@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Management{% endblock %}
+
+{% block content %}
+
+<div class="d-flex w-100 px-4">
+    <div class="row">
+        <div class="d-flex justify-content-start p-3">
+            <div class="text-start">
+                <h1>Admin Admin</h1>
+                <p>admin@mail.com</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between text-start">
+            <div class="col-2 ">text</div>
+            <div class="col-2 ">text</div>
+            <div class="col-2 ">text</div>
+            <div class="col-2 ">text</div>
+            <div class="col-2 ">text</div>
+
+        </div>
+        <div class="d-flex justify-content-between text-start my-2">
+            <div class="col-1 ">Open New Account</div>
+            <div class="col-1 ">Edit Account</div>
+            <div class="col-1 ">Deactivate Account</div>
+            <div class="col-1 ">Close Account</div>
+            <div class="col-1 ">View Transaction History</div>
+            <div class="col-1 ">Deposit Funds</div>
+            <div class="col-1 ">Withdraw Funds</div>
+            <div class="col-1 ">Transfer Funds</div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="form-outline" data-mdb-input-init>
+    <input type="search" id="form1" class="form-control"
+        placeholder="Type query" aria-label="Search" />
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Handle</th>
+        </tr>
+    </thead>
+    {% for cust in customer %}
+    <tbody>
+        <tr>
+            <th scope="row">{{ cust.id }}</th>
+            <td>{{ cust.given_name }} {{ surname }}</td>
+            <td>{{ cust.streetaddress }}</td>
+            <td>{{ cust.city }}</td>
+            <td>{{ cust.zipcode }}</td>
+            <td>{{ cust.country }}</td>
+            <td>{{ cust.country_code }}</td>
+            <td>{{ cust.birthday }}</td>
+            <td>{{ cust.national_id }}</td>
+            <td>{{ cust.telephone_country_code }}</td>
+            <td>{{ cust.telephone }}</td>
+            <td>{{ cust.email_addres }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+        {% endblock %}

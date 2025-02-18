@@ -1,68 +1,74 @@
 {% extends 'base.html' %}
-
 {% block title %}Bank Dashboard{% endblock title %}
-
 {% block content %}
-
-<p>Statistik: </p>
-<p>Antal Kunder: </p>
-<p>Summan av saldo hos kunder: </p>
-
-
 
 
 <div class="d-flex flex-column flex-md-row p-4 gap-3 justify-content-between w-100">
   <div class="list-group w-100">
       <h5 class="text-start">Counterparty Exposure</h5>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span></span>Goldman Sachs<span class="text-success">985,174€</span>
-      </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span>JPMorgan Chase</span> <span class="text-success">98,812€</span>
-      </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span>Bank of America</span> <span class="text-danger">-2,081,662€</span>
-      </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span>Swedbank</span> <span class="text-success">110,291€</span>
-      </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-        <span>Nordea</span> <span class="text-success">110,291€</span>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+        <span class="currency-item">
+            <span id="currency-logo"><img src="/static/images/sachs.jpg" alt="sachs"></span>
+            Goldman Sachs
+        </span>
+        <span class="{% if gs > gs_pr %}text-success{% else %}text-danger{% endif %}">{{ gs }} USD</span>
     </p>
+    <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+      <span class="currency-item">
+          <span id="currency-logo"><img src="/static/images/boa.png" alt="sachs"></span>
+          Bank of America
+      </span>
+      <span class="{% if bac > bac_pr %}text-success{% else %}text-danger{% endif %}">{{ bac }} USD</span>
+  </p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+    <span class="currency-item">
+        <span id="currency-logo"><img src="/static/images/J_P_Morgan_Logo_2008_1.svg.png" alt="sachs"></span>
+        JPMorgan
+    </span>
+    <span class="{% if jpm > jpm_pr %}text-success{% else %}text-danger{% endif %}">{{ jpm }} USD</span>
+</p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+  <span class="currency-item">
+      <span id="currency-logo"><img src="/static/images/NDA-FI.HE-13ed89fc.png" alt="sachs"></span>
+      Wells Fargo
+  </span>
+  <span class="{% if wfc > wfc_pr %}text-success{% else %}text-danger{% endif %}">{{ wfc }} USD</span>
+</p>
+
+
   </div>
   <div class="list-group w-100">
-      <h5 class="text-start">Currency Positions (USD)</h5>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span><span id="currency">€</span> EUR</span> <span class="text-success">785,000€</span>
+      <h5 class="text-start">Currency Positions (1 USD)</h5>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+          <span><span id="currency">€</span> EUR</span> <span class="text-primary">
+            {{ currency_list_values.0 }}
+          </span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span><span id="currency">F</span> CHF</span> <span class="text-success">50,450€</span>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+          <span><span id="currency">F</span> CHF</span> <span class="text-primary">{{ currency_list_values.1 }}</span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span><span id="currency">£</span> GBP</span> <span class="text-danger">-1,500,200€</span>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+          <span><span id="currency">£</span> GBP</span> <span class="text-primary">{{ currency_list_values.2 }}</span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-        <span><span id="currency">¥</span> JPY</span> <span class="text-success">99,999€</span>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+        <span><span id="currency">¥</span> JPY</span> <span class="text-primary">{{ currency_list_values.3 }}</span>
     </p>
-    <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-      <span><span id="currency">Kr</span> SEK</span> <span class="text-success">99,999€</span>
+    <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+      <span><span id="currency">Kr</span> SEK</span> <span class="text-primary">{{ currency_list_values.4 }}</span>
   </p>
-
 
 
   </div>
   <div class="list-group w-100">
       <h5 class="text-start">Entity Positions</h5>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
-          <span>Deutsche Bank</span> <span class="text-success">1,200,000€</span>
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
+          <span>Deutsche Bank</span> <span class="text-success">1,200,000</span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
           <span>JPMorgan</span> <span class="text-success">75,350€</span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
           <span>Nordea</span> <span class="text-danger">-3,010,500€</span>
       </p>
-      <p class="list-group-item rounded-3 py-2 d-flex justify-content-between">
+      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
           <span>Swedbank</span> <span class="text-success">150,000€</span>
       </p>
   </div>
@@ -70,35 +76,22 @@
 
 
 
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
-    <div class="row align-items-center g-lg-5 py-5">
-      <div class="col-lg-7 text-center text-lg-start">
-        <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">Vertically centered hero sign-up form</h1>
-        <p class="col-lg-10 fs-4">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
-      </div>
-      <div class="col-md-10 mx-auto col-lg-5">
-        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
-          <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
-          </div>
-          <div class="form-floating mb-3">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
-          </div>
-          <div class="checkbox mb-3">
-            <label>
-              <input type="checkbox" value="remember-me"> Remember me
-            </label>
-          </div>
-          <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
-          <hr class="my-4">
-          <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
-        </form>
-      </div>
+<div class="container list-group">
+  <div class="row justify-content-evenly">
+    <div class="col-3 list-group-item rounded-3">
+      <p class="text-muted small mb-1">Total cash</p>
+      <h1 class="fw-bold mb-0">12,234,948€</h1>
     </div>
-  </div>
+    <div class="col-3 list-group-item rounded-3">
+      <p class="text-muted small mb-1">Total customers</p>
+      <h1 class="fw-bold mb-0">12,234</h1>
+    </div>
+    <div class="col-5 list-group-item rounded-3">
+      One of two columns
+    </div>
     
+</div>
+
 
 
 
