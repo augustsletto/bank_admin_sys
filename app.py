@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_migrate import Migrate, upgrade
 from flask_bootstrap import Bootstrap5
 from models import db, seedData, Customer, Account, Transaction
@@ -12,14 +12,16 @@ from collections import defaultdict
 import requests
 import os
 from dotenv import load_dotenv
-from wtforms import StringField, SubmitField, IntegerField
+from wtforms import StringField, SubmitField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired, Email, NumberRange
-from models import db, seedData, Customer, Account, Transaction
+from wtforms.validators import DataRequired, Email, NumberRange, Length
+from models import db, seedData, Customer, Account, Transaction, AccountType
 from wtforms import StringField, DecimalField, SelectField, SubmitField
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+
+
 
 load_dotenv()
 
@@ -31,9 +33,56 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:password@lo
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)
-
+Bootstrap5(app)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+
+class EditCustomerForm(FlaskForm):
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)])
+    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)])
+    city = StringField("City", validators=[DataRequired(), Length(max=70)])
+    zipcode = StringField("Zip Code", validators=[DataRequired(), Length(max=15)])
+    country = StringField("Country", validators=[DataRequired(), Length(max=60)])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)])
+    birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
+    national_id = StringField("National ID", validators=[DataRequired(), Length(max=20)])
+    telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(max=10)])
+    telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
+    
+    submit = SubmitField("Update Customer")
+
+
+class AddCustomerForm(FlaskForm):
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)])
+    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)])
+    city = StringField("City", validators=[DataRequired(), Length(max=70)])
+    zipcode = StringField("Zip Code", validators=[DataRequired(), Length(max=15)])
+    country = StringField("Country", validators=[DataRequired(), Length(max=60)])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)])
+    birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
+    national_id = StringField("National ID", validators=[DataRequired(), Length(max=20)])
+    telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(max=10)])
+    telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
+    
+    submit = SubmitField("Add Customer")
+
+
+class AddAccountForm(FlaskForm):
+    account_type = SelectField(
+        "Account Type", 
+        choices=[(account.value, account.name) for account in AccountType], 
+        validators=[DataRequired()]
+    )
+    balance = DecimalField(
+        "Initial Balance", 
+        validators=[DataRequired(), NumberRange(min=0, message="Balance must be at least 0")]
+    )
+    submit = SubmitField("Create Account")
 
 
 
@@ -41,7 +90,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 @app.route("/", methods=["GET"])
 def startpage():
     
-
+    
     today = date.today()
     yesterday = today - timedelta(days = 4)
     day_before_yesterday = yesterday - timedelta(days = 1)
@@ -58,14 +107,14 @@ def startpage():
         data = r.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
         currency_list_values.append(data)
 
-        print(data)
+        # print(data)
     
 
     url = f'https://www.alphavantage.co/query?function=REALTIME_BULK_QUOTES&symbol=BAC,WFC,GS,JPM&apikey={ALPHA_VANTAGE}'
     r = requests.get(url)
     data = r.json()["data"]
     
-   
+    # print(data)
     bac = data[0]["close"]
     bac_pr = data[0]["previous_close"]
     bac_percent = data[0]["change_percent"]
@@ -101,16 +150,60 @@ def startpage():
                            )
 
 
-@app.route("/management", methods=["GET"])
-def management():
-    customer = db.session.execute(db.select(Customer)
-                                  .order_by(Customer.surname)).scalars()
-    print(customer)
+@app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
+def add_account(customer_id):
+    form = AddAccountForm()
+    customer = db.get_or_404(Customer, customer_id)
     
+    
+    if form.validate_on_submit():
+        new_account = Account(
+            account_type = form.account_type.data,
+            created=datetime.now(),
+            balance=form.balance.data,
+            customer_id=customer.id
+        )
+        db.session.add(new_account)
+        db.session.commit()
+        flash("Account successfully created!", "success")
+        return redirect(url_for("management"))
+    
+    return render_template("add_account.html", form=form, customer=customer)
+
+# @app.route("/delete_account/<int:account_id>" methods=["GET", "POST"])
+# def delete_account(account_id):
+#     pass
+    
+    
+    
+@app.route("/management", methods=["GET", "POST"])
+def management():
+    customer = db.session.execute(db.select(Customer)).scalars()
+    # print(customer)
+    
+        
     
     return render_template("management.html", customer=customer)
 
-@app.route("/customer/<int:id>", methods=["GET"])
+
+@app.route("/edit_customer.html", methods=["GET", "POST"])
+def edit_customer():
+    customer_id = request.args.get("id")
+    customer = db.get_or_404(Customer, customer_id)
+    form = EditCustomerForm(obj=customer)
+    
+    if form.validate_on_submit():
+        form.populate_obj(customer)
+        db.session.commit()
+        
+        flash("Account successfully edited!")
+        return redirect(url_for("management"))
+    return render_template("edit_customer.html", form=form, customer=customer)
+
+
+    
+
+@app.route("/customer/<int:id>", methods=["GET", "POST"])
 def customer_list(id):
     customer = Customer.query.get_or_404(id)
 

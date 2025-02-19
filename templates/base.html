@@ -1,139 +1,220 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-<head>
+<html lang="en" data-bs-theme="dark">
+    <head>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet"
+            href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet"
+            href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css">
+        <link href="https://cdn.lineicons.com/4.0/lineicons.css"
+            rel="stylesheet" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock title %}</title>
+        <link
+            href="{{ url_for('static',filename = 'css/style.css')}}"
+            rel="stylesheet" />
+
+        {% block header_links %}
+        {% endblock header_links %}
+    </head>
+    <body>
 
 
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css">
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock title %}</title>
-    <link
-      href="{{ url_for('static',filename = 'css/style.css')}}"
-      rel="stylesheet"
-    />
-    
-    
-    {% block header_links %}
-    {% endblock header_links %}
-</head>
-<body>
 
-  
-  <div class="wrapper">
-    <aside id="sidebar">
-        <div class="d-flex">
-            <button class="toggle-btn" type="button">
-                <i class="lni lni-grid-alt"></i>
-            </button>
-            <div class="sidebar-logo">
-                <a href="#">Stratton 
-                    & Pierce</a>
-            </div>
-        </div>
-        <ul class="sidebar-nav">
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-user"></i>
-                    <span>Profile</span>
+
+
+        
+        <div class="wrapper">
+            
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style="width: 260px; background-color: #0e2238;">
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                  <img src="/static/images/LOGO.png" class="m-2" width="50px" alt="logo">
                 </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-agenda"></i>
-                    <span>Task</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                    data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                    <i class="lni lni-protection"></i>
-                    <span>Auth</span>
-                </a>
-                <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">Login</a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">Register</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                    data-bs-target="#multi" aria-expanded="false" aria-controls="multi">
-                    <i class="lni lni-layout"></i>
-                    <span>Multi Level</span>
-                </a>
-                <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
-                            data-bs-target="#multi-two" aria-expanded="false" aria-controls="multi-two">
-                            Two Links
+                
+
+                <ul class="nav flex-column mb-auto my-4">
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
+                          <i class="lni lni-layout height"></i>
+                          <span class="fs-6">Dashboard</span>
                         </a>
-                        <ul id="multi-two" class="sidebar-dropdown list-unstyled collapse">
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ url_for('management') }}" class="nav-link sidebar-link d-flex align-items-center">
+                            <i class="bi bi-people"></i>
+                          <span class="fs-6">Customers</span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
+                          <i class="lni lni-layout height"></i>
+                          <span class="fs-6">Admin</span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
+                            <i class="bi bi-graph-up"></i>
+                          <span class="fs-6">Investments</span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
+                            <i class="bi bi-gear"></i>
+                          <span class="fs-6">Settings</span>
+                        </a>
+                      </li>
+                  
+                </ul>
+                <hr>
+                <div class="dropdown">
+                  <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>mdo</strong>
+                  </a>
+                  <ul class="dropdown-menu text-small shadow" >
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                  </ul>
+                </div>
+              </div>
+              
+            <!-- <aside id="sidebar">
+                <div class="d-flex">
+                    <button class="toggle-btn" type="button">
+                        <i class="lni lni-grid-alt"></i>
+                    </button>
+                    <div class="sidebar-logo">
+                        <a href="#">Stratton
+                            & Pierce</a>
+                    </div>
+                </div>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-house"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ url_for('management') }}" class="sidebar-link">
+                            <i class="bi bi-person-rolodex"></i>
+
+                            <span>Customers</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link collapsed has-dropdown"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#auth" aria-expanded="false"
+                            aria-controls="auth">
+                            <i class="lni lni-protection"></i>
+                            <span>Admin</span>
+                        </a>
+                        <ul id="auth"
+                            class="sidebar-dropdown list-unstyled collapse"
+                            data-bs-parent="#sidebar">
                             <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">Link 1</a>
+                                <a href="#" class="sidebar-link">Login</a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">Link 2</a>
+                                <a href="#" class="sidebar-link">Register</a>
                             </li>
                         </ul>
                     </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link collapsed has-dropdown"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#multi" aria-expanded="false"
+                            aria-controls="multi">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Investments</span>
+                        </a>
+                        <ul id="multi"
+                            class="sidebar-dropdown list-unstyled collapse"
+                            data-bs-parent="#sidebar">
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link collapsed"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#multi-two"
+                                    aria-expanded="false"
+                                    aria-controls="multi-two">
+                                    Portfolio
+                                </a>
+                                <ul id="multi-two"
+                                    class="sidebar-dropdown list-unstyled collapse">
+                                    <li class="sidebar-item">
+                                        <a href="#" class="sidebar-link">Stock Market</a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a href="#" class="sidebar-link">Crypto Wallet</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <i class="lni lni-popup"></i>
+                            <span>Notification</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <i class="lni lni-cog"></i>
+                            <span>Setting</span>
+                        </a>
+                    </li>
                 </ul>
-            </li>
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-popup"></i>
-                    <span>Notification</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-cog"></i>
-                    <span>Setting</span>
-                </a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
-            <a href="#" class="sidebar-link">
-                <i class="lni lni-exit"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-    </aside>
-    <div class="main p-3">
-        <div class="text-center">
-            
-            <nav class="navbar bg-body-tertiary">
-                <div class="container-fluid">
-                  <a class="navbar-brand">Navbar</a>
-                  <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                  </form>
+                <div class="sidebar-footer">
+                    <a href="#" class="sidebar-link">
+                        <i class="lni lni-exit"></i>
+                        <span>Logout</span>
+                    </a>
                 </div>
-              </nav>
+            </aside> -->
+            <div class="main p-3">
+                <div class="text-center">
 
-          {% block content %}
-          {% endblock content %}
+                    <nav class="navbar bg-body-tertiary">
+                        <div class="container-fluid">
+                            <a class="navbar-brand">Navbar</a>
+                            <form class="d-flex" role="search">
+                                <input class="form-control me-2" type="search"
+                                    placeholder="Search" aria-label="Search">
+                                <button class="btn btn-outline-success"
+                                    type="submit">Search</button>
+                            </form>
+                        </div>
+                    </nav>
+
+                    {% block content %}
+                    {% endblock content %}
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-    
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-    crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename = 'js/scripts.js')}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/controller/chart-1.js"></script>
-    
-    {% block custom_scripts %}
-    {% endblock custom_scripts %}
-</body>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+        <script
+            src="{{ url_for('static', filename = 'js/scripts.js')}}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script
+            src="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/controller/chart-1.js"></script>
+
+        {% block custom_scripts %}
+        {% endblock custom_scripts %}
+    </body>
 </html>

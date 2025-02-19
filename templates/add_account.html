@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Create a New Account for {{ customer.given_name }} {{ customer.surname }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.account_type.label }} {{ form.account_type() }}
+        </div>
+        <div>
+            {{ form.balance.label }} {{ form.balance() }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+{% endblock %}

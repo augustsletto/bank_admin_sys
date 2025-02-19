@@ -11,26 +11,26 @@
             <span id="currency-logo"><img src="/static/images/sachs.jpg" alt="sachs"></span>
             Goldman Sachs
         </span>
-        <span class="{% if gs > gs_pr %}text-success{% else %}text-danger{% endif %}">{{ gs }} USD</span>
+        <span class="{% if gs > gs_pr %}text-success{% else %}text-danger{% endif %}">{% if gs %}{{ gs }}{% else %}{{ gs_pr }}{% endif %} USD</span>
     </p>
     <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
       <span class="currency-item">
           <span id="currency-logo"><img src="/static/images/boa.png" alt="sachs"></span>
           Bank of America
       </span>
-      <span class="{% if bac > bac_pr %}text-success{% else %}text-danger{% endif %}">{{ bac }} USD</span>
+      <span class="{% if bac > bac_pr %}text-success{% else %}text-danger{% endif %}">{% if bac %}{{ bac }}{% else %}{{ gs_pr }}{% endif %} USD</span>
   </p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
     <span class="currency-item">
         <span id="currency-logo"><img src="/static/images/J_P_Morgan_Logo_2008_1.svg.png" alt="sachs"></span>
         JPMorgan
     </span>
-    <span class="{% if jpm > jpm_pr %}text-success{% else %}text-danger{% endif %}">{{ jpm }} USD</span>
+    <span class="{% if jpm > jpm_pr %}text-success{% else %}text-danger{% endif %}">{% if jpm %}{{ jpm }}{% else %}{{ jpm_pr }}{% endif %} USD</span>
 </p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
   <span class="currency-item">
       <span id="currency-logo"><img src="/static/images/NDA-FI.HE-13ed89fc.png" alt="sachs"></span>
       Wells Fargo
   </span>
-  <span class="{% if wfc > wfc_pr %}text-success{% else %}text-danger{% endif %}">{{ wfc }} USD</span>
+  <span class="{% if wfc > wfc_pr %}text-success{% else %}text-danger{% endif %}">{% if wfc %}{{ wfc }}{% else %}{{ wfc_pr }}{% endif %} USD</span>
 </p>
 
 

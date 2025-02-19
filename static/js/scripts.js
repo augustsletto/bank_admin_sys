@@ -1,5 +1,21 @@
-const hamBurger = document.querySelector(".toggle-btn");
+// document.addEventListener("DOMContentLoaded", function () {
+//   const sidebarItems = document.querySelectorAll(".sidebar-item .has-dropdown");
 
-hamBurger.addEventListener("click", function () {
-  document.querySelector("#sidebar").classList.toggle("expand");
-});
+//   sidebarItems.forEach((item) => {
+//     item.addEventListener("click", function (event) {
+//       event.preventDefault();
+
+//       let dropdown = this.nextElementSibling;
+//       if (dropdown.classList.contains("open")) {
+//         dropdown.classList.remove("open");
+//       } else {
+//         // Close other open dropdowns
+//         // document.querySelectorAll(".sidebar-dropdown.open").forEach((openDropdown) => {
+//         //   openDropdown.classList.remove("open");
+//         // });
+
+//         dropdown.classList.add("open");
+//       }
+//     });
+//   });
+// });

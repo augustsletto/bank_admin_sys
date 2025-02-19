@@ -92,9 +92,14 @@
 
         
         <div class="col-lg-4">
-      
-
+                
+                    <div class="d-flex flex-row justify-content-between align-items-center mb-2">
+                        <h6>My Card</h6>
+                        <button class="btn btn-primary py-1 mb-2">Add Card</button>
+                    </div>
+                
                 <div class="credit-card bg-dark text-white mb-4 p-4 d-flex flex-column justify-content-between">
+                    
                     <div class="d-flex justify-content-between align-items-center">
                         <h4>Platinum Card</h4>
                         <i class="fab fa-cc-amex fa-2x"></i>
@@ -112,7 +117,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <ul class="nav nav-pills d-flex flex-row">
+                        <ul class="nav nav-pills d-flex flex-row justify-content-between">
                             {% for acc in customer_accounts %}
                             <li class="nav-item">
                                 <a class="nav-link {% if acc.id == selected_account_id %}active{% endif %}" 
