@@ -11,6 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <title>Document</title>
     <style>
+
+
+        
         header{
             padding-top: 28px ;
             padding-bottom: 28px ;
@@ -62,7 +65,7 @@
 
             li a.selected{
                 color: #fff;
-                background-color: #2a2a2a;
+                background-color: #5641f5;
 
             }
 
@@ -70,7 +73,7 @@
             
 
             .table-container {
-                max-height: 220px;  /* Adjust based on your needs */
+                max-height: 657px;  /* Adjust based on your needs */
                 overflow-y: auto;   /* Enables scrolling */
                 overflow-x: hidden; /* Prevents horizontal scroll */
                 border-radius: 8px; /* Optional: Rounded corners */
@@ -131,6 +134,62 @@
               .bi-caret-down-fill{
                 font-size: 0.5rem;
               }
+
+
+
+
+
+              
+            .exchange-btn {
+                background-color: #5641f5;
+                color: rgb(255, 255, 255);
+                width: 100%;
+                border-radius: 10px;
+                padding: 10px;
+                border: none;
+
+            }
+
+            .exchange-btn:hover{
+                background-color: #6754f5;
+                
+                
+            }
+
+
+            .number-pad {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .number-pad button {
+                background-color: #333;
+                color: white;
+                border: none;
+                padding: 15px;
+                border-radius: 5px;
+                font-size: 20px;
+            }
+
+            .number-pad button:hover {
+                background-color: #313131d5;
+            }
+
+
+
+            .form-select{
+                color:#0f0f0f;
+                background-color: #fff;
+
+            }
+
+            .bi-search, .bi-three-dots {
+                color: #757575;
+                
+                
+            }
+
               
 
 
@@ -140,13 +199,13 @@
 
 
 
+<!-- cta 7c00cf -->
 
 
 
 
-
-
-<!-- <div class="container-fluid px-5"> -->
+<!-- 
+<div class="container-fluid px-5"> -->
 
 <!-- 
       <div class="row g-3 mx-5">
@@ -179,8 +238,8 @@
         </div>
     </div> -->
 
-
-    <!-- <div class="main px-5">
+<!-- 
+    <div class="main px-5">
 <div class="nav mx-5 mb-3">
     <div class="col px-2">
         <div class="col px-1">
@@ -192,8 +251,8 @@
                   </div>
             
                   <ul class="nav col-12 col-md-auto mb-2 justify-content-between mb-md-0 ">
-                    <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded selected">Dashboard</a></li>
-                    <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded">Customers</a></li>
+                    <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded">Dashboard</a></li>
+                    <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded selected">Customers</a></li>
                     <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded">Accounts</a></li>
                     <li><a href="#" class="mx-2 py-3 px-5 nav-select rounded">About</a></li>
                   </ul>
@@ -205,8 +264,8 @@
             </header>
         </div>
     </div>
-</div>
-     -->
+</div> -->
+    
     <div class="row g-4 mx-5">
         <!-- First Row -->
 
@@ -214,88 +273,149 @@
         <div class="col-3 d-flex">
             <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
                 <div class="row d-flex justify-content-between">
-                    <div class="col card-title pb-4">Overview</div>
+                    <div class="col card-title pb-4">Currency </div>
                     <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
                 </div>
                 
-                    <div class="col py-2">Total Balance</div>
-                <div class="col display-4 pb-5">$32,440.99</div>
                 
-                <div class="col mt-5">
-                    <div class="col card-details fw-lighter py-2">Total customers: <strong>1,243</strong></div>
-                    <div class="col card-details fw-lighter pb-0">Total accounts: <strong>2,243</strong></div>
-                </div>
                 
-            </div>
-        </div>
-        <div class="col-5 d-flex">
-            <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
-                <div class="row d-flex justify-content-between">
-                    <div class="col card-title pb-4">Statistics</div>
-                    <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-                </div>
-                <div>
-                    <canvas id="lineChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 d-flex">
-            <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
-                <div class="row d-flex justify-content-between">
-                    <div class="col card-title pb-4">Total</div>
-                    <div class="col text-end">
+                    
                         
-                        <i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i>
+                        <div class="mb-3">
+                            <select id="fromCurrency" class="form-select">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="SEK">SEK</option>
+                            </select>
+                            <input type="number" id="amount" class="form-control mt-2" placeholder="Enter amount">
+                        </div>
+
+
+                        
+                        <div class="mb-3">
+                            <select id="toCurrency" class="form-select">
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                                <option value="SEK">SEK</option>
+                            </select>
+                            <input type="text" id="convertedAmount" class="form-control mt-2" placeholder="Converted amount" readonly>
+                        </div>
+                        <button class="exchange-btn" onclick="convertCurrency()">Exchange Now</button>
+                        
+                        <div class="number-pad">
+                            <button onclick="addNumber(1)">1</button>
+                            <button onclick="addNumber(2)">2</button>
+                            <button onclick="addNumber(3)">3</button>
+                            <button onclick="addNumber(4)">4</button>
+                            <button onclick="addNumber(5)">5</button>
+                            <button onclick="addNumber(6)">6</button>
+                            <button onclick="addNumber(7)">7</button>
+                            <button onclick="addNumber(8)">8</button>
+                            <button onclick="addNumber(9)">9</button>
+                            <button onclick="clearAmount()">C</button>
+                            <button onclick="addNumber(0)">0</button>
                             
-                        
-                        
-
-                        </i></div>
-                </div>
-                <div>
-                    <canvas id="barChart"></canvas>
-                </div>
-
+                        </div>
+                    
 
 
 
                 
-                <div class="container mt-2 pe-5">
-                    <div class="row text-white ps-3 rounded d-flex align-items-center text-start">
-                        <div class="col-5 d-flex justify-content-start align-items-center px-0">
-                            <div class="text-end">
-                                <span class="fs-1 d-block">8,3</span>
-                            </div>
-                            <div class="ms-2 text-start">
-                                <span class="d-block lw-l lh-sm fs-6">Cash</span>
-                                <span class="d-block lw-l lh-sm fs-6">receipts</span>
-                            </div>
-                        </div>
+
+
+                <!-- <form method="GET" action="" class="mb-4">
+                     {{ url_for('management') }}
+                    <div class="row">
                         
-                        <!-- Vertical Line Divider -->
-                        <div class="col-2 d-flex justify-content-start ps-0">
-                            <div class="border-start border-secondary" style="height: 30px;"></div>
+                        <div class="col-md-4">
+                            <label for="name">Namn:</label>
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Förnamn eller efternamn" value="">
+                             {{ request.args.get('name', '') }}
                         </div>
-                
-                        <div class="col-5 d-flex justify-content-start align-items-center">
-                            <div class="text-end">
-                                <span class="fs-1 d-block">6,9</span>
-                            </div>
-                            <div class="ms-2 text-start">
-                                <span class="d-block lh-sm fs-6">Cash</span>
-                                <span class="d-block lh-sm fs-6">expenses</span>
-                            </div>
+                        <div class="col-md-4">
+                            <label for="city">Stad:</label>
+                            <input type="text" name="city" id="city" class="form-control" placeholder="Ex. Stockholm" value="">
+                             {{ request.args.get('city', '') }} 
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email">E-post:</label>
+                            <input type="text" name="email" id="email" class="form-control" placeholder="Ex. kund@example.com" value="">
+                             {{ request.args.get('email', '') }} 
                         </div>
                     </div>
-                </div>
+            
+                    <div class="row mt-3">
+                         Dropdowns 
+                        <div class="col-md-4">
+                            <label for="country">Land:</label>
+                            <select name="country" id="country" class="form-control">
+                                <option value="">Alla</option>
+                                 {% for country in country_list %} 
+                                <option value="country" >{{ country }}</option>
+                                 {% if request.args.get('country') == country %}selected{% endif %} 
+                                 {% endfor %} 
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="account_type">Kontotyp:</label>
+                            <select name="account_type" id="account_type" class="form-control">
+                                <option value="">Alla</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Checking">Checking</option>
+                                <option value="Savings">Savings</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="transaction_type">Transaktionstyp:</label>
+                            <select name="transaction_type" id="transaction_type" class="form-control">
+                                <option value="">Alla</option>
+                                <option value="Debit">Debit</option>
+                                <option value="Credit">Credit</option>
+
+                                 {% if request.args.get('account_type') == "Personal" %}selected{% endif %}
+                                {% if request.args.get('account_type') == "Checking" %}selected{% endif %}
+                                {% if request.args.get('account_type') == "Savings" %}selected{% endif %}
+                                {% if request.args.get('transaction_type') == "Debit" %}selected{% endif %}
+                                 {% if request.args.get('transaction_type') == "Credit" %}selected{% endif %} 
+                            </select>
+                        </div>
+                    </div>
+            
+                    <div class="row mt-3">
+                         Checkboxar 
+                        <div class="col-md-3">
+                            <input type="checkbox" name="has_account" id="has_account">
+                              {% if request.args.get('has_account') %}checked{% endif %} 
+                            <label for="has_account">Endast kunder med konton</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" name="has_transactions" id="has_transactions">
+                              {% if request.args.get('has_transactions') %}checked{% endif %} 
+                            <label for="has_transactions">Endast kunder med transaktioner</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" name="positive_balance" id="positive_balance">
+                              {% if request.args.get('positive_balance') %}checked{% endif %} 
+                            <label for="positive_balance">Endast konton med saldo över 0</label>
+                        </div>
+                    </div>
+            
+                    
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Filtrera</button>
+                        <a href="#" class="btn btn-secondary">Återställ</a>
+                    </div>
+                </form> 
 
 
+            -->
                 
-
+                
+                <div class="col mt-5">
+                </div>
+                
             </div>
         </div>
-
-        <!-- Second Row -->
         
         <div class="col-9 d-flex">
             <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
@@ -399,19 +519,109 @@
                             <td>$500</td>
                             <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
                         </tr>
+                        <tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr><tr>
+                            <td>August Sletto</td>
+                            <td>today</td>
+                            <td>Approved</td>
+                            <td>???</td>
+                            <td>$500</td>
+                            <td class="text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></td>
+                        </tr>
 
                     </tbody>
                 </table>
             </div>
-            </div>
-        </div>
-        <div class="col-3 d-flex">
-            <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
-                <div class="row d-flex justify-content-between">
-                    <div class="col card-title pb-4">AI Chatbot</div>
-                    <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-                    
-                </div>
             </div>
         </div>
     </div>
@@ -527,9 +737,29 @@
     
 
 
+        function convertCurrency() {
+            let amount = parseFloat(document.getElementById("amount").value);
+            let fromCurrency = document.getElementById("fromCurrency").value;
+            let toCurrency = document.getElementById("toCurrency").value;
+
+            fetch(`/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("convertedAmount").value = data.converted_amount;
+                });
+        }
+
+        function addNumber(num) {
+            document.getElementById("amount").value += num;
+        }
+
+        function clearAmount() {
+            document.getElementById("amount").value = "";
+        }
+    </script>
     
 
 
-</script>
+
 </body>
 </html>

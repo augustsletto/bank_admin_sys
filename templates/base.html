@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-    <head>
+<html lang="en" >
+    
+<!-- data-bs-theme="dark" -->
+
+<head>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet"
@@ -15,6 +18,7 @@
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}{% endblock title %}</title>
@@ -28,13 +32,110 @@
     <body>
 
 
+    
+
+
+
+
+
 
 
 
         
         <div class="wrapper">
             
-            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style="width: 260px; background-color: #0e2238;">
+            <div class="d-flex flex-column flex-shrink-0 sidebar" id="sidebar">
+                
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                    <img src="/static/images/LOGO.png" class="m-2" width="50px" alt="logo">
+                  </a>
+
+                <hr>
+                
+            
+                <!-- Sidebar Menu -->
+                <ul class="nav flex-column my-4">
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="{% if 'index' == active_page %}sidebar-link-active{% else %} sidebar-link{% endif %}">
+                            <i class="lni lni-layout"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('management') }}" class="{% if 'management' == active_page %}sidebar-link-active{% else %} sidebar-link{% endif %}">
+                            <i class="bi bi-people"></i>
+                            <span>Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-chat-left-dots"></i>
+                            <span>Admin</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Investments</span>
+                            <span class="badge">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-stack"></i>
+                            <span>Campaigns</span>
+                            <span class="badge">1</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-people"></i>
+                            <span>Audience</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Statistics</span>
+                        </a>
+                    </li>
+                </ul>
+            
+                <hr class="divider">
+            
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="sidebar-link">
+                            <i class="bi bi-gear"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link">
+                            <i class="bi bi-question-circle"></i>
+                            <span>Help Center</span>
+                        </a>
+                    </li>
+                </ul>
+            
+                <!-- Profile Dropdown -->
+                <div class="dropdown profile-section">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                        <img src="https://github.com/mdo.png" alt="User" width="32" height="32" class="rounded-circle me-2">
+                        <strong>mdo</strong>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+
+            <!-- <div class="d-flex flex-column flex-shrink-0" id="sidebar" style="width: 260px;">
                 <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                   <img src="/static/images/LOGO.png" class="m-2" width="50px" alt="logo">
                 </a>
@@ -43,20 +144,20 @@
                 <ul class="nav flex-column mb-auto my-4">
                     <li class="nav-item">
                         <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
-                          <i class="lni lni-layout height"></i>
-                          <span class="fs-6">Dashboard</span>
+                          <i class="lni lni-layout height "></i>
+                          <span class="fs-6 ">Dashboard</span>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a href="{{ url_for('management') }}" class="nav-link sidebar-link d-flex align-items-center">
-                            <i class="bi bi-people"></i>
-                          <span class="fs-6">Customers</span>
+                            <i class="bi bi-people "></i>
+                          <span class="fs-6 ">Management</span>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
-                          <i class="lni lni-layout height"></i>
-                          <span class="fs-6">Admin</span>
+                          <i class="lni lni-layout height "></i>
+                          <span class="fs-6 ">Admin</span>
                         </a>
                       </li>
                       <li class="nav-item">
@@ -66,14 +167,14 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link d-flex align-items-center">
+                        <a href="{{ url_for('startpage') }}" class="nav-link sidebar-link-active d-flex align-items-center">
                             <i class="bi bi-gear"></i>
                           <span class="fs-6">Settings</span>
                         </a>
                       </li>
                   
                 </ul>
-                <hr>
+                <hr class="greytext">
                 <div class="dropdown">
                   <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
@@ -87,7 +188,10 @@
                     <li><a class="dropdown-item" href="#">Sign out</a></li>
                   </ul>
                 </div>
-              </div>
+              </div> -->
+
+              
+              
               
             <!-- <aside id="sidebar">
                 <div class="d-flex">
@@ -183,20 +287,14 @@
                     </a>
                 </div>
             </aside> -->
-            <div class="main p-3">
-                <div class="text-center">
+            <div class="main">
+                
 
-                    <nav class="navbar bg-body-tertiary">
-                        <div class="container-fluid">
-                            <a class="navbar-brand">Navbar</a>
-                            <form class="d-flex" role="search">
-                                <input class="form-control me-2" type="search"
-                                    placeholder="Search" aria-label="Search">
-                                <button class="btn btn-outline-success"
-                                    type="submit">Search</button>
-                            </form>
-                        </div>
-                    </nav>
+                    
+
+
+
+
 
                     {% block content %}
                     {% endblock content %}
@@ -218,3 +316,4 @@
         {% endblock custom_scripts %}
     </body>
 </html>
+

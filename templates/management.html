@@ -1,5 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'baseTemplate.html' %}
+{% set active_page = "management" %}
 {% block title %}Management{% endblock %}
+
 
 {% block content %}
 {% with messages = get_flashed_messages() %}
@@ -11,97 +13,254 @@
     </ul>
   {% endif %}
 {% endwith %}
-<div class="d-flex w-100 px-4">
-    <div class="row">
-        <div class="d-flex justify-content-start p-3">
-            <div class="text-start">
-                <h1>Admin Admin</h1>
-                <p>admin@mail.com</p>
+
+<div class="row g-4 mx-5">
+    <!-- First Row -->
+
+    
+    <div class="col-3 d-flex">
+        <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Currency </div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
-        </div>
+            
+            
+            
+                
+                    
+                    <div class="mb-3">
+                        <select id="fromCurrency" class="form-select">
+                            {% for currency in currencies %}
+                            <option value="{{ currency }}">{{ currency }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="number" id="amount" class="form-control mt-2" placeholder="Enter amount">
+                    </div>
 
-        <div class="d-flex justify-content-between text-start">
-            <div class="col-2 ">text</div>
-            <div class="col-2 ">text</div>
-            <div class="col-2 ">text</div>
-            <div class="col-2 ">text</div>
-            <div class="col-2 ">text</div>
 
-        </div>
-        <div class="d-flex justify-content-between text-start my-2">
-            <div class="col-1 ">Open New Account</div>
-            <div class="col-1 ">Edit Account</div>
-            <div class="col-1 ">Deactivate Account</div>
-            <div class="col-1 ">Close Account</div>
-            <div class="col-1 ">View Transaction History</div>
-            <div class="col-1 ">Deposit Funds</div>
-            <div class="col-1 ">Withdraw Funds</div>
-            <div class="col-1 ">Transfer Funds</div>
+                    
+                    <div class="mb-3">
+                        <select id="toCurrency" class="form-select">
+                            {% for currency in currencies %}
+                            <option value="{{ currency }}">{{ currency }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" id="convertedAmount" class="form-control mt-2" placeholder="Converted amount" readonly>
+                    </div>
+                    <button class="exchange-btn" onclick="convertCurrency()">Exchange Now</button>
+                    
+                    <div class="number-pad">
+                        <button onclick="addNumber(1)">1</button>
+                        <button onclick="addNumber(2)">2</button>
+                        <button onclick="addNumber(3)">3</button>
+                        <button onclick="addNumber(4)">4</button>
+                        <button onclick="addNumber(5)">5</button>
+                        <button onclick="addNumber(6)">6</button>
+                        <button onclick="addNumber(7)">7</button>
+                        <button onclick="addNumber(8)">8</button>
+                        <button onclick="addNumber(9)">9</button>
+                        <button onclick="clearAmount()">C</button>
+                        <button onclick="addNumber(0)">0</button>
+                        
+                    </div>
+                
 
+
+
+            
+
+
+            <!-- <form method="GET" action="" class="mb-4">
+                 {{ url_for('management') }}
+                <div class="row">
+                    
+                    <div class="col-md-4">
+                        <label for="name">Namn:</label>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Förnamn eller efternamn" value="">
+                         {{ request.args.get('name', '') }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="city">Stad:</label>
+                        <input type="text" name="city" id="city" class="form-control" placeholder="Ex. Stockholm" value="">
+                         {{ request.args.get('city', '') }} 
+                    </div>
+                    <div class="col-md-4">
+                        <label for="email">E-post:</label>
+                        <input type="text" name="email" id="email" class="form-control" placeholder="Ex. kund@example.com" value="">
+                         {{ request.args.get('email', '') }} 
+                    </div>
+                </div>
+        
+                <div class="row mt-3">
+                     Dropdowns 
+                    <div class="col-md-4">
+                        <label for="country">Land:</label>
+                        <select name="country" id="country" class="form-control">
+                            <option value="">Alla</option>
+                             {% for country in country_list %} 
+                            <option value="country" >{{ country }}</option>
+                             {% if request.args.get('country') == country %}selected{% endif %} 
+                             {% endfor %} 
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="account_type">Kontotyp:</label>
+                        <select name="account_type" id="account_type" class="form-control">
+                            <option value="">Alla</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Checking">Checking</option>
+                            <option value="Savings">Savings</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="transaction_type">Transaktionstyp:</label>
+                        <select name="transaction_type" id="transaction_type" class="form-control">
+                            <option value="">Alla</option>
+                            <option value="Debit">Debit</option>
+                            <option value="Credit">Credit</option>
+
+                             {% if request.args.get('account_type') == "Personal" %}selected{% endif %}
+                            {% if request.args.get('account_type') == "Checking" %}selected{% endif %}
+                            {% if request.args.get('account_type') == "Savings" %}selected{% endif %}
+                            {% if request.args.get('transaction_type') == "Debit" %}selected{% endif %}
+                             {% if request.args.get('transaction_type') == "Credit" %}selected{% endif %} 
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="row mt-3">
+                     Checkboxar 
+                    <div class="col-md-3">
+                        <input type="checkbox" name="has_account" id="has_account">
+                          {% if request.args.get('has_account') %}checked{% endif %} 
+                        <label for="has_account">Endast kunder med konton</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" name="has_transactions" id="has_transactions">
+                          {% if request.args.get('has_transactions') %}checked{% endif %} 
+                        <label for="has_transactions">Endast kunder med transaktioner</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" name="positive_balance" id="positive_balance">
+                          {% if request.args.get('positive_balance') %}checked{% endif %} 
+                        <label for="positive_balance">Endast konton med saldo över 0</label>
+                    </div>
+                </div>
+        
+                
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Filtrera</button>
+                    <a href="#" class="btn btn-secondary">Återställ</a>
+                </div>
+            </form> 
+
+
+        -->
+            
+            
+            <div class="col mt-5">
+            </div>
+            
         </div>
     </div>
-
-</div>
-
-<div class="form-outline" data-mdb-input-init>
-    <input type="search" id="form1" class="form-control"
-        placeholder="Search" aria-label="Search" />
-</div>
-
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Customer ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Address</th>
-            <th scope="col">City</th>
-            <th scope="col">Country</th>
-
-
-            <th scope="col">Telephone</th>
-        
-            <th scope="col">Birthday</th>
-            <th scope="col">National Id</th>
-            <th scope="col">Edit</th>
-
-        
-        </tr>
-    </thead>
-    {% for cust in customer %}
     
-    <tbody>
-        <tr onclick="window.location='{{ url_for('customer_list', id=cust.id) }}';" style="cursor: pointer;">
+    <div class="col-9 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-2">Top 10 Wealthiest</div>
+                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
             
+            <div class="table-container-big table-container">
+                <table class="wealt-table table-hover table text-start">
+                    <thead>
+                        <tr>
+                            <!-- <th scope="col">Customer ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col">Birthday</th>
+                            <th scope="col">National Id</th>
+                            <th scope="col">Edit</th> -->
                 
-            <th scope="row">{{ cust.id }}</th>
-            <td class="">{{ cust.given_name }} {{ cust.surname }}</td>
-            <td class="">{{ cust.email_address }}</td>
-            <td class="">{{ cust.streetaddress }}, {{ cust.zipcode }}</td>
-            <td class="">{{ cust.city }}</td>
-            <td class="">{{ cust.country_code }} {{ cust.country }}</td>
-            
-            <td class="">({{ cust.telephone_country_code }}) {{ cust.telephone }}</td>
-            <td class="">{{ cust.birthday }}</td>
-            <td class="">{{ cust.national_id }}</td>
-            <td>
+                            <th scope="col" class="text-start">Customer</th>
+                            <th scope="col" class="text-start">Address</th>
+                            <th scope="col" class="text-start">City</th>
+                            <th scope="col" class="text-start">National Id</th>
+                            <th scope="col" class="text-start">Customer ID</th>
+                            <th scope="col"></th>
                 
                 
+                        
+                        </tr>
+                    </thead>
+                    {% for cust in customer %}
+                    
+                    <tbody>
+                        <tr onclick="window.location='{{ url_for('customer_list', id=cust.id) }}';" style="cursor: pointer;">
+                            
+                                
+                            <td class="text-start">
+                                <strong>{{ cust.given_name }} {{ cust.surname }}</strong><br>
+                                <span style="font-size: 0.85em; color: gray;">{{ cust.email_address }}</span>
+                            </td>
+                            <td class="text-start">{{ cust.streetaddress }}, {{ cust.zipcode }}</td>
+                            <td class="text-start">{{ cust.city }}</td>
+                            <!-- <td class="">{{ cust.country_code }} {{ cust.country }}</td> -->
+                            
+                            <!-- <td class="">({{ cust.telephone_country_code }}) {{ cust.telephone }}</td> -->
+                            <!-- <td class="">{{ cust.birthday }}</td> -->
+                            <td class="text-start">{{ cust.national_id }}</td>
+                            <td class="text-start">{{ cust.id }}</td>
+                            <td class="text-end">
+                                <div class="row">
+                                  <div class="col p-0 m-0 text-end">
+                                    <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="{{ url_for('edit_customer', id=cust.id) }}">
+                                        <i class="bi bi-pen py-1 px-2 tiny-buttons rounded"></i>
+                                      </a>
+                                  </div>
+                                  <div class="col p-0 m-0 text-end">
+                                    <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="#">
+                                        <i class="bi bi-trash py-1 px-2 tiny-buttons rounded"></i>
+                                      </a>
+                                  </div>
+                                      
+                                    
+                                </div>
+                              </td>
+                            
+                            
+                
+                        
+                        </tr>
+                    </tbody>
+                
+                
+                
+                
+                    
+                        {% endfor %}
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
 
-                
-                <a href="{{ url_for('edit_customer', id=cust.id) }}" class="btn btn-sm btn-warning">
-                    <i class="fas fa-edit">Edit</i> 
-                </a>
 
-                
-                <button class="btn btn-sm btn-danger">
-                    <i class="fas fa-trash">Delete</i> 
-                </button>
-            </td>
 
-        
-        </tr>
-    </tbody>
-        {% endfor %}
 
-        {% endblock %}
+
+
+
+
+
+
+
+
+{% endblock %}

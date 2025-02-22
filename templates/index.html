@@ -1,103 +1,186 @@
-{% extends 'base.html' %}
-{% block title %}Bank Dashboard{% endblock title %}
+{% extends 'baseTemplate.html' %}
+{% set active_page = "index" %}
+{% block title %}Dashboard{% endblock %}
+
+
+
 {% block content %}
 
 
-<div class="d-flex flex-column flex-md-row p-4 gap-3 justify-content-between w-100">
-  <div class="list-group w-100">
-      <h5 class="text-start">Counterparty Exposure</h5>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-        <span class="currency-item">
-            <span id="currency-logo"><img src="/static/images/sachs.jpg" alt="sachs"></span>
-            Goldman Sachs
-        </span>
-        <span class="{% if gs > gs_pr %}text-success{% else %}text-danger{% endif %}">{% if gs %}{{ gs }}{% else %}{{ gs_pr }}{% endif %} USD</span>
-    </p>
-    <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-      <span class="currency-item">
-          <span id="currency-logo"><img src="/static/images/boa.png" alt="sachs"></span>
-          Bank of America
-      </span>
-      <span class="{% if bac > bac_pr %}text-success{% else %}text-danger{% endif %}">{% if bac %}{{ bac }}{% else %}{{ gs_pr }}{% endif %} USD</span>
-  </p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-    <span class="currency-item">
-        <span id="currency-logo"><img src="/static/images/J_P_Morgan_Logo_2008_1.svg.png" alt="sachs"></span>
-        JPMorgan
-    </span>
-    <span class="{% if jpm > jpm_pr %}text-success{% else %}text-danger{% endif %}">{% if jpm %}{{ jpm }}{% else %}{{ jpm_pr }}{% endif %} USD</span>
-</p><p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-  <span class="currency-item">
-      <span id="currency-logo"><img src="/static/images/NDA-FI.HE-13ed89fc.png" alt="sachs"></span>
-      Wells Fargo
-  </span>
-  <span class="{% if wfc > wfc_pr %}text-success{% else %}text-danger{% endif %}">{% if wfc %}{{ wfc }}{% else %}{{ wfc_pr }}{% endif %} USD</span>
-</p>
+<div class="row g-4 mx-5">
+    <!-- First Row -->
 
-
-  </div>
-  <div class="list-group w-100">
-      <h5 class="text-start">Currency Positions (1 USD)</h5>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span><span id="currency">€</span> EUR</span> <span class="text-primary">
-            {{ currency_list_values.0 }}
-          </span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span><span id="currency">F</span> CHF</span> <span class="text-primary">{{ currency_list_values.1 }}</span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span><span id="currency">£</span> GBP</span> <span class="text-primary">{{ currency_list_values.2 }}</span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-        <span><span id="currency">¥</span> JPY</span> <span class="text-primary">{{ currency_list_values.3 }}</span>
-    </p>
-    <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-      <span><span id="currency">Kr</span> SEK</span> <span class="text-primary">{{ currency_list_values.4 }}</span>
-  </p>
-
-
-  </div>
-  <div class="list-group w-100">
-      <h5 class="text-start">Entity Positions</h5>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span>Deutsche Bank</span> <span class="text-success">1,200,000</span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span>JPMorgan</span> <span class="text-success">75,350€</span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span>Nordea</span> <span class="text-danger">-3,010,500€</span>
-      </p>
-      <p class="list-group-item rounded-3 my-1 py-2 d-flex justify-content-between">
-          <span>Swedbank</span> <span class="text-success">150,000€</span>
-      </p>
-  </div>
-</div>
-
-
-
-<div class="container list-group">
-  <div class="row justify-content-evenly">
-    <div class="col-3 list-group-item rounded-3">
-      <p class="text-muted small mb-1">Total cash</p>
-      <h1 class="fw-bold mb-0">12,234,948€</h1>
-    </div>
-    <div class="col-3 list-group-item rounded-3">
-      <p class="text-muted small mb-1">Total customers</p>
-      <h1 class="fw-bold mb-0">12,234</h1>
-    </div>
-    <div class="col-5 list-group-item rounded-3">
-      One of two columns
-    </div>
     
+    <div class="col-3 d-flex">
+        <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Overview</div>
+                <div class="col text-end"><form method="GET" action="{{ url_for('startpage') }}">
+				
+				
+                    <select name="country" id="country" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if selected_country == "all" %}selected{% endif %}>Total</option>
+                        {% for count in country_list_items %}
+                        <option value="{{ count }}" {% if selected_country == count %}selected{% endif %}>{{ count }}</option>
+                        {% endfor %}
+                    
+                    </select>
+                </form></div>
+            </div>
+            
+                <div class="col py-2">{% if not selected_country or selected_country == "all" %}Total Balance{% else %}Total Balance in {{ selected_country }}{% endif %}</div>
+            <div class="col display-4 pb-5">$<span class="">{{ "{:,.2f}".format(richest_customers_by_country | sum(attribute="total_balance")) }}</span></div>
+            
+            <div class="col mt-5">
+                <div class="col card-details fw-lighter py-2">{% if not selected_country or selected_country == "all" %}Total Customers{% else %}Customers in {{ selected_country }}{% endif %} <strong>{{ total_customers_by_country }}</strong></div>
+                <div class="col card-details fw-lighter pb-0">{% if not selected_country or selected_country == "all" %}Total Accounts{% else %}Accounts in {{ selected_country }}{% endif %} <strong>{{ total_accounts_by_country }}</strong></div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="col-5 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Statistics</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            <div>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Total</div>
+                <div class="col text-end">
+                    
+                    <i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i>
+                        
+                    
+                    
+
+                    </i></div>
+            </div>
+            <div>
+                <canvas id="barChart"></canvas>
+            </div>
+
+
+
+
+            
+            <div class="container mt-2 pe-5">
+                <div class="row text-white ps-3 rounded d-flex align-items-center text-start">
+                    <div class="col-5 d-flex justify-content-start align-items-center px-0">
+                        <div class="text-end">
+                            <span class="fs-1 d-block">8,3</span>
+                        </div>
+                        <div class="ms-2 text-start">
+                            <span class="d-block lw-l lh-sm fs-6">Cash</span>
+                            <span class="d-block lw-l lh-sm fs-6">receipts</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Vertical Line Divider -->
+                    <div class="col-2 d-flex justify-content-start ps-0">
+                        <div class="border-start border-secondary" style="height: 30px;"></div>
+                    </div>
+            
+                    <div class="col-5 d-flex justify-content-start align-items-center">
+                        <div class="text-end">
+                            <span class="fs-1 d-block">6,9</span>
+                        </div>
+                        <div class="ms-2 text-start">
+                            <span class="d-block lh-sm fs-6">Cash</span>
+                            <span class="d-block lh-sm fs-6">expenses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+
+        </div>
+    </div>
+
+    <!-- Second Row -->
+    
+    <div class="col-9 d-flex">
+        <div class="p-2 card-border flex-fill p-4">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-2">{% if not selected_country or selected_country == "all" %}Top 10 Wealthiest Customers{% else %}Top 10 Wealthiest in {{ selected_country }}{% endif %}</div>
+                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+            <div class="table-container-small table-container">
+                <table class="wealt-table table-dark text-start">
+                    <thead>
+                        <th>Customer id</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Retained</th>
+                        <th>Amount</th>
+                        <th>Balance after trade</th>
+                    </thead>
+                    {% for latest_transac in transactions_by_country %}
+                    
+                    
+
+
+                    <tbody>
+                        <tr>
+                        <td>{{ latest_transac.customer_id }}</td>
+                        <td>{{ latest_transac.customer_name }}</td>
+                        <td class="badge rouded-pill bg-danger text-dark">Frozen</td>
+                        <td>5 min ago</td>
+                        <td>${{ "{:,.2f}".format(latest_transac.amount) }}</td>
+                        <td>${{ "{:,.2f}".format(latest_transac.new_balance) }}</td>
+
+                        
+                    </tr>
+                    {% endfor %}
+                    
+                    
+                    </tbody>
+                </table>
+        </div>
+        </div>
+    </div>
+    <div class="col-3 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">10 Richest</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                <div class="table-container-small table-container">
+                <table class="wealt-table table-dark text-start">
+                    {% for richest in richest_customers_by_country[:10] %}
+                    <tbody>
+                        <tr>
+                        <td>{{ richest.name }}</td>
+                        <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                        <td>{{ richest.country }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                    
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
 </div>
 
 
 
 
-  
 
 
 
 
-{% endblock content %}
+{% endblock %}

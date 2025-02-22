@@ -1,0 +1,201 @@
+{% extends 'baseTemplate.html' %}
+{% set active_page = "customer" %}
+{% block title %}{% endblock %}
+
+
+{% block content %}
+
+
+<div class="row g-4 mx-5">
+    <!-- First Row -->
+
+    
+    <div class="col-3 d-flex">
+        <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Total Balance</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+            <div class="col display-4 pb-5">${{ "{:,.2f}".format(total_balance) }}</div>
+            
+            <div class="col mt-5">
+                <div class="col card-details fw-lighter py-2">Selected Account: <strong>${{ "{:,.2f}".format(current_balance) }}</strong></div>
+                <div class="col card-details fw-lighter pb-0">Total accounts: <strong>2,243</strong></div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="col-5 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Statistics</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            <div>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Account</div>
+                <div class="col text-end">
+                    
+
+                    
+
+
+                    <div class="dropdown">
+                        <a class="add_acc_btn" href="{{ url_for('add_account', customer_id=customer.id) }}"><i class="bi bi-plus-circle-fill py-1 px-2 tiny-buttons rounded"></i></a>
+
+                        <i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                        <ul class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow" data-bs-theme="dark" style="min-width: auto; width: auto;">
+                          
+                            {% for acc in customer_accounts %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if acc.id == selected_account_id %}active{% endif %}" 
+                                   href="{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}">
+                                    {{ acc.account_type.value }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                      </div>
+                        
+                    
+                    
+
+                    </div>
+            </div>
+            <div>
+                <div class="creditcard p-3">
+                    <div id="card-logo" class="text-end pt-2 pe-3 "><img src="/static/images/V.D-e36aebe0.png" alt="visalogo" id="visalogo"></div>
+                
+                <div id="card-num" class="my-4 px-2 pt-3">
+                    •••• •••• •••• <span id="card-num-4"> {{ customer.national_id[-4:] }}</span>
+                </div>
+
+                <div class="row">
+                    <div class="col ps-4 card-name text-start">{{ customer.given_name }} {{ customer.surname }}</div>
+                    <div class="col card-date text-end">22/11</div>
+                </div>
+            </div>
+        </div>
+
+
+        
+            
+            
+                
+                    
+                    
+                
+            
+
+
+            
+
+        </div>
+    </div>
+
+    <!-- Second Row -->
+    
+    <div class="col-9 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-2">Transaction History</div>
+                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+            <div class="table-container table-container-big">
+                {% if transactions %}
+                <table class="wealt-table table table-dark text-start" style="background-color: #1d1d1d;">
+                <thead style>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>New Balance</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                {% for t in transactions %}
+                
+                <tbody>
+                    <tr>
+                        <td>{{ t.id }}</td>
+                            <td>${{ "{:,.2f}".format(t.amount) }}</td>
+                            <td>${{ "{:,.2f}".format(t.new_balance) }}</td>
+                            <td>{{ t.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td class="text-end">
+                            <div class="dropup">
+                              <i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                              <ul class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow" data-bs-theme="dark" style="min-width: auto; width: auto;">
+                                
+                                <li>
+                                  <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="#">
+                                    <i class="bi bi-pen"></i>
+                                  </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                  <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="#">
+                                    <i class="bi bi-trash"></i>
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                          
+
+                          
+                    </tr>
+                    {% endfor %}
+                    <div>
+                        {% if pagination.has_prev %}
+                            <a href="{{ url_for('customer_list', id=customer.id, account_id=selected_account_id, page=pagination.prev_num) }}" 
+                               class="btn btn-primary">Previous</a>
+                        {% endif %}
+            
+                        Page {{ pagination.page }} of {{ pagination.pages }}
+            
+                        {% if pagination.has_next %}
+                            <a href="{{ url_for('customer_list', id=customer.id, account_id=selected_account_id, page=pagination.next_num) }}" 
+                               class="btn btn-primary">Next</a>
+                        {% endif %}
+                    </div>
+                
+                {% else %}
+                    <p>No transactions found for this account.</p>
+                {% endif %}
+                    
+
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+    <div class="col-3 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Transfer</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+{% endblock %}

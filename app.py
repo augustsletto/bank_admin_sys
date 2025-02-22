@@ -20,7 +20,9 @@ from models import db, seedData, Customer, Account, Transaction, AccountType
 from wtforms import StringField, DecimalField, SelectField, SubmitField
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, aliased
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Integer, String, Text
 
 
 load_dotenv()
@@ -87,8 +89,184 @@ class AddAccountForm(FlaskForm):
 
 
 
+
+@app.route("/login")
+def login():
+
+    
+    
+
+    return render_template("login.html")
+
+
+# def get_customer_and_accounts_from_country(country_name):
+#     customers_with_accounts = (
+#         db.session.query(Customer, Account
+#                         ).join(Account, Customer.id == Account.customer_id
+#                         ).filter(Customer.country == country_name
+#                         ).all()
+#     )
+    
+#     return customers_with_accounts
+
+def get_country_data(country_name=None):
+    
+    AccountAlias = aliased(Account)
+    
+    
+    customer_query = db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")).join(Account, Account.customer_id == Customer.id)
+    total_customers_query = db.session.query(db.func.count(Customer.id))
+    total_accounts_query = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id)
+    transactions_query = (
+        db.session.query(Transaction, Customer.id, Customer.given_name, Customer.surname)
+        .join(Account, Account.id == Transaction.account_id)
+        .join(Customer, Customer.id == Account.customer_id)
+    )
+    
+    if country_name and country_name.lower() != "all":
+        customer_query = customer_query.filter(Customer.country == country_name)
+        total_customers_query = total_customers_query.filter(Customer.country == country_name)
+        total_accounts_query = total_accounts_query.filter(Customer.country == country_name)
+        transactions_query = transactions_query.filter(Customer.country == country_name)
+    
+    
+    customer_accounts = customer_query.group_by(Customer.id).order_by(db.desc("total_balance")).all()
+    total_customers = total_customers_query.scalar()
+    total_accounts = total_accounts_query.scalar()
+    transactions = transactions_query.order_by(Transaction.date.desc()).all()
+    
+    
+    
+    
+    # customer_accounts = (
+    #     db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")
+    #                     ).join(Account, Customer.id == Account.customer_id
+    #                     ).filter(Customer.country == country_name
+    #                     ).group_by(Customer.id
+    #                     ).order_by(db.desc("total_balance")
+    #                     ).limit(limit
+    #                     ).all()
+    # )
+    
+    # total_customers = db.session.query(db.func.count(Customer.id)
+    #                                 ).filter(Customer.country == country_name
+    #                                 ).scalar()
+
+    # total_accounts = (
+    #     db.session.query(db.func.count(Account.id)
+    #                     ).join(Customer, Customer.id == Account.customer_id
+    #                     ).filter(Customer.country == country_name
+    #                     ).scalar()
+    # )
+
+    # # Count total transactions in the country
+    # # total_transactions = (
+    # #     db.session.query(db.func.count(Transaction.id))
+    # #     .join(Account, Account.id == Transaction.account_id)
+    # #     .join(Customer, Customer.id == Account.customer_id)
+    # #     .filter(Customer.country == country_name)
+    # #     .scalar()
+    # # )
+    # transactions = (
+    #     db.session.query(Transaction
+    #                     ).join(Account, Account.id == Transaction.account_id
+    #                     ).join(Customer, Customer.id == Account.customer_id
+    #                     ).filter(Customer.country == country_name
+    #                     ).order_by(Transaction.date.desc()
+    #                     ).all()
+    # )
+
+
+
+    richest_customers = []
+    for customer, total_balance in customer_accounts:
+        richest_customers.append({
+            "name": f"{customer.given_name} {customer.surname}",
+            "country": customer.country,
+            "total_balance":total_balance
+
+        })
+        
+        
+    transaction_list = []
+    for transaction, customer_id, given_name, surname in transactions:
+        transaction_list.append({
+            "id": transaction.id,
+            "customer_id": customer_id,
+            "customer_name":f"{given_name} {surname}",
+            "type": transaction.type.name,
+            "operation":transaction.operation.name,
+            "date": transaction.date,
+            "amount": float(transaction.amount),
+            "new_balance": float(transaction.new_balance),
+            "account_id":transaction.account_id
+        }
+        )
+        
+        
+        
+    return {
+            "richest_customers": richest_customers,
+            "total_customers": total_customers,
+            "total_accounts": total_accounts,
+            "transactions": transaction_list
+            
+            }
+
+
+
+
+
+
+
 @app.route("/", methods=["GET"])
 def startpage():
+    
+    country = request.args.get("country", "all")
+    
+    
+    
+    country_data = get_country_data(country)
+    richest_customers_by_country = country_data["richest_customers"]
+    total_customers_by_country = country_data["total_customers"]
+    total_accounts_by_country = country_data["total_accounts"]
+    transactions_by_country = country_data["transactions"]
+    
+    
+    
+    country_list_items = db.session.execute(db.select(Customer.country)).scalars().all()
+    
+    
+    
+    
+    balance_list = []
+    balance = db.session.execute(db.select(Account.balance)).scalars()
+    
+    for bal in balance:
+        balance_list.append(bal)
+    
+    balance_sum = sum(balance_list)
+    
+    cust_list = []
+    cust_amount = db.session.execute(db.select(Customer)).scalars().all()
+    customer_amount = len(cust_amount)
+    
+    
+    # customers_account = get_customer_and_accounts_from_country(country_name)
+    
+    
+    # top_richest_list = []
+    # customer_dict = {}
+    # for customer, account in customers_account[:10]:
+    #     print(f"Customer: {customer.given_name} {customer} {customer.country}")
+    #     print(f"acc id{account.id}")
+    
+    
+    
+    # custumers_country = Customer.query.filter_by(Customer.country.desc()).all()
+    
+    
+    
     
     
     today = date.today()
@@ -100,6 +278,7 @@ def startpage():
     # TODO: Currency trader
     currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
     currency_list_values = []
+    
     
     for currency in currency_list:
         url = f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency={currency}&apikey={ALPHA_VANTAGE}'
@@ -146,12 +325,21 @@ def startpage():
                            wfc=wfc,
                            wfc_pr=wfc_pr,
                            wfc_percent=wfc_percent,
-                           currency_list_values=currency_list_values
+                           currency_list_values=currency_list_values,
+                           balance_sum=balance_sum,
+                           customer_amount=customer_amount,
+                           richest_customers_by_country=richest_customers_by_country,
+                           total_customers_by_country=total_customers_by_country,
+                           total_accounts_by_country=total_accounts_by_country,
+                           transactions_by_country=transactions_by_country,
+                           country_list_items=country_list_items,
+                           selected_country=country
                            )
 
 
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
 def add_account(customer_id):
+    
     form = AddAccountForm()
     customer = db.get_or_404(Customer, customer_id)
     
@@ -173,20 +361,60 @@ def add_account(customer_id):
 # @app.route("/delete_account/<int:account_id>" methods=["GET", "POST"])
 # def delete_account(account_id):
 #     pass
-    
-    
+
+@app.route("/convert", methods=["GET"])
+def convert_currency():
+        try:
+            amount = float(request.args.get('amount'))
+            from_currency = request.args.get('from')
+            to_currency = request.args.get('to')
+
+            # Hämta växelkurser
+            response = requests.get(f"https://v6.exchangerate-api.com/v6/793f97b4f7bfbf99ae6fb376/latest/{from_currency}")
+            data = response.json()
+            
+            
+            if to_currency not in data['conversion_rates']:
+                return jsonify({"error": "Invalid currency code"}), 400
+
+            exchange_rate = data['conversion_rates'][to_currency]
+            converted_amount = round(amount * exchange_rate, 2)
+
+            return jsonify({"converted_amount": converted_amount})
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
     
 @app.route("/management", methods=["GET", "POST"])
 def management():
     customer = db.session.execute(db.select(Customer)).scalars()
     # print(customer)
     
+    # currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
+    # currency_list_values = []
+    currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
+    
+    # for currency in currency_list:
+    #     url = f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency={currency}&apikey={ALPHA_VANTAGE}'
+    #     r = requests.get(url)
+    #     data = r.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
+    #     currency_list_values.append(data)
+        
+    # url = f"https://v6.exchangerate-api.com/v6/793f97b4f7bfbf99ae6fb376/latest/USD"
+    # data = requests.get(url).json()
+        
+    # print(data)
+    
+        
         
     
-    return render_template("management.html", customer=customer)
+    return render_template("management.html", customer=customer, currencies=currencies)
 
+@app.route("/test_customer")
+def test_customer():
+    return render_template("test_customer.html")
 
-@app.route("/edit_customer.html", methods=["GET", "POST"])
+@app.route("/edit_customer", methods=["GET", "POST"])
 def edit_customer():
     customer_id = request.args.get("id")
     customer = db.get_or_404(Customer, customer_id)
@@ -201,7 +429,7 @@ def edit_customer():
     return render_template("edit_customer.html", form=form, customer=customer)
 
 
-    
+
 
 @app.route("/customer/<int:id>", methods=["GET", "POST"])
 def customer_list(id):
@@ -247,7 +475,7 @@ def customer_list(id):
         transactions = pagination.items
 
     return render_template(
-        "customers.html",
+        "customer.html",
         customer=customer,
         customer_accounts=customer_accounts,
         transactions=transactions,
