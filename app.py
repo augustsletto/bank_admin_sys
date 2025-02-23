@@ -16,19 +16,21 @@ from wtforms import StringField, SubmitField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, NumberRange, Length
-from models import db, seedData, Customer, Account, Transaction, AccountType
+from models import db, seedData, Customer, Account, Transaction, AccountType, TransactionType, TransactionOperation
 from wtforms import StringField, DecimalField, SelectField, SubmitField
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, aliased
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Text
-
-
+from sqlalchemy import Integer, String, Text, func
+from sqlalchemy.sql import extract, func
+from collections import Counter
+from decimal import Decimal
 load_dotenv()
 
 POLYGON_API = os.getenv("POLYGON_API")
 ALPHA_VANTAGE = os.getenv("ALPHA_VANTAGE")
+CURRENCY_API = os.getenv("CURRENCY_API")
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:password@localhost:3310/Bank'
@@ -38,6 +40,9 @@ migrate = Migrate(app,db)
 Bootstrap5(app)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+
+
 
 
 class EditCustomerForm(FlaskForm):
@@ -94,26 +99,17 @@ class AddAccountForm(FlaskForm):
 def login():
 
     
-    
 
     return render_template("login.html")
 
 
-# def get_customer_and_accounts_from_country(country_name):
-#     customers_with_accounts = (
-#         db.session.query(Customer, Account
-#                         ).join(Account, Customer.id == Account.customer_id
-#                         ).filter(Customer.country == country_name
-#                         ).all()
-#     )
-    
-#     return customers_with_accounts
+
 
 def get_country_data(country_name=None):
     
     AccountAlias = aliased(Account)
     
-    
+
     customer_query = db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")).join(Account, Account.customer_id == Customer.id)
     total_customers_query = db.session.query(db.func.count(Customer.id))
     total_accounts_query = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id)
@@ -131,53 +127,13 @@ def get_country_data(country_name=None):
     
     
     customer_accounts = customer_query.group_by(Customer.id).order_by(db.desc("total_balance")).all()
+    
     total_customers = total_customers_query.scalar()
     total_accounts = total_accounts_query.scalar()
     transactions = transactions_query.order_by(Transaction.date.desc()).all()
     
     
     
-    
-    # customer_accounts = (
-    #     db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")
-    #                     ).join(Account, Customer.id == Account.customer_id
-    #                     ).filter(Customer.country == country_name
-    #                     ).group_by(Customer.id
-    #                     ).order_by(db.desc("total_balance")
-    #                     ).limit(limit
-    #                     ).all()
-    # )
-    
-    # total_customers = db.session.query(db.func.count(Customer.id)
-    #                                 ).filter(Customer.country == country_name
-    #                                 ).scalar()
-
-    # total_accounts = (
-    #     db.session.query(db.func.count(Account.id)
-    #                     ).join(Customer, Customer.id == Account.customer_id
-    #                     ).filter(Customer.country == country_name
-    #                     ).scalar()
-    # )
-
-    # # Count total transactions in the country
-    # # total_transactions = (
-    # #     db.session.query(db.func.count(Transaction.id))
-    # #     .join(Account, Account.id == Transaction.account_id)
-    # #     .join(Customer, Customer.id == Account.customer_id)
-    # #     .filter(Customer.country == country_name)
-    # #     .scalar()
-    # # )
-    # transactions = (
-    #     db.session.query(Transaction
-    #                     ).join(Account, Account.id == Transaction.account_id
-    #                     ).join(Customer, Customer.id == Account.customer_id
-    #                     ).filter(Customer.country == country_name
-    #                     ).order_by(Transaction.date.desc()
-    #                     ).all()
-    # )
-
-
-
     richest_customers = []
     for customer, total_balance in customer_accounts:
         richest_customers.append({
@@ -186,7 +142,7 @@ def get_country_data(country_name=None):
             "total_balance":total_balance
 
         })
-        
+   
         
     transaction_list = []
     for transaction, customer_id, given_name, surname in transactions:
@@ -209,7 +165,7 @@ def get_country_data(country_name=None):
             "richest_customers": richest_customers,
             "total_customers": total_customers,
             "total_accounts": total_accounts,
-            "transactions": transaction_list
+            "transactions": transaction_list,
             
             }
 
@@ -222,22 +178,72 @@ def get_country_data(country_name=None):
 @app.route("/", methods=["GET"])
 def startpage():
     
+    
+    
     country = request.args.get("country", "all")
     
     
     
     country_data = get_country_data(country)
     richest_customers_by_country = country_data["richest_customers"]
+    
     total_customers_by_country = country_data["total_customers"]
     total_accounts_by_country = country_data["total_accounts"]
     transactions_by_country = country_data["transactions"]
     
+
     
     
-    country_list_items = db.session.execute(db.select(Customer.country)).scalars().all()
+    
+    
+   
     
     
     
+    labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    balance_data_rich = [customer["total_balance"] for customer in country_data["richest_customers"]]
+    
+    
+    main_bar_color =["#5641f5"]*11
+    off_bar_color = ["#b5a3d9"]*11
+    maxrange = np.arange(1, 11).tolist()
+    
+    
+    transaction_data_operation = [t["operation"] for t in country_data["transactions"]]
+    transaction_data_new_balance = [t["new_balance"] for t in country_data["transactions"]]
+    transaction_by_date = [t["date"].weekday() for t in country_data["transactions"]]
+    transaction_by_month = [t["date"].month for t in country_data["transactions"]]
+    income_by_month = [t["operation"] for t in country_data["transactions"]]
+    
+    transaction_data_amount = [t["amount"] for t in country_data["transactions"]]
+    country_list_items = sorted(set(db.session.execute(db.select(Customer.country)).scalars().all()))
+    
+   
+    
+    
+    
+    
+
+    counter = Counter(transaction_by_date)
+    iterations_per_week = dict(sorted(counter.items()))
+    
+    counter_month = Counter(transaction_by_month)
+    iterations_per_month = dict(sorted(counter_month.items()))
+    
+    counter_income_by_month = Counter(income_by_month)
+    iterations_income_by_month = dict(sorted(counter_income_by_month.items()))
+   
+    print(iterations_income_by_month)
+    
+    
+    
+    average_transactions_list = []
+    for i in iterations_per_month.values():
+        
+        average_transactions_list.append(i)
+    #  / total_customers_by_country if total_customers_by_country else 1 
+    
+
     
     balance_list = []
     balance = db.session.execute(db.select(Account.balance)).scalars()
@@ -252,22 +258,6 @@ def startpage():
     customer_amount = len(cust_amount)
     
     
-    # customers_account = get_customer_and_accounts_from_country(country_name)
-    
-    
-    # top_richest_list = []
-    # customer_dict = {}
-    # for customer, account in customers_account[:10]:
-    #     print(f"Customer: {customer.given_name} {customer} {customer.country}")
-    #     print(f"acc id{account.id}")
-    
-    
-    
-    # custumers_country = Customer.query.filter_by(Customer.country.desc()).all()
-    
-    
-    
-    
     
     today = date.today()
     yesterday = today - timedelta(days = 4)
@@ -275,7 +265,7 @@ def startpage():
     week_ago = today - timedelta(days = 7)
     
     
-    # TODO: Currency trader
+
     currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
     currency_list_values = []
     
@@ -286,14 +276,14 @@ def startpage():
         data = r.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
         currency_list_values.append(data)
 
-        # print(data)
+ 
     
 
     url = f'https://www.alphavantage.co/query?function=REALTIME_BULK_QUOTES&symbol=BAC,WFC,GS,JPM&apikey={ALPHA_VANTAGE}'
     r = requests.get(url)
     data = r.json()["data"]
     
-    # print(data)
+   
     bac = data[0]["close"]
     bac_pr = data[0]["previous_close"]
     bac_percent = data[0]["change_percent"]
@@ -333,7 +323,18 @@ def startpage():
                            total_accounts_by_country=total_accounts_by_country,
                            transactions_by_country=transactions_by_country,
                            country_list_items=country_list_items,
-                           selected_country=country
+                           selected_country=country,
+                           balance_data_rich=balance_data_rich,
+                           transaction_data_amount=transaction_data_amount,
+                           transaction_data_operation=transaction_data_operation,
+                           transaction_data_new_balance=transaction_data_new_balance,
+                           labels=labels,
+                           main_bar_color=main_bar_color,
+                           maxrange=maxrange,
+                           off_bar_color=off_bar_color,
+                           iterations_per_week=iterations_per_week,
+                           iterations_per_month=iterations_per_month,
+                           average_transactions_list=average_transactions_list
                            )
 
 
@@ -358,9 +359,7 @@ def add_account(customer_id):
     
     return render_template("add_account.html", form=form, customer=customer)
 
-# @app.route("/delete_account/<int:account_id>" methods=["GET", "POST"])
-# def delete_account(account_id):
-#     pass
+
 
 @app.route("/convert", methods=["GET"])
 def convert_currency():
@@ -370,7 +369,7 @@ def convert_currency():
             to_currency = request.args.get('to')
 
             # Hämta växelkurser
-            response = requests.get(f"https://v6.exchangerate-api.com/v6/793f97b4f7bfbf99ae6fb376/latest/{from_currency}")
+            response = requests.get(f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/latest/{from_currency}")
             data = response.json()
             
             
@@ -409,6 +408,13 @@ def management():
         
     
     return render_template("management.html", customer=customer, currencies=currencies)
+
+
+
+
+
+
+
 
 @app.route("/test_customer")
 def test_customer():

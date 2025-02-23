@@ -1,25 +1,93 @@
-{% extends 'baseTemplate.html' %} {% from 'bootstrap5/form.html' import render_form %}
+{% extends 'baseTemplate.html' %}
+{% from 'bootstrap5/form.html' import render_form %}
 {% set active_page = "management" %}
 {% block title %}Edit Customer{% endblock %}
 
-
 {% block content %}
 
+<div class="row g-4 mx-5">
 
-
-
-
-
-
-<div class="content">
-    <h1 class="heading"></h1>
-    <p class="description">Edit Customer</p>
-    {{ render_form(form, novalidate=True) }}
+  <div class="col-3 d-flex">
+      <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+          <div class="row d-flex justify-content-between">
+              <div class="col card-title pb-4">Currency</div>
+              <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+          </div>
+          
+      </div>
   </div>
 
+ 
+  <div class="col-9 d-flex">
+      <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+          <div class="row d-flex justify-content-between">
+              <div class="col card-title pb-2 text-light">Edit Customer</div>
+              <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+          </div>
 
+          <form method="POST" novalidate>
+              {{ form.hidden_tag() }}
 
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-light">Given Name</label>
+                      {{ form.given_name(class="form-control custom-input", placeholder="Enter given name") }}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-light">Surname</label>
+                      {{ form.surname(class="form-control custom-input", placeholder="Enter surname") }}
+                  </div>
+              </div>
 
+              <div class="mb-3">
+                  <label class="form-label text-light">Street Address</label>
+                  {{ form.streetaddress(class="form-control custom-input", placeholder="123 Main St") }}
+              </div>
 
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-light">City</label>
+                      {{ form.city(class="form-control custom-input", placeholder="Enter city") }}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label text-light">Zip Code</label>
+                      {{ form.zipcode(class="form-control custom-input", placeholder="Enter ZIP code") }}
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-md-8 mb-3">
+                      <label class="form-label text-light">Country</label>
+                      {{ form.country(class="form-control custom-input", placeholder="Enter country") }}
+                  </div>
+                  <div class="col-md-4 mb-3">
+                      <label class="form-label text-light">Country Code</label>
+                      {{ form.country_code(class="form-control custom-input", placeholder="US, SE, etc.") }}
+                  </div>
+              </div>
+
+              <div class="mb-3">
+                  <label class="form-label text-light">Birthday</label>
+                  {{ form.birthday(class="form-control custom-input", placeholder="YYYY-MM-DD") }}
+              </div>
+
+              <div class="mb-3">
+                  <label class="form-label text-light">National ID</label>
+                  {{ form.national_id(class="form-control custom-input", placeholder="Enter National ID") }}
+              </div>
+
+              <div class="mb-3">
+                  <label class="form-label text-light">Email Address</label>
+                  {{ form.email_address(class="form-control custom-input", placeholder="Enter email address") }}
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                  <button type="submit" class="btn primary-btn  px-4 py-2">Update Customer</button>
+                  <button type="button" class="btn secondary-btn px-4 py-2">Cancel</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
 
 {% endblock %}

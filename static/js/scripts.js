@@ -22,70 +22,49 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    // Ensure elements exist before initializing charts
+    
     if (document.getElementById("lineChart")) {
-        new Chart(document.getElementById("lineChart"), {
+        let ctx = document.getElementById("lineChart").getContext("2d");
+
+        let chartData = JSON.parse(document.getElementById("chartData").textContent);
+
+        
+
+        new Chart(ctx, {
             type: "line",
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                datasets: [
-                    {
-                        data: [10, 25, 15, 40, 30, 50],
-                        borderColor: "#00c3ff",
-                        backgroundColor: "rgba(0, 195, 255, 0.2)",
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 4
-                    },
-                    {
-                        data: [20, 15, 35, 25, 45, 55],
-                        borderColor: "#ff5733",
-                        backgroundColor: "rgba(255, 87, 51, 0.2)",
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 4
-                    }
-                ]
-            },
+            data: chartData,
             options: {
-                plugins: { legend: { display: false } },
+                plugins: { legend: {
+                     display: true },
+                     labels: {
+                    color: "#ffffff",
+                    font: { size: 14 }
+                }
+                    },
                 scales: {
                     x: { grid: { display: false } },
                     y: { grid: { display: true } }
                 }
             }
-        });
-    }
+        })};
+
 
     if (document.getElementById("barChart")) {
-        new Chart(document.getElementById("barChart"), {
+        let bctx = document.getElementById("barChart").getContext("2d");
+        
+        let barChartData = JSON.parse(document.getElementById("barChartData").textContent)
+        new Chart(bctx, {
             type: "bar",
-            data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple"],
-                datasets: [
-                    {
-                        data: [12, 15, 3, 5, 2],
-                        backgroundColor: ["#ff6b6b", "#4d96ff", "#ffd93d", "#4caf50", "#9c27b0"],
-                        borderRadius: 6
-                    },
-                    {
-                        data: [9, 14, 5, 7, 13],
-                        backgroundColor: ["#ff6b6b", "#4d96ff", "#ffd93d", "#4caf50", "#9c27b0"],
-                        borderRadius: 6
-                    }
-                ]
-            },
+            data: barChartData,
             options: {
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { display: false } },
+                    x: { grid: { display: false }, ticks: { display: true } },
                     y: { grid: { display: false }, ticks: { display: false } }
                 }
             }
-        });
-    }
-
-    // Currency Converter Functions
+        })};
+    
     function convertCurrency() {
         let amount = parseFloat(document.getElementById("amount").value);
         let fromCurrency = document.getElementById("fromCurrency").value;
@@ -112,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("amount").value = "";
     }
 
-    // Expose functions to global scope if needed
+    
     window.convertCurrency = convertCurrency;
     window.addNumber = addNumber;
     window.clearAmount = clearAmount;

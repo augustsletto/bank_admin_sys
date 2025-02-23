@@ -1,5 +1,5 @@
 {% extends 'baseTemplate.html' %}
-{% set active_page = "management" %}
+{% set active_page = "transfer" %}
 {% block title %}Management{% endblock %}
 
 
@@ -15,7 +15,7 @@
 {% endwith %}
 
 <div class="row g-4 mx-5">
- 
+
 
     
     <div class="col-3 d-flex">
@@ -64,7 +64,11 @@
                         <button onclick="addNumber(0)">0</button>
                         
                     </div>
-          
+                
+
+
+            
+            
             <div class="col mt-5">
             </div>
             
@@ -82,7 +86,17 @@
                 <table class="wealt-table table-hover table text-start">
                     <thead>
                         <tr>
-                           
+                            <!-- <th scope="col">Customer ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col">Birthday</th>
+                            <th scope="col">National Id</th>
+                            <th scope="col">Edit</th> -->
+                
                             <th scope="col" class="text-start">Customer</th>
                             <th scope="col" class="text-start">Address</th>
                             <th scope="col" class="text-start">City</th>
@@ -106,7 +120,10 @@
                             </td>
                             <td class="text-start">{{ cust.streetaddress }}, {{ cust.zipcode }}</td>
                             <td class="text-start">{{ cust.city }}</td>
+                            <!-- <td class="">{{ cust.country_code }} {{ cust.country }}</td> -->
                             
+                            <!-- <td class="">({{ cust.telephone_country_code }}) {{ cust.telephone }}</td> -->
+                            <!-- <td class="">{{ cust.birthday }}</td> -->
                             <td class="text-start">{{ cust.national_id }}</td>
                             <td class="text-start">{{ cust.id }}</td>
                             <td class="text-end">

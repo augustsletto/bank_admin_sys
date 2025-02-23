@@ -8,7 +8,7 @@
 
 
 <div class="row g-4 mx-5">
-    <!-- First Row -->
+
 
     
     <div class="col-3 d-flex">
@@ -20,7 +20,7 @@
 				
                     <select name="country" id="country" class="form-select" onchange="this.form.submit()">
                         <option value="all" {% if selected_country == "all" %}selected{% endif %}>Total</option>
-                        {% for count in country_list_items %}
+                        {% for count in country_list_items | unique %}
                         <option value="{{ count }}" {% if selected_country == count %}selected{% endif %}>{{ count }}</option>
                         {% endfor %}
                     
@@ -29,12 +29,29 @@
             </div>
             
                 <div class="col py-2">{% if not selected_country or selected_country == "all" %}Total Balance{% else %}Total Balance in {{ selected_country }}{% endif %}</div>
-            <div class="col display-4 pb-5">$<span class="">{{ "{:,.2f}".format(richest_customers_by_country | sum(attribute="total_balance")) }}</span></div>
+            <div class="col display-4 pb-0">$<span class="">{{ "{:,.2f}".format(richest_customers_by_country | sum(attribute="total_balance")) }}</span></div>
             
-            <div class="col mt-5">
-                <div class="col card-details fw-lighter py-2">{% if not selected_country or selected_country == "all" %}Total Customers{% else %}Customers in {{ selected_country }}{% endif %} <strong>{{ total_customers_by_country }}</strong></div>
-                <div class="col card-details fw-lighter pb-0">{% if not selected_country or selected_country == "all" %}Total Accounts{% else %}Accounts in {{ selected_country }}{% endif %} <strong>{{ total_accounts_by_country }}</strong></div>
+            <div class="col mt-0">
+                
+            
+                <div class="col mt-2">
+                    <table class="wealt-table table-dark text-start">
+                        {% for richest in richest_customers_by_country[:5] %}
+                        <tbody>
+                            <tr>
+                            <td>{{ richest.name }}</td>
+                            <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                           
+                        </tr>
+                    </tbody>
+                        {% endfor %}
+                    
+                    </table>
+                        
+                        
+                </div>
             </div>
+            
             
         </div>
     </div>
@@ -52,7 +69,7 @@
     <div class="col-4 d-flex">
         <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">Total</div>
+                <div class="col card-title pb-4">Transactions by Weekday</div>
                 <div class="col text-end">
                     
                     <i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i>
@@ -82,7 +99,7 @@
                         </div>
                     </div>
                     
-                    <!-- Vertical Line Divider -->
+                    
                     <div class="col-2 d-flex justify-content-start ps-0">
                         <div class="border-start border-secondary" style="height: 30px;"></div>
                     </div>
@@ -105,7 +122,7 @@
         </div>
     </div>
 
-    <!-- Second Row -->
+    
     
     <div class="col-9 d-flex">
         <div class="p-2 card-border flex-fill p-4">
@@ -154,19 +171,8 @@
                 <div class="col card-title pb-4">10 Richest</div>
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
                 <div class="table-container-small table-container">
-                <table class="wealt-table table-dark text-start">
-                    {% for richest in richest_customers_by_country[:10] %}
-                    <tbody>
-                        <tr>
-                        <td>{{ richest.name }}</td>
-                        <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
-                        <td>{{ richest.country }}</td>
-                    </tr>
-                    {% endfor %}
-                    
-                    
-                    </tbody>
-                </table>
+                
+                
             </div>
             </div>
         </div>
@@ -181,6 +187,58 @@
 
 
 
+
+
+<script id="chartData" type="application/json">
+            {
+                "labels": {{ labels | tojson }},
+                "datasets": [
+                    {
+                        "label": "Average Transactions per Month",
+                        "data": {{ average_transactions_list | list | tojson }},
+                        "borderColor": "#5641f5",
+                        "backgroundColor": "rgba(0, 195, 255, 0.2)",
+                        "borderWidth": 3,
+                        "tension": 0.6,
+                        "pointRadius": 2
+                        
+                    },
+                    {
+                        "label": "Average Total Balance",
+                        "data": {{ 0 | tojson }},
+                        "borderColor": "#b5a3d9",
+                        "backgroundColor": "rgba(255, 87, 51, 0.2)",
+                        "borderWidth": 2,
+                        "tension": 0.6,
+                        "pointRadius": 4
+                    }
+                ]
+            }
+            
+        </script>
+
+        {% set max_value = iterations_per_week.values() | max %}
+{% set colors = [] %}
+{% for value in iterations_per_week.values() %}
+    {% if value == max_value %}
+        {% set _ = colors.append("#5641f5") %}
+    {% else %}
+        {% set _ = colors.append("#b5a3d9") %}
+    {% endif %}
+{% endfor %}
+
+<script id="barChartData" type="application/json">
+    {
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "datasets": [
+            {
+                "data": {{ iterations_per_week.values() | list | tojson }},
+                "backgroundColor": {{ colors | tojson }},
+                "borderRadius": 6
+            }
+        ]
+    }
+</script>
 
 
 {% endblock %}
