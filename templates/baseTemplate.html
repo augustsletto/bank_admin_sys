@@ -29,7 +29,7 @@
         .card-border {
             background: linear-gradient(#1b1b1b, #1b1b1b) padding-box,
             linear-gradient(to bottom, #2a2a2a, #0f0f0f) border-box;
-            border-radius: 16px;
+            border-radius: 20px;
             border: 1px solid transparent;
             box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
             color: white;
@@ -321,7 +321,7 @@ header{
 
       
     .exchange-btn {
-        background-color: #5641f5;
+        background-color: #333;
         color: rgb(255, 255, 255);
         width: 100%;
         border-radius: 10px;
@@ -415,7 +415,7 @@ header{
 
         li a.selected{
             color: #fff;
-            background-color: #5641f5;
+            background-color: #333;
 
         }
 
@@ -432,17 +432,14 @@ header{
 
         li a.selected{
             color: #fff;
-            background-color: #5641f5;
+            background-color: #333;
 
         }
         .add_acc_btn{
           color:#757575;
           text-decoration: none;
         }
-        .add_acc_btn:hover{
-          
-          background-color: #313131d5;
-        }
+        
 
         
           
@@ -511,13 +508,13 @@ header{
 }
 
 .custom-input:focus {
-    border-color: #6754f5;
+    border-color: #313131d5;
     box-shadow: 0 0 10px rgba(103, 84, 245, 0.7);
 }
 
 
 .primary-btn {
-    background-color: #5641f5;
+    background-color: #333;
     border: none;
     border-radius: 10px;
     
@@ -528,7 +525,7 @@ header{
 
 
 .primary-btn:hover{
-  background-color: #6754f5;
+  background-color: #313131d5;
   
   
 }
@@ -625,15 +622,16 @@ header{
 
 
 
-    <div class="container-fluid px-5">
-    <div class="main px-5">
-        <div class="nav mx-5 mb-3">
+    <div class="container-fluid px-0">
+    <div class="main px-0">
+        <div class="nav mx-2 mb-3">
             <div class="col px-2">
                 <div class="col px-1">
                     <header class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-between card-border" style="background-color: #1d1d1d;">
                         <div class="col-md-3 mb-2 mb-md-0">
-                            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-                              <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+                            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none ms-4 ps-1" style="height: 25px;">
+                              <img src="/static/images/Group 5.png" alt="logo">
+                              <span class="">m<span class="text-success">o</span>nex</span>
                             </a>
                           </div>
                     
@@ -643,9 +641,15 @@ header{
                             {% endfor %}
                           </ul>
                     
-                          <div class="col-md-3 text-end">
-                            <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                            <button type="button" class="btn btn-primary">Sign-up</button>
+                          <div class="col-md-3 text-end me-4">
+                            <div class="row p-0 m-0">
+                              
+                              <div class="row m-0 p-0">
+                                
+                                <span class="col-12 py-0 my-0 text-end"><span>Account</span></span>
+                                <span class="col-12 py-0 my-0 text-end">August Sletto</span>
+                              </div>
+                            </div>
                           </div>
                     </header>
                 </div>

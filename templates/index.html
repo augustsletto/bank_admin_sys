@@ -7,7 +7,7 @@
 {% block content %}
 
 
-<div class="row g-4 mx-5">
+<div class="row mx-2">
 
 
     
@@ -34,22 +34,7 @@
             <div class="col mt-0">
                 
             
-                <div class="col mt-2">
-                    <table class="wealt-table table-dark text-start">
-                        {% for richest in richest_customers_by_country[:5] %}
-                        <tbody>
-                            <tr>
-                            <td>{{ richest.name }}</td>
-                            <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
-                           
-                        </tr>
-                    </tbody>
-                        {% endfor %}
-                    
-                    </table>
-                        
-                        
-                </div>
+                
             </div>
             
             
@@ -124,14 +109,55 @@
 
     
     
-    <div class="col-9 d-flex">
+    <div class="col-9 d-flex mt-3">
         <div class="p-2 card-border flex-fill p-4">
             <div class="row d-flex justify-content-between">
                 <div class="col card-title pb-2">{% if not selected_country or selected_country == "all" %}Top 10 Wealthiest Customers{% else %}Top 10 Wealthiest in {{ selected_country }}{% endif %}</div>
                 <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
-            <div class="table-container-small table-container">
+
+
+
+            <div class="col mt-2">
+
+                <div class="row m-0 p-8">
+                    <div class="col">
+                        <table class="wealt-table table-dark text-start">
+                            {% for richest in richest_customers_by_country[:5] %}
+                            <tbody>
+                                <tr>
+                                <td>{{ richest.name }}</td>
+                                <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                                <td>{{ richest.country}}</td>
+                               
+                            </tr>
+                        </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="col">
+                        <table class="wealt-table table-dark text-start">
+                            {% for richest in richest_customers_by_country[5:10] %}
+                            <tbody>
+                                <tr>
+                                <td>{{ richest.name }}</td>
+                                <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                                <td>{{ richest.country}}</td>
+                               
+                            </tr>
+                        </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+
+                
+                    
+                    
+            </div>
+
+            <!-- <div class="table-container-small table-container">
                 <table class="wealt-table table-dark text-start">
                     <thead>
                         <th>Customer id</th>
@@ -162,10 +188,10 @@
                     
                     </tbody>
                 </table>
-        </div>
+        </div> -->
         </div>
     </div>
-    <div class="col-3 d-flex">
+    <div class="col-3 d-flex mt-3">
         <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
                 <div class="col card-title pb-4">10 Richest</div>
@@ -196,7 +222,7 @@
                     {
                         "label": "Average Transactions per Month",
                         "data": {{ average_transactions_list | list | tojson }},
-                        "borderColor": "#5641f5",
+                        "borderColor": "#216eec",
                         "backgroundColor": "rgba(0, 195, 255, 0.2)",
                         "borderWidth": 3,
                         "tension": 0.6,
@@ -206,7 +232,7 @@
                     {
                         "label": "Average Total Balance",
                         "data": {{ 0 | tojson }},
-                        "borderColor": "#b5a3d9",
+                        "borderColor": "#e58abf",
                         "backgroundColor": "rgba(255, 87, 51, 0.2)",
                         "borderWidth": 2,
                         "tension": 0.6,
@@ -221,9 +247,9 @@
 {% set colors = [] %}
 {% for value in iterations_per_week.values() %}
     {% if value == max_value %}
-        {% set _ = colors.append("#5641f5") %}
+        {% set _ = colors.append("#1a76ff") %}
     {% else %}
-        {% set _ = colors.append("#b5a3d9") %}
+        {% set _ = colors.append("#65a3ff") %}
     {% endif %}
 {% endfor %}
 

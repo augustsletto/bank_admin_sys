@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="row g-4 mx-5">
+<div class="row g-4 mx-2">
 
     <div class="col-3 d-flex">
         <div class="card-border flex-fill p-4 pb-0">
@@ -47,7 +47,7 @@
                         <ul class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow" data-bs-theme="dark" style="min-width: auto; width: auto;">
                             {% for acc in customer_accounts %}
                             <li class="nav-item">
-                                <a class="nav-link {% if acc.id == selected_account_id %}active{% endif %}" 
+                                <a class="nav-link p-1 {% if acc.id == selected_account_id %}active{% endif %}" 
                                    href="{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}">
                                     {{ acc.account_type.value }}
                                 </a>
@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="px-5">
                 <div class="creditcard p-3" id="creditCard">
                     <div id="card-logo" class="text-end pt-2 pe-3">
                         <img src="/static/images/V.D-e36aebe0.png" alt="visalogo" id="visalogo">
@@ -86,22 +86,6 @@
 </div>
 
 
-<div class="row g-4 mx-5 mt-2">
-    <div class="col-4 d-flex">
-        <div class="card-border flex-fill p-4">
-            <h4 class="card-title pb-3">Financial Insights</h4>
-            <p class="text-light">Your average monthly spending is <strong>$2,458</strong>. You spent <span class="text-danger">5% more</span> this month compared to last month.</p>
-            <p class="text-light">Your top spending category is <strong>Dining</strong>.</p>
-        </div>
-    </div>
-
-    <div class="col-8 d-flex">
-        <div class="card-border flex-fill p-4">
-            <h4 class="card-title pb-3">Top Spending Categories</h4>
-            <canvas id="spendingChart"></canvas>
-        </div>
-    </div>
-</div>
 
 <script>
     function changeCardColor(primary, secondary) {

@@ -338,6 +338,15 @@ def startpage():
                            )
 
 
+
+@app.route("/transfer", methods=["GET", "POST"])
+def transfer():
+    
+    
+    
+    return render_template("transfer.html")
+
+
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
 def add_account(customer_id):
     
