@@ -14,6 +14,9 @@
     {% endblock header_links %}
 
     <style>
+      
+        
+
         header{
             padding-top: 28px ;
             padding-bottom: 28px ;
@@ -37,12 +40,17 @@
 
             .card-title{
                 font-size: 1.5rem;
+                
             }
 
             .bar-chart-text{
                 font-size: 1.5rem;
             }
             
+            .tiny-buttons{
+              font-size: 1.5rem;
+            }
+
             .tiny-buttons:hover {
                 background-color: #313131d5;
                 
@@ -70,6 +78,8 @@
                 overflow-y: auto;   
                 overflow-x: hidden; 
                 border-radius: 8px; 
+                padding-right: 8px;
+                
               }
               
               
@@ -107,6 +117,7 @@
               .table-container::-webkit-scrollbar {
                 width: 8px; 
                 
+                
               }
               
               .table-container::-webkit-scrollbar-thumb {
@@ -118,6 +129,7 @@
               .table-container::-webkit-scrollbar-track {
                 background: rgba(50, 50, 50, 0.3);
                 border-radius: 8px; 
+                
               }
               
               
@@ -257,6 +269,7 @@ header{
         max-height: 657px;  
         overflow-x: hidden; 
         border-radius: 8px; 
+        padding-right: 8px;
       }
       
       
@@ -599,11 +612,52 @@ header{
 .btn-silver {
     background-color: #bdc3c7;
 }
+.header-logo{
+  display: flex;
+  align-items: center;
+}
+
+.header-logo-span1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
 
 
+}
 
+.logobody{
+  display: flex;
+  text-align: start;
+  align-items: center;
+}
 
+#logologo{
+  height: 22px;
+  margin-right: 6px;
+}
 
+.cvv-col {
+  border-radius: 50px;
+  background-color: #2ecc71;
+}
+#cvvbal{
+  color: black;
+  
+  
+}
+
+#dots{
+  font-size: 1.5rem;
+}
+
+.card-details{
+  color: #757575;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.cardBold{
+  font-weight: 600;
+}
 
     </style>
 </head>
@@ -628,10 +682,10 @@ header{
             <div class="col px-2">
                 <div class="col px-1">
                     <header class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-between card-border" style="background-color: #1d1d1d;">
-                        <div class="col-md-3 mb-2 mb-md-0">
-                            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none ms-4 ps-1" style="height: 25px;">
-                              <img src="/static/images/Group 5.png" alt="logo">
-                              <span class="">m<span class="text-success">o</span>nex</span>
+                        <div class="col-md-3 mb-2 mb-md-0 pb-0 logobody">
+                            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none ms-4 ps-1 header-logo">
+                              <img src="/static/images/Group 5.png" id="logologo" alt="logo">
+                              <span class="header-logo-span1 p-0">m<span class="text-success">o</span>nytor</span>
                             </a>
                           </div>
                     

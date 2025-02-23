@@ -21,7 +21,7 @@
     <div class="col-3 d-flex">
         <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">Currency </div>
+                <div class="col card-title pb-4">Filter </div>
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
@@ -29,41 +29,7 @@
             
                 
                     
-                    <div class="mb-3">
-                        <select id="fromCurrency" class="form-select">
-                            {% for currency in currencies %}
-                            <option value="{{ currency }}">{{ currency }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="number" id="amount" class="form-control mt-2" placeholder="Enter amount">
-                    </div>
-
-
                     
-                    <div class="mb-3">
-                        <select id="toCurrency" class="form-select">
-                            {% for currency in currencies %}
-                            <option value="{{ currency }}">{{ currency }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="text" id="convertedAmount" class="form-control mt-2" placeholder="Converted amount" readonly>
-                    </div>
-                    <button class="exchange-btn" onclick="convertCurrency()">Exchange Now</button>
-                    
-                    <div class="number-pad">
-                        <button onclick="addNumber(1)">1</button>
-                        <button onclick="addNumber(2)">2</button>
-                        <button onclick="addNumber(3)">3</button>
-                        <button onclick="addNumber(4)">4</button>
-                        <button onclick="addNumber(5)">5</button>
-                        <button onclick="addNumber(6)">6</button>
-                        <button onclick="addNumber(7)">7</button>
-                        <button onclick="addNumber(8)">8</button>
-                        <button onclick="addNumber(9)">9</button>
-                        <button onclick="clearAmount()">C</button>
-                        <button onclick="addNumber(0)">0</button>
-                        
-                    </div>
           
             <div class="col mt-5">
             </div>

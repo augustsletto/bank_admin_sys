@@ -9,15 +9,55 @@
     <div class="col-3 d-flex">
         <div class="card-border flex-fill p-4 pb-0">
             <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">Total Balance</div>
+                <div class="col card-title pb-4 mb-3">Total Balance</div>
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
-            <div class="col display-4 pb-5">${{ "{:,.2f}".format(total_balance) }}</div>
+            <div class="row d-flex align-items-center mb-4">
+                <div class="col-2 cvv-col ms-3 d-flex justify-content-center align-items-center" >
+                    <span id="cvvbal">CVV</span>
+                </div>
+                <div class="col-2 mt-0 ms-4" id="dots">••••</div>
+                <div class="col-2">{{ customer.national_id[-4:] }}</div>
+            </div>
             
-            <div class="col mt-5">
-                <div class="col card-details fw-lighter py-2">Selected Account: <strong>${{ "{:,.2f}".format(current_balance) }}</strong></div>
-                <div class="col card-details fw-lighter pb-0">Total accounts: <strong>2,243</strong></div>
+            <div class="col display-3 pb-3" id="total-balance">
+                $<span class="">
+                    {%- if total_balance >= 1000000000 -%}
+                        {{ "{:,.2f}B".format(total_balance / 1000000000) }}
+                    {%- elif total_balance >= 1000000 -%}
+                        {{ "{:,.3f}M".format(total_balance / 1000000) }}
+                    {%- else -%}
+                        {{ "{:,.2f}".format(total_balance) }}
+                    {%- endif -%}
+            </span>
+        </div>
+            
+            <div class="col mt-0 pt-0">
+                
+                <div class="col card-details pb-4">All Accounts<strong class="cardBold">
+                    <div class="table-container table-container-small">
+                        <table class="wealt-table text-start">
+                            {% for acc in customer_accounts %}
+                              <tbody>
+                                <tr class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}">
+                                  <td>{{ acc.account_type.value }}</td>
+                                  <td class="text-end">$ {%- if acc.balance >= 1000000000 -%}
+                                      {{ "{:,.2f}B".format(acc.balance / 1000000000) }}
+                                  {%- elif acc.balance >= 1000000 -%}
+                                      {{ "{:,.3f}M".format(acc.balance / 1000000) }}
+                                  {%- else -%}
+                                      {{ "{:,.2f}".format(acc.balance) }}
+                                  {%- endif -%}</td>
+                                </tr>
+                              </tbody>
+                            {% endfor %}
+                          </table>
+                    </div>
+                    
+                      
+
+                </strong></div>
             </div>
         </div>
     </div>
@@ -41,7 +81,7 @@
                 <div class="col text-end">
                     <div class="dropdown">
                         <a class="add_acc_btn" href="{{ url_for('add_account', customer_id=customer.id) }}">
-                            <i class="bi bi-plus-circle-fill py-1 px-2 tiny-buttons rounded"></i>
+                            <i class="bi bi-plus-lg py-1 px-2 tiny-buttons rounded"></i>
                         </a>
                         <i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded" data-bs-toggle="dropdown" aria-expanded="false"></i>
                         <ul class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow" data-bs-theme="dark" style="min-width: auto; width: auto;">
@@ -49,7 +89,7 @@
                             <li class="nav-item">
                                 <a class="nav-link p-1 {% if acc.id == selected_account_id %}active{% endif %}" 
                                    href="{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}">
-                                    {{ acc.account_type.value }}
+                                   Delete {{ acc.account_type.value }} 
                                 </a>
                             </li>
                             {% endfor %}

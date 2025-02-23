@@ -29,7 +29,19 @@
             </div>
             
                 <div class="col py-2">{% if not selected_country or selected_country == "all" %}Total Balance{% else %}Total Balance in {{ selected_country }}{% endif %}</div>
-            <div class="col display-4 pb-0">$<span class="">{{ "{:,.2f}".format(richest_customers_by_country | sum(attribute="total_balance")) }}</span></div>
+                {% set total_balance = richest_customers_by_country | sum(attribute="total_balance") %}
+
+                <div class="col display-4 pb-0">
+                    $<span class="">
+                        {%- if total_balance >= 1000000000 -%}
+                            {{ "{:,.2f}B".format(total_balance / 1000000000) }}
+                        {%- elif total_balance >= 1000000 -%}
+                            {{ "{:,.3f}M".format(total_balance / 1000000) }}
+                        {%- else -%}
+                            {{ "{:,.2f}".format(total_balance) }}
+                        {%- endif -%}
+                </span>
+            </div>
             
             <div class="col mt-0">
                 
@@ -128,7 +140,15 @@
                             <tbody>
                                 <tr>
                                 <td>{{ richest.name }}</td>
-                                <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                                <td>$
+                                    {%- if richest.total_balance >= 1000000000 -%}
+                                        {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
+                                    {%- elif richest.total_balance >= 1000000 -%}
+                                        {{ "{:,.3f}M".format(richest.total_balance / 1000000) }}
+                                    {%- else -%}
+                                        {{ "{:,.2f}".format(richest.total_balance) }}
+                                    {%- endif -%}
+                            </td>
                                 <td>{{ richest.country}}</td>
                                
                             </tr>
@@ -142,7 +162,15 @@
                             <tbody>
                                 <tr>
                                 <td>{{ richest.name }}</td>
-                                <td>${{ "{:,.2f}".format(richest.total_balance) }}</td>
+                                <td>$
+                                    {%- if richest.total_balance >= 1000000000 -%}
+                                        {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
+                                    {%- elif richest.total_balance >= 1000000 -%}
+                                        {{ "{:,.3f}M".format(richest.total_balance / 1000000) }}
+                                    {%- else -%}
+                                        {{ "{:,.2f}".format(richest.total_balance) }}
+                                    {%- endif -%}
+                                </td>
                                 <td>{{ richest.country}}</td>
                                
                             </tr>

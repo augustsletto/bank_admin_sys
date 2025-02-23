@@ -192,7 +192,7 @@ def startpage():
     transactions_by_country = country_data["transactions"]
     
 
-    
+    # print(richest_customers_by_country)
     
     
     
@@ -233,7 +233,7 @@ def startpage():
     counter_income_by_month = Counter(income_by_month)
     iterations_income_by_month = dict(sorted(counter_income_by_month.items()))
    
-    print(iterations_income_by_month)
+    # print(iterations_income_by_month)
     
     
     
@@ -341,10 +341,10 @@ def startpage():
 
 @app.route("/transfer", methods=["GET", "POST"])
 def transfer():
+    currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
     
     
-    
-    return render_template("transfer.html")
+    return render_template("transfer.html", currencies=currencies)
 
 
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
@@ -364,7 +364,7 @@ def add_account(customer_id):
         db.session.add(new_account)
         db.session.commit()
         flash("Account successfully created!", "success")
-        return redirect(url_for("management"))
+        return redirect(url_for("customer_list", id=customer_id))
     
     return render_template("add_account.html", form=form, customer=customer)
 
@@ -400,7 +400,7 @@ def management():
     
     # currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
     # currency_list_values = []
-    currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
+    
     
     # for currency in currency_list:
     #     url = f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency={currency}&apikey={ALPHA_VANTAGE}'
@@ -416,7 +416,7 @@ def management():
         
         
     
-    return render_template("management.html", customer=customer, currencies=currencies)
+    return render_template("management.html", customer=customer)
 
 
 
@@ -458,7 +458,9 @@ def customer_list(id):
     # Fetch all accounts for this customer
     customer_accounts = customer.accounts  # List of all accounts
     account_dict = {acc.id: acc for acc in customer_accounts}  # Map accounts by ID
-
+    
+    
+    
     # Default to the first available acc
     if not selected_account_id and customer_accounts:
         selected_account_id = customer_accounts[0].id
@@ -471,15 +473,19 @@ def customer_list(id):
             .order_by(Transaction.date.desc())
             .first()
         )
-        account_balances[account.id] = last_transaction.new_balance if last_transaction else 0.00
-
+        account_balances = {account.id: account.balance for account in customer_accounts}
+    
     # Compute total balance
     total_balance = sum(account_balances.values())
-
+    
+    current_balance = account_balances.get(selected_account_id)
+    
+    # total_balance = sum(account_balances.values())
+    # total_balance = sum(account_balances)
     # Get paginated for account
     transactions = []
     pagination = None
-    current_balance = account_balances.get(selected_account_id, 0.00)
+    # current_balance = account_balances.get(selected_account_id, 0.00)
 
     if selected_account_id in account_dict:
         pagination = (
@@ -489,6 +495,8 @@ def customer_list(id):
         )
         transactions = pagination.items
 
+    
+    
     return render_template(
         "customer.html",
         customer=customer,
@@ -498,7 +506,8 @@ def customer_list(id):
         selected_account_id=selected_account_id,
         current_balance=current_balance,
         total_balance=total_balance, 
-        page=page
+        page=page,
+        
     )
 
 
