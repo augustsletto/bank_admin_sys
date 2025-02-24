@@ -1,0 +1,505 @@
+{% extends 'baseTemplate.html' %}
+
+{% block title %}Add Customer{% endblock %}
+{% block content %}
+
+
+<div class="row g-4 mx-2">
+
+
+    <div class="col-6 d-flex">
+        <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Currency</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+        
+    
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="given_name" class="form-label">Given Name</label>
+            {{ form.given_name(class="form-control", placeholder="John") }}
+        </div>
+        <div class="col-md-6">
+            <label for="surname" class="form-label">Surname</label>
+            {{ form.surname(class="form-control", placeholder="Doe") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="streetaddress" class="form-label">Street Address</label>
+            {{ form.streetaddress(class="form-control", placeholder="123 Main St") }}
+        </div>
+        <div class="col-md-3">
+            <label for="city" class="form-label">City</label>
+            {{ form.city(class="form-control", placeholder="Springfield") }}
+        </div>
+        <div class="col-md-3">
+            <label for="zipcode" class="form-label">Zip Code</label>
+            {{ form.zipcode(class="form-control", placeholder="12345") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="country" class="form-label">Country</label>
+            {{ form.country(class="form-control", placeholder="United States", id="country-select") }}
+        </div>
+        <div class="col-md-6">
+            <label for="country_code" class="form-label">Country Code</label>
+            {{ form.country_code(class="form-control", placeholder="US", id="country-code", readonly="readonly" ) }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="telephone_country_code" class="form-label">Telephone Country Code</label>
+            {{ form.telephone_country_code(class="form-control", placeholder="+1", id="tele-country-code", readonly="readonly"  ) }}
+        </div>
+        <div class="col-md-4">
+            <label for="telephone" class="form-label">Telephone</label>
+            {{ form.telephone(class="form-control", placeholder="(555) 123 456") }}
+        </div>
+        <div class="col-md-5">
+            <label for="email_address" class="form-label">Email Address</label>
+            {{ form.email_address(class="form-control", placeholder="johndoe@example.com") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="birthday" class="form-label">Birthday</label>
+            {{ form.birthday(class="form-control", type="date") }}
+        </div>
+        <div class="col-md-6">
+            <label for="national_id" class="form-label">National ID</label>
+            {{ form.national_id(class="form-control", placeholder="123-45-6789") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="account_type" class="form-label">Account Type</label>
+            {{ form.account_type(class="form-control") }}
+        </div>
+        <div class="col-md-4">
+            <label for="balance" class="form-label">Balance</label>
+            {{ form.balance(class="form-control", type="number", step="0.01") }}
+        </div>
+        
+    </div>
+
+    <button type="submit" class="btn w-100 mb-3">Submit</button>
+
+    </div>
+</form>
+
+</div>
+</div>
+
+
+</div>
+
+
+
+<script>
+    
+    document.getElementById("country-select").addEventListener("change", function() {
+        const countryCodes = {
+        "afghanistan": "+93",
+        "albania": "+355",
+        "algeria": "+213",
+        "andorra": "+376",
+        "angola": "+244",
+        "antigua and barbuda": "+1-268",
+        "argentina": "+54",
+        "armenia": "+374",
+        "australia": "+61",
+        "austria": "+43",
+        "azerbaijan": "+994",
+        "bahamas": "+1-242",
+        "bahrain": "+973",
+        "bangladesh": "+880",
+        "barbados": "+1-246",
+        "belarus": "+375",
+        "belgium": "+32",
+        "belize": "+501",
+        "benin": "+229",
+        "bhutan": "+975",
+        "bolivia": "+591",
+        "bosnia and herzegovina": "+387",
+        "botswana": "+267",
+        "brazil": "+55",
+        "brunei": "+673",
+        "bulgaria": "+359",
+        "burkina faso": "+226",
+        "burundi": "+257",
+        "cambodia": "+855",
+        "cameroon": "+237",
+        "canada": "+1",
+        "cape verde": "+238",
+        "central african republic": "+236",
+        "chad": "+235",
+        "chile": "+56",
+        "china": "+86",
+        "colombia": "+57",
+        "comoros": "+269",
+        "congo": "+242",
+        "costa rica": "+506",
+        "croatia": "+385",
+        "cuba": "+53",
+        "cyprus": "+357",
+        "czech republic": "+420",
+        "democratic republic of the congo": "+243",
+        "denmark": "+45",
+        "djibouti": "+253",
+        "dominica": "+1-767",
+        "dominican republic": "+1-809, +1-829, +1-849",
+        "ecuador": "+593",
+        "egypt": "+20",
+        "el salvador": "+503",
+        "equatorial guinea": "+240",
+        "eritrea": "+291",
+        "estonia": "+372",
+        "eswatini": "+268",
+        "ethiopia": "+251",
+        "fiji": "+679",
+        "finland": "+358",
+        "france": "+33",
+        "gabon": "+241",
+        "gambia": "+220",
+        "georgia": "+995",
+        "germany": "+49",
+        "ghana": "+233",
+        "greece": "+30",
+        "grenada": "+1-473",
+        "guatemala": "+502",
+        "guinea": "+224",
+        "guinea-bissau": "+245",
+        "guyana": "+592",
+        "haiti": "+509",
+        "honduras": "+504",
+        "hong kong": "+852",
+        "hungary": "+36",
+        "iceland": "+354",
+        "india": "+91",
+        "indonesia": "+62",
+        "iran": "+98",
+        "iraq": "+964",
+        "ireland": "+353",
+        "israel": "+972",
+        "italy": "+39",
+        "jamaica": "+1-876",
+        "japan": "+81",
+        "jordan": "+962",
+        "kazakhstan": "+7",
+        "kenya": "+254",
+        "kiribati": "+686",
+        "kuwait": "+965",
+        "kyrgyzstan": "+996",
+        "laos": "+856",
+        "latvia": "+371",
+        "lebanon": "+961",
+        "lesotho": "+266",
+        "liberia": "+231",
+        "libya": "+218",
+        "liechtenstein": "+423",
+        "lithuania": "+370",
+        "luxembourg": "+352",
+        "madagascar": "+261",
+        "malawi": "+265",
+        "malaysia": "+60",
+        "maldives": "+960",
+        "mali": "+223",
+        "malta": "+356",
+        "marshall islands": "+692",
+        "mauritania": "+222",
+        "mauritius": "+230",
+        "mexico": "+52",
+        "micronesia": "+691",
+        "moldova": "+373",
+        "monaco": "+377",
+        "mongolia": "+976",
+        "montenegro": "+382",
+        "morocco": "+212",
+        "mozambique": "+258",
+        "myanmar": "+95",
+        "namibia": "+264",
+        "nauru": "+674",
+        "nepal": "+977",
+        "netherlands": "+31",
+        "new zealand": "+64",
+        "nicaragua": "+505",
+        "niger": "+227",
+        "nigeria": "+234",
+        "north korea": "+850",
+        "north macedonia": "+389",
+        "norway": "+47",
+        "oman": "+968",
+        "pakistan": "+92",
+        "palau": "+680",
+        "panama": "+507",
+        "papua new guinea": "+675",
+        "paraguay": "+595",
+        "peru": "+51",
+        "philippines": "+63",
+        "poland": "+48",
+        "portugal": "+351",
+        "qatar": "+974",
+        "romania": "+40",
+        "russia": "+7",
+        "rwanda": "+250",
+        "saudi arabia": "+966",
+        "senegal": "+221",
+        "serbia": "+381",
+        "seychelles": "+248",
+        "sierra leone": "+232",
+        "singapore": "+65",
+        "slovakia": "+421",
+        "slovenia": "+386",
+        "solomon islands": "+677",
+        "somalia": "+252",
+        "south africa": "+27",
+        "south korea": "+82",
+        "spain": "+34",
+        "sri lanka": "+94",
+        "sudan": "+249",
+        "suriname": "+597",
+        "sweden": "+46",
+        "switzerland": "+41",
+        "syria": "+963",
+        "taiwan": "+886",
+        "tajikistan": "+992",
+        "tanzania": "+255",
+        "thailand": "+66",
+        "timor-leste": "+670",
+        "togo": "+228",
+        "tonga": "+676",
+        "tunisia": "+216",
+        "turkey": "+90",
+        "turkmenistan": "+993",
+        "uganda": "+256",
+        "ukraine": "+380",
+        "united arab emirates": "+971",
+        "united kingdom": "+44",
+        "united states": "+1",
+        "uruguay": "+598",
+        "uzbekistan": "+998",
+        "vanuatu": "+678",
+        "venezuela": "+58",
+        "vietnam": "+84",
+        "yemen": "+967",
+        "zambia": "+260",
+        "zimbabwe": "+263"
+    };
+
+    let selectedCountry = this.value.toLowerCase();
+    document.getElementById("tele-country-code").value = countryCodes[selectedCountry] || "";
+    });
+</script>
+<script>
+    
+    document.getElementById("country-select").addEventListener("change", function() {
+        const countryCodes = {
+            "afghanistan": "AF",
+            "albania": "AL",
+            "algeria": "DZ",
+            "andorra": "AD",
+            "angola": "AO",
+            "antigua and barbuda": "AG",
+            "argentina": "AR",
+            "armenia": "AM",
+            "australia": "AU",
+            "austria": "AT",
+            "azerbaijan": "AZ",
+            "bahamas": "BS",
+            "bahrain": "BH",
+            "bangladesh": "BD",
+            "barbados": "BB",
+            "belarus": "BY",
+            "belgium": "BE",
+            "belize": "BZ",
+            "benin": "BJ",
+            "bhutan": "BT",
+            "bolivia": "BO",
+            "bosnia and herzegovina": "BA",
+            "botswana": "BW",
+            "brazil": "BR",
+            "brunei": "BN",
+            "bulgaria": "BG",
+            "burkina faso": "BF",
+            "burundi": "BI",
+            "cambodia": "KH",
+            "cameroon": "CM",
+            "canada": "CA",
+            "cape verde": "CV",
+            "central african republic": "CF",
+            "chad": "TD",
+            "chile": "CL",
+            "china": "CN",
+            "colombia": "CO",
+            "comoros": "KM",
+            "congo": "CG",
+            "costa rica": "CR",
+            "croatia": "HR",
+            "cuba": "CU",
+            "cyprus": "CY",
+            "czech republic": "CZ",
+            "democratic republic of the congo": "CD",
+            "denmark": "DK",
+            "djibouti": "DJ",
+            "dominica": "DM",
+            "dominican republic": "DO",
+            "ecuador": "EC",
+            "egypt": "EG",
+            "el salvador": "SV",
+            "equatorial guinea": "GQ",
+            "eritrea": "ER",
+            "estonia": "EE",
+            "eswatini": "SZ",
+            "ethiopia": "ET",
+            "fiji": "FJ",
+            "finland": "FI",
+            "france": "FR",
+            "gabon": "GA",
+            "gambia": "GM",
+            "georgia": "GE",
+            "germany": "DE",
+            "ghana": "GH",
+            "greece": "GR",
+            "grenada": "GD",
+            "guatemala": "GT",
+            "guinea": "GN",
+            "guinea-bissau": "GW",
+            "guyana": "GY",
+            "haiti": "HT",
+            "honduras": "HN",
+            "hong kong": "HK",
+            "hungary": "HU",
+            "iceland": "IS",
+            "india": "IN",
+            "indonesia": "ID",
+            "iran": "IR",
+            "iraq": "IQ",
+            "ireland": "IE",
+            "israel": "IL",
+            "italy": "IT",
+            "jamaica": "JM",
+            "japan": "JP",
+            "jordan": "JO",
+            "kazakhstan": "KZ",
+            "kenya": "KE",
+            "kiribati": "KI",
+            "kuwait": "KW",
+            "kyrgyzstan": "KG",
+            "laos": "LA",
+            "latvia": "LV",
+            "lebanon": "LB",
+            "lesotho": "LS",
+            "liberia": "LR",
+            "libya": "LY",
+            "liechtenstein": "LI",
+            "lithuania": "LT",
+            "luxembourg": "LU",
+            "madagascar": "MG",
+            "malawi": "MW",
+            "malaysia": "MY",
+            "maldives": "MV",
+            "mali": "ML",
+            "malta": "MT",
+            "marshall islands": "MH",
+            "mauritania": "MR",
+            "mauritius": "MU",
+            "mexico": "MX",
+            "micronesia": "FM",
+            "moldova": "MD",
+            "monaco": "MC",
+            "mongolia": "MN",
+            "montenegro": "ME",
+            "morocco": "MA",
+            "mozambique": "MZ",
+            "myanmar": "MM",
+            "namibia": "NA",
+            "nauru": "NR",
+            "nepal": "NP",
+            "netherlands": "NL",
+            "new zealand": "NZ",
+            "nicaragua": "NI",
+            "niger": "NE",
+            "nigeria": "NG",
+            "north korea": "KP",
+            "north macedonia": "MK",
+            "norway": "NO",
+            "oman": "OM",
+            "pakistan": "PK",
+            "palau": "PW",
+            "panama": "PA",
+            "papua new guinea": "PG",
+            "paraguay": "PY",
+            "peru": "PE",
+            "philippines": "PH",
+            "poland": "PL",
+            "portugal": "PT",
+            "qatar": "QA",
+            "romania": "RO",
+            "russia": "RU",
+            "rwanda": "RW",
+            "saudi arabia": "SA",
+            "senegal": "SN",
+            "serbia": "RS",
+            "seychelles": "SC",
+            "sierra leone": "SL",
+            "singapore": "SG",
+            "slovakia": "SK",
+            "slovenia": "SI",
+            "solomon islands": "SB",
+            "somalia": "SO",
+            "south africa": "ZA",
+            "south korea": "KR",
+            "spain": "ES",
+            "sri lanka": "LK",
+            "sudan": "SD",
+            "suriname": "SR",
+            "sweden": "SE",
+            "switzerland": "CH",
+            "syria": "SY",
+            "taiwan": "TW",
+            "tajikistan": "TJ",
+            "tanzania": "TZ",
+            "thailand": "TH",
+            "timor-leste": "TL",
+            "togo": "TG",
+            "tonga": "TO",
+            "tunisia": "TN",
+            "turkey": "TR",
+            "turkmenistan": "TM",
+            "uganda": "UG",
+            "ukraine": "UA",
+            "united arab emirates": "AE",
+            "united kingdom": "GB",
+            "united states": "US",
+            "uruguay": "UY",
+            "uzbekistan": "UZ",
+            "vanuatu": "VU",
+            "venezuela": "VE",
+            "vietnam": "VN",
+            "yemen": "YE",
+            "zambia": "ZM",
+            "zimbabwe": "ZW"
+        }
+        
+    
+    let selectedCountry = this.value.toLowerCase();
+    document.getElementById("country-code").value = countryCodes[selectedCountry] || "";
+    });
+</script>
+
+
+
+{% endblock %}

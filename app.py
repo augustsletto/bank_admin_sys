@@ -76,6 +76,16 @@ class AddCustomerForm(FlaskForm):
     telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
     email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
     
+    account_type = SelectField(
+        "Account Type", 
+        choices=[(account.value, account.name) for account in AccountType], 
+        validators=[DataRequired()]
+    )
+    balance = DecimalField(
+        "Initial Balance", 
+        validators=[DataRequired(), NumberRange(min=0, message="Balance must be at least 0")], render_kw={"placeholder":"Balance"}
+    )
+    
     submit = SubmitField("Add Customer")
 
 
@@ -617,6 +627,60 @@ def customer_list(id):
         
         
     )
+    
+    
+    
+    
+@app.route("/add_customer", methods = ["GET", "POST"])
+def add_customer():
+    
+    form = AddCustomerForm()
+        
+    if form.validate_on_submit():
+        create_customer = Customer(
+            given_name = form.given_name.data.title(),
+            surname = form.surname.data.title(),
+            streetaddress = form.streetaddress.data.title(),
+            city = form.city.data.title(),
+            zipcode = form.zipcode.data,
+            country = form.country.data.title(),
+            country_code = form.country_code.data.upper(),
+            birthday = form.birthday.data,
+            national_id = form.national_id.data,
+            telephone_country_code = form.telephone_country_code.data,
+            telephone = form.telephone.data,
+            email_address = form.email_address.data.lower()
+        )
+        db.session.add(create_customer)
+        db.session.commit()
+        
+        create_account = Account(
+            account_type = form.account_type.data,
+            created = datetime.now(),
+            balance = form.balance.data,
+            customer_id = create_customer.id
+        )
+        
+        db.session.add(create_account)
+        db.session.commit()
+        
+        create_transaction = Transaction(
+            type = TransactionType.DEBIT,
+            operation = TransactionOperation.DEPOSIT_CASH,
+            date=datetime.now(),
+            amount = form.balance.data,
+            new_balance = form.balance.data,
+            account_id = create_account.id
+            
+        )
+        
+        db.session.add(create_transaction)
+        db.session.commit()
+        flash("Account successfully created!", "success")
+        return redirect(url_for("customer_list", id=create_customer.id))
+    
+    
+    return render_template("add_customer.html", form=form)
 
 
 
