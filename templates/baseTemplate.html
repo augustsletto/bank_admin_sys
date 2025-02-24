@@ -17,52 +17,22 @@
       
         
 
-        header{
-            padding-top: 28px ;
-            padding-bottom: 28px ;
-            margin-top: 20px;
-            
-
-        }
         body {
             background-color: black;
         }
 
 
-        .card-border {
-            background: linear-gradient(#1b1b1b, #1b1b1b) padding-box,
-            linear-gradient(to bottom, #2a2a2a, #0f0f0f) border-box;
-            border-radius: 20px;
-            border: 1px solid transparent;
-            box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
-            color: white;
-            }
 
-            .card-title{
-                font-size: 1.5rem;
-                
-            }
+           
 
-            .bar-chart-text{
-                font-size: 1.5rem;
-            }
             
-            .tiny-buttons{
-              font-size: 1.5rem;
-            }
 
-            .tiny-buttons:hover {
-                background-color: #313131d5;
-                
-            }
+            
             .tiny-buttons-country {
                 background-color: #313131d5;
                 
             }
-            .tiny-buttons-country:hover {
-                background-color: #313131d5;
-                
-            }
+            
 
             
             
@@ -75,6 +45,15 @@
 
             .table-container-small {
                 max-height: 220px;  
+                overflow-y: auto;   
+                overflow-x: hidden; 
+                border-radius: 8px; 
+                padding-right: 8px;
+                
+              }
+
+              .table-container-customer {
+                max-height: 200px;  
                 overflow-y: auto;   
                 overflow-x: hidden; 
                 border-radius: 8px; 
@@ -206,11 +185,7 @@
     z-index: 2;
 }
 
-.bi-search, .bi-three-dots {
-    color: #757575;
-    
-    
-}
+
 
 
 
@@ -226,35 +201,17 @@ header{
 }
 
 
-.card-border {
-    background: linear-gradient(#1b1b1b, #1b1b1b) padding-box,
-    linear-gradient(to bottom, #2a2a2a, #0f0f0f) border-box;
-    border-radius: 16px;
-    border: 1px solid transparent;
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
-    color: white;
-    }
 
-    .card-title{
-        font-size: 1.5rem;
-    }
 
-    .bar-chart-text{
-        font-size: 1.5rem;
-    }
+
+    
     
     .tiny-buttons:hover {
         background-color: #313131d5;
         
     }
-    .tiny-buttons-country {
-        background-color: #313131d5;
-        
-    }
-    .tiny-buttons-country:hover {
-        background-color: #313131d5;
-        
-    }
+    
+    
 
     
     
@@ -266,11 +223,14 @@ header{
     
 
     .table-container-big {
-        max-height: 657px;  
+        max-height: 390px;  
         overflow-x: hidden; 
         border-radius: 8px; 
         padding-right: 8px;
       }
+
+
+      
       
       
       
@@ -337,14 +297,17 @@ header{
         background-color: #333;
         color: rgb(255, 255, 255);
         width: 100%;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 10px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+
         border: none;
 
     }
 
     .exchange-btn:hover{
-        background-color: #6754f5;
+        background-color: #313131d5;
         
         
     }
@@ -353,20 +316,21 @@ header{
     .number-pad {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 20px;
+        /* gap: 10px;
+        margin-top: 20px; */
     }
     .number-pad button {
-        background-color: #333;
+        background-color: #1b1b1b;
         color: white;
         border: none;
         padding: 15px;
-        border-radius: 5px;
+        
         font-size: 20px;
     }
 
     .number-pad button:hover {
         background-color: #313131d5;
+        border-radius: 8px;
     }
 
 
@@ -377,11 +341,7 @@ header{
 
     }
 
-    .bi-search, .bi-three-dots {
-        color: #757575;
-        
-        
-    }
+   
 
      
 
@@ -402,17 +362,31 @@ header{
             font-size: 1.5rem;
         }
         
+        .tiny-buttons{
+          font-size: 1.5rem;
+          background-color: #282828;
+        }
+
         .tiny-buttons:hover {
             background-color: #313131d5;
             
         }
         .tiny-buttons-country {
-            background-color: #313131d5;
+            background-color: #282828;
             
         }
         .tiny-buttons-country:hover {
             background-color: #313131d5;
             
+            
+        }
+
+        .country_btn{
+          background-color: #282828;
+        }
+
+        .country_btn:hover{
+          background-color: #313131d5;
         }
 
         li a{
@@ -428,7 +402,7 @@ header{
 
         li a.selected{
             color: #fff;
-            background-color: #333;
+            background-color: #282828;
 
         }
 
@@ -443,11 +417,7 @@ header{
             
         }
 
-        li a.selected{
-            color: #fff;
-            background-color: #333;
-
-        }
+        
         .add_acc_btn{
           color:#757575;
           text-decoration: none;
@@ -500,6 +470,31 @@ header{
           }
           
           .table-container::-webkit-scrollbar-track {
+            background: rgba(50, 50, 50, 0.3); 
+            border-radius: 8px; 
+          }
+
+          .dropdown-menu{
+            max-height: 300px;
+            overflow-y: auto;
+          }
+
+
+          
+
+
+          .dropdown-menu::-webkit-scrollbar {
+            width: 8px; 
+            
+          }
+          
+          .dropdown-menu::-webkit-scrollbar-thumb {
+            background: #313131d5; 
+            border-radius: 8px; 
+            
+          }
+          
+          .dropdown-menu::-webkit-scrollbar-track {
             background: rgba(50, 50, 50, 0.3); 
             border-radius: 8px; 
           }
@@ -659,12 +654,105 @@ header{
   font-weight: 600;
 }
 
+
+
+.form_input{
+  font-size: 30px;
+  font-weight: 600;
+  color: #fff;
+  background-color: transparent;
+  border:none;
+  outline: none;
+  display: inline-block;  
+}
+
+.form_input::placeholder{
+  color: #333;
+}
+
+.form_input::-webkit-outer-spin-button,
+.form_input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+
+
+.form_btns{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 18px;
+  font-weight: 400;
+  color: #313131d5;
+  background: #1b1b1b;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin-left: 2px;
+  
+  
+}
+
+
+
+.curr_opt:checked {
+  background-color: #333;
+  color: #fff;  
+  border: none;
+}
+
+.curr_opt{
+  
+  background-color: #333;
+  color: #fff;
+  border: none;
+  outline: none;
+}
+
+.form_btns option:hover,
+.form_btns option:focus {
+  background-color: #444; 
+  color: #fff;
+}
+.form_btns:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.form_btns::-ms-expand {
+  display: none;
+}
+
+
+.green-details{
+  color: #02c56f !important;
+}
+
+.red-details{
+  color: #c71400 !important;;
+}
+
+.trans-green{
+  color: #02c56f !important;
+  background-color: #fff;
+}
+
+.trans-red{
+  color: #c71400 !important;;
+
+}
+
+
+
     </style>
 </head>
 <body>
 
     {% set navigation_bar = [
-        ('/', 'index', 'Index'),
+        ('/', 'index', 'Dashboard'),
         ('/management', 'management', 'Management'),
         ('/transfer', 'transfer', 'Transfer'),
         ('/admin', 'admin', 'Admin'),
@@ -685,7 +773,7 @@ header{
                         <div class="col-md-3 mb-2 mb-md-0 pb-0 logobody">
                             <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none ms-4 ps-1 header-logo">
                               <img src="/static/images/Group 5.png" id="logologo" alt="logo">
-                              <span class="header-logo-span1 p-0">m<span class="text-success">o</span>nytor</span>
+                              <span class="header-logo-span1 p-0">m<span class="green-details">o</span>nytor</span>
                             </a>
                           </div>
                     

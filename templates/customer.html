@@ -13,6 +13,9 @@
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
+
+
+
             <div class="row d-flex align-items-center mb-4">
                 <div class="col-2 cvv-col ms-3 d-flex justify-content-center align-items-center" >
                     <span id="cvvbal">CVV</span>
@@ -22,7 +25,7 @@
             </div>
             
             <div class="col display-3 pb-3" id="total-balance">
-                $<span class="">
+                <span class="green-details">$</span><span class="">
                     {%- if total_balance >= 1000000000 -%}
                         {{ "{:,.2f}B".format(total_balance / 1000000000) }}
                     {%- elif total_balance >= 1000000 -%}
@@ -36,11 +39,15 @@
             <div class="col mt-0 pt-0">
                 
                 <div class="col card-details pb-4">All Accounts<strong class="cardBold">
-                    <div class="table-container table-container-small">
+                    <div class="table-container table-container-customer">
                         <table class="wealt-table text-start">
                             {% for acc in customer_accounts %}
                               <tbody>
-                                <tr class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}">
+
+
+                                <tr class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}" onclick="window.location='{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}';" style="cursor: pointer;">
+
+                                
                                   <td>{{ acc.account_type.value }}</td>
                                   <td class="text-end">$ {%- if acc.balance >= 1000000000 -%}
                                       {{ "{:,.2f}B".format(acc.balance / 1000000000) }}
@@ -49,6 +56,7 @@
                                   {%- else -%}
                                       {{ "{:,.2f}".format(acc.balance) }}
                                   {%- endif -%}</td>
+                                    
                                 </tr>
                               </tbody>
                             {% endfor %}
@@ -63,16 +71,63 @@
     </div>
 
     <div class="col-5 d-flex">
-        <div class="p-2 card-border flex-fill p-4">
+        <div class="p-2 card-border flex-fill p-4 d-flex flex-column">
             <div class="row d-flex justify-content-between">
                 <div class="col card-title pb-4">Statistics</div>
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
-            <div>
-                <canvas id="lineChart"></canvas>
+            <div class="table-container table-container-big flex-grow-1">
+                
+                {% if transactions %}
+                <table class="table wealt-table">
+                    <thead>
+                        <tr>
+                            
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            
+                            <th>Amount</th>
+
+                            
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for t in transactions %}
+                    <tbody>
+                        <tr>
+                            <td>{{ t.id }}</td>
+                            <td>{{ t.date.strftime('%b %d, %Y') }}</td>
+                            <!-- <td>{{ t.type.value }}</td> -->
+                            <td>{{ t.operation.value }}</td>
+                            <!-- <td>{{ t.new_balance }}</td> -->
+                            
+
+                            
+                            
+                            
+
+                            <td class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}" >{% if t.type.value == 'Debit' %}+{% else %}-{% endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
+                            
+
+
+                            <td></td>
+                            
+
+
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <p>No transactions found for this account.</p>
+                    {% endif %}
+                    </tbody>
+                </table>
             </div>
+    
+
         </div>
     </div>
+    
 
     <div class="col-4 d-flex">
         <div class="p-2 card-border flex-fill p-4">

@@ -4,7 +4,7 @@
 
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <ul class=flashes>
     {% for message in messages %}
@@ -25,30 +25,52 @@
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
-            
-            
+
+            <div class="converter mb-4">
+                <div class="mb-3">
+                  <input type="number" id="amount" class="form_input py-2" placeholder="Enter amount">
+                </div>
                 
-                    
-                    <div class="mb-3">
-                        <select id="fromCurrency" class="form-select">
-                            {% for currency in currencies %}
-                            <option value="{{ currency }}">{{ currency }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="number" id="amount" class="form-control mt-2" placeholder="Enter amount">
+                <div class="row mb-3">
+                  <div class="col">
+                    <div class="dropdown">
+                      <button id="fromCurrencyButton" class="btn dropdown-toggle custom-currency-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #444; color: #fff; border: none;">
+                        From Currency
+                      </button>
+                      <ul id="fromCurrencyMenu" class="dropdown-menu" style="width: 100%; background: #333;">
+                        {% for currency in currencies %}
+                        <li>
+                          <a class="dropdown-item" href="#" data-value="{{ currency }}" style="color: #fff;">{{ currency }}</a>
+                        </li>
+                        {% endfor %}
+                      </ul>
                     </div>
-
-
-                    
-                    <div class="mb-3">
-                        <select id="toCurrency" class="form-select">
-                            {% for currency in currencies %}
-                            <option value="{{ currency }}">{{ currency }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="text" id="convertedAmount" class="form-control mt-2" placeholder="Converted amount" readonly>
+                    <input type="hidden" id="fromCurrency" value="">
+                  </div>
+                  <div class="col">
+                    <div class="dropdown">
+                      <button id="toCurrencyButton" class="btn dropdown-toggle custom-currency-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #444; color: #fff; border: none;">
+                        To Currency
+                      </button>
+                      <ul id="toCurrencyMenu" class="dropdown-menu" style="width: 100%; background: #333;">
+                        {% for currency in currencies %}
+                        <li>
+                          <a class="dropdown-item" href="#" data-value="{{ currency }}" style="color: #fff;">{{ currency }}</a>
+                        </li>
+                        {% endfor %}
+                      </ul>
                     </div>
-                    <button class="exchange-btn" onclick="convertCurrency()">Exchange Now</button>
+                    <input type="hidden" id="toCurrency" value="">
+                  </div>
+                </div>
+                
+             
+                <div class="mb-3">
+                  <input type="text" id="convertedAmount" class="form_input py-2" placeholder="Converted amount" readonly>
+                </div>
+                
+                
+                <button class="exchange-btn mt-0" onclick="convertCurrency()">Exchange Now</button>
                     
                     <div class="number-pad">
                         <button onclick="addNumber(1)">1</button>
@@ -64,90 +86,67 @@
                         <button onclick="addNumber(0)">0</button>
                         
                     </div>
-                
+              </div>
+            
 
-
-            
-            
-            <div class="col mt-5">
-            </div>
-            
         </div>
     </div>
     
     <div class="col-9 d-flex">
         <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-2">Top 10 Wealthiest</div>
+                <div class="col card-title pb-2">Transfer</div>
                 <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
             
-            <div class="table-container-big table-container">
-                <table class="wealt-table table-hover table text-start">
-                    <thead>
-                        <tr>
-                            <!-- <th scope="col">Customer ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Address</th>
-                            <th scope="col">City</th>
-                            <th scope="col">Country</th>
-                            <th scope="col">Telephone</th>
-                            <th scope="col">Birthday</th>
-                            <th scope="col">National Id</th>
-                            <th scope="col">Edit</th> -->
-                
-                            <th scope="col" class="text-start">Customer</th>
-                            <th scope="col" class="text-start">Address</th>
-                            <th scope="col" class="text-start">City</th>
-                            <th scope="col" class="text-start">National Id</th>
-                            <th scope="col" class="text-start">Customer ID</th>
-                            <th scope="col"></th>
-                
-                
-                        
-                        </tr>
-                    </thead>
-                    {% for cust in customer %}
-                    
-                    <tbody>
-                        <tr onclick="window.location='{{ url_for('customer_list', id=cust.id) }}';" style="cursor: pointer;">
-                            
-                                
-                            <td class="text-start">
-                                <strong>{{ cust.given_name }} {{ cust.surname }}</strong><br>
-                                <span style="font-size: 0.85em; color: gray;">{{ cust.email_address }}</span>
-                            </td>
-                            <td class="text-start">{{ cust.streetaddress }}, {{ cust.zipcode }}</td>
-                            <td class="text-start">{{ cust.city }}</td>
-                            <!-- <td class="">{{ cust.country_code }} {{ cust.country }}</td> -->
-                            
-                            <!-- <td class="">({{ cust.telephone_country_code }}) {{ cust.telephone }}</td> -->
-                            <!-- <td class="">{{ cust.birthday }}</td> -->
-                            <td class="text-start">{{ cust.national_id }}</td>
-                            <td class="text-start">{{ cust.id }}</td>
-                            <td class="text-end">
-                                <div class="row">
-                                  <div class="col p-0 m-0 text-end">
-                                    <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="{{ url_for('edit_customer', id=cust.id) }}">
-                                        <i class="bi bi-pen py-1 px-2 tiny-buttons rounded"></i>
-                                      </a>
-                                  </div>
-                                  <div class="col p-0 m-0 text-end">
-                                    <a class="dropdown-item p-1 d-flex justify-content-center align-items-center" href="#">
-                                        <i class="bi bi-trash py-1 px-2 tiny-buttons rounded"></i>
-                                      </a>
-                                  </div>
-                                      
-                                    
-                                </div>
-                              </td>
-                            
-       
-                        </tr>
-                    </tbody>
-                    {% endfor %}
-                </table>
+            
+            <form method="POST" action="{{ url_for('transfer')}}" class="card p-4">
+              {{ form.hidden_tag() }}
+
+              <div class="mb-3">
+                <label for="sender_account_id" class="form-label">Sender Account</label>
+                {{ form.sender_account_id(class="form_control") }}
+              </div>
+
+              <div class="mb-3">
+                <label for="receiver_account_id" class="form-label">receiver Account</label>
+                {{ form.receiver_account_id(class="form_control") }}
+              </div>
+
+              
+              <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                {{ form.amount(class="form_control") }}
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Transfer</button>
+
+
+
+            </form>
+            <div class="table-container-small">
+              
+              <table class="table wealt-table">
+                <thead>
+                  <tr>
+                    <th>Account Id</th>
+                    <th>Customer name</th>
+                    <th>Account type</th>
+                    <th>Balance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for account in accounts %}
+                    <tr>
+                    <td>{{ account.id }}</td>
+                    <td>{{ account.customer.given_name }} {{ account.customer.surname }}</td>
+                    <td>{{ account.account_type.value }}</td>
+                    <td>${{ "%.2f"|format(account.balance) }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
                         
          
         </div>
@@ -163,7 +162,47 @@
 
 
 
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update the From Currency button and hidden input on selection
+      document.querySelectorAll('#fromCurrencyMenu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          var selectedCurrency = this.getAttribute("data-value");
+          document.getElementById('fromCurrencyButton').textContent = selectedCurrency;
+          document.getElementById('fromCurrency').value = selectedCurrency;
+        });
+      });
+      
+      // Update the To Currency button and hidden input on selection
+      document.querySelectorAll('#toCurrencyMenu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          var selectedCurrency = this.getAttribute("data-value");
+          document.getElementById('toCurrencyButton').textContent = selectedCurrency;
+          document.getElementById('toCurrency').value = selectedCurrency;
+        });
+      });
+    });
+  
+    // Conversion function that reads the amount and selected currencies
+    function convertCurrency() {
+      let amount = parseFloat(document.getElementById("amount").value);
+      let fromCurrency = document.getElementById("fromCurrency").value;
+      let toCurrency = document.getElementById("toCurrency").value;
+  
+      fetch(`/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.converted_amount !== undefined) {
+            document.getElementById("convertedAmount").value = data.converted_amount;
+          } else {
+            alert("Error: " + JSON.stringify(data));
+          }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+  </script>
 
 
 

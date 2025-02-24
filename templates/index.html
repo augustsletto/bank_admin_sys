@@ -15,24 +15,37 @@
         <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
                 <div class="col card-title pb-4">Overview</div>
-                <div class="col text-end"><form method="GET" action="{{ url_for('startpage') }}">
-				
-				
-                    <select name="country" id="country" class="form-select" onchange="this.form.submit()">
-                        <option value="all" {% if selected_country == "all" %}selected{% endif %}>Total</option>
-                        {% for count in country_list_items | unique %}
-                        <option value="{{ count }}" {% if selected_country == count %}selected{% endif %}>{{ count }}</option>
-                        {% endfor %}
-                    
-                    </select>
-                </form></div>
+                <div class="col text-end">
+                    <form method="GET" action="{{ url_for('startpage') }}">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle country_btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if selected_country and selected_country != "all" %}{{ selected_country }}{% else %}Total{% endif %}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <input type="text" class="form-control" id="searchCountry" placeholder="Search...">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="?country=all">Total</a>
+                                </li>
+                                {% for count in country_list_items | unique %}
+                                <li>
+                                    <a class="dropdown-item country-option" href="?country={{ count }}">{{ count }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </form></div>
             </div>
+            
+
+
             
                 <div class="col py-2">{% if not selected_country or selected_country == "all" %}Total Balance{% else %}Total Balance in {{ selected_country }}{% endif %}</div>
                 {% set total_balance = richest_customers_by_country | sum(attribute="total_balance") %}
 
-                <div class="col display-4 pb-0">
-                    $<span class="">
+                <div class="col display-3 pb-0">
+                    <span class="green-details">$</span><span class="">
                         {%- if total_balance >= 1000000000 -%}
                             {{ "{:,.2f}B".format(total_balance / 1000000000) }}
                         {%- elif total_balance >= 1000000 -%}
@@ -45,7 +58,28 @@
             
             <div class="col mt-0">
                 
-            
+                <div class="col card-details pb-4 mt-4"><strong class="cardBold">
+                    <div class="table-container table-container-small">
+                        <table class="wealt-table text-start">
+                            
+                              <tbody>
+                                <tr>
+                                    <td class="text-white">Total Customers</td>
+                                    <td class="text-end">{{ total_customers_by_country }}    
+                                </tr>
+                                <tr>
+                                    <td class="text-white">Total Accounts</td>
+                                    <td class="text-end">{{ total_accounts_by_country }}    
+                                </tr>
+
+                              </tbody>
+                            
+                          </table>
+                    </div>
+                    
+                      
+
+                </strong></div>
                 
             </div>
             
@@ -142,7 +176,8 @@
                                 <td>{{ richest.name }}</td>
                                 <td>$
                                     {%- if richest.total_balance >= 1000000000 -%}
-                                        {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
+                                        {{ "{:,.2f}".format(richest.total_balance / 1000000000) }}
+                                        
                                     {%- elif richest.total_balance >= 1000000 -%}
                                         {{ "{:,.3f}M".format(richest.total_balance / 1000000) }}
                                     {%- else -%}
@@ -294,5 +329,20 @@
     }
 </script>
 
+<script>
+    document.getElementById('searchCountry').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let items = document.querySelectorAll('.country-option');
+        
+        items.forEach(function(item) {
+            let text = item.textContent.toLowerCase();
+            if (text.includes(filter)) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+</script>
 
 {% endblock %}

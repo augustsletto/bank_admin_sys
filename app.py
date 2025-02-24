@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from flask_migrate import Migrate, upgrade
 from flask_bootstrap import Bootstrap5
-from models import db, seedData, Customer, Account, Transaction
+from models import db, seedData, Customer, Account, Transaction, TransactionOperation, TransactionType
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import io
@@ -40,7 +40,7 @@ migrate = Migrate(app,db)
 Bootstrap5(app)
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
+app.jinja_env.filters['zip'] = zip
 
 
 
@@ -91,14 +91,23 @@ class AddAccountForm(FlaskForm):
     )
     submit = SubmitField("Create Account")
 
+class TransferForm(FlaskForm):
+    sender_account_id = SelectField("Sender Account", coerce=int, validators=[DataRequired()])
+    receiver_account_id = SelectField("Receiver Account", coerce=int, validators=[DataRequired()])
+    amount = DecimalField("Amount", validators=[DataRequired(), NumberRange(min=0.01, message="Amount must be positive")])
+    submit = SubmitField("Transfer Money")
+
+    def __init__(self, *args, **kwargs):
+        super(TransferForm, self).__init__(*args, **kwargs)
+        self.sender_account_id.choices = [(a.id, f"{a.customer.given_name} {a.customer.surname} - {a.account_type.value}") for a in Account.query.all()]
+        self.receiver_account_id.choices = self.sender_account_id.choices
 
 
 
 
-@app.route("/login")
+@app.route("/login", methods=["POST", "GET"])
 def login():
 
-    
 
     return render_template("login.html")
 
@@ -339,12 +348,90 @@ def startpage():
 
 
 
+
+
+
+def transfer_money(sender_account_id, receiver_account_id, amount):
+    
+    if amount <= 0:
+        return False, "Invalid amount: Cannot transfer negative money."
+    
+    sender_account = db.session.get(Account, sender_account_id)
+    receiver_account = db.session.get(Account, receiver_account_id)
+
+    
+    if not sender_account or not receiver_account:
+        return False, "One or both accounts do not exist."
+    
+    if sender_account.id == receiver_account.id:
+        return False, "Cannot transfer to the same account."
+    
+    if sender_account.balance < amount:
+        return False, "Insufficient balance."
+    
+    
+    is_internal_transfer = sender_account.customer_id == receiver_account.customer_id
+
+    sender_transaction = Transaction(
+        type=TransactionType.CREDIT,
+        operation=TransactionOperation.TRANSFER,
+        date=datetime.now(),
+        amount=amount,
+        new_balance=sender_account.balance - amount,
+        account_id=sender_account.id
+    )
+    
+    
+    reciever_transaction = Transaction(
+        type=TransactionType.DEBIT,
+        operation=TransactionOperation.TRANSFER,
+        date=datetime.now(),
+        amount=amount,
+        new_balance=receiver_account.balance + amount,
+        account_id=receiver_account.id
+    )
+
+
+    sender_account.balance -= amount
+    receiver_account.balance += amount
+    
+    db.session.add(sender_transaction)
+    db.session.add(reciever_transaction)
+    db.session.commit()
+    
+    return True, "Transfer successful!"
+
+    
+    
+
+
+
 @app.route("/transfer", methods=["GET", "POST"])
 def transfer():
     currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
     
+    form = TransferForm()
+    customers = Customer.query.all()
+    accounts = Account.query.all()
     
-    return render_template("transfer.html", currencies=currencies)
+    if form.validate_on_submit():
+        sender_account_id = form.sender_account_id.data
+        receiver_account_id = form.receiver_account_id.data
+        amount = form.amount.data
+        
+        success, message = transfer_money(sender_account_id, receiver_account_id, amount)
+        
+        if success:
+            flash("Transfer completed", "success")
+            
+        else:
+            flash(message, "danger")
+        
+        return redirect(url_for("transfer"))
+    
+    
+    
+    return render_template("transfer.html", currencies=currencies, form=form, customers=customers, accounts=accounts)
 
 
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
@@ -361,7 +448,21 @@ def add_account(customer_id):
             balance=form.balance.data,
             customer_id=customer.id
         )
+        
         db.session.add(new_account)
+        db.session.commit()
+        
+        initial_transaction = Transaction(
+            type = TransactionType.DEBIT,
+            operation = TransactionOperation.DEPOSIT_CASH,
+            date=datetime.now(),
+            amount = form.balance.data,
+            new_balance = form.balance.data,
+            account_id = new_account.id
+            
+        )
+        
+        db.session.add(initial_transaction)
         db.session.commit()
         flash("Account successfully created!", "success")
         return redirect(url_for("customer_list", id=customer_id))
@@ -450,22 +551,19 @@ def edit_customer():
 def customer_list(id):
     customer = Customer.query.get_or_404(id)
 
-    # Get selected account ID and page number from request 
+   
     selected_account_id = request.args.get("account_id", None, type=int)
-    page = request.args.get("page", 1, type=int)
-    per_page = 5
-
-    # Fetch all accounts for this customer
-    customer_accounts = customer.accounts  # List of all accounts
-    account_dict = {acc.id: acc for acc in customer_accounts}  # Map accounts by ID
+    
+    customer_accounts = customer.accounts  
+    account_dict = {acc.id: acc for acc in customer_accounts} 
     
     
     
-    # Default to the first available acc
+   
     if not selected_account_id and customer_accounts:
         selected_account_id = customer_accounts[0].id
 
-    # Get the latest balance for each acc
+    
     account_balances = {}
     for account in customer_accounts:
         last_transaction = (
@@ -473,28 +571,38 @@ def customer_list(id):
             .order_by(Transaction.date.desc())
             .first()
         )
-        account_balances = {account.id: account.balance for account in customer_accounts}
     
-    # Compute total balance
+    account_balances = {account.id: account.balance for account in customer_accounts}
+    
+    
     total_balance = sum(account_balances.values())
     
     current_balance = account_balances.get(selected_account_id)
     
-    # total_balance = sum(account_balances.values())
-    # total_balance = sum(account_balances)
-    # Get paginated for account
+    
     transactions = []
-    pagination = None
-    # current_balance = account_balances.get(selected_account_id, 0.00)
+
 
     if selected_account_id in account_dict:
-        pagination = (
-            Transaction.query.filter(Transaction.account_id == selected_account_id)
-            .order_by(Transaction.date.desc())
-            .paginate(page=page, per_page=per_page, error_out=False)
-        )
-        transactions = pagination.items
+        transactions = (
+    Transaction.query
+    .join(Account, Transaction.account_id == Account.id)
+    .filter(Account.customer_id == customer.id, Transaction.account_id == selected_account_id)
+    .order_by(Transaction.date.desc())
+    .all()
+)
+    else:
+        transactions = []
 
+        
+        # .paginate(page=page, per_page=per_page, error_out=False)
+        # transactions = pagination.items
+
+   
+    
+    
+    
+    
     
     
     return render_template(
@@ -502,11 +610,11 @@ def customer_list(id):
         customer=customer,
         customer_accounts=customer_accounts,
         transactions=transactions,
-        pagination=pagination,
         selected_account_id=selected_account_id,
         current_balance=current_balance,
         total_balance=total_balance, 
-        page=page,
+        zip=zip
+        
         
     )
 

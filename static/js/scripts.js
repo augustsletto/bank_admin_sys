@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("amount").value = "";
     }
 
-    
+    // Expose functions to global scope if needed
     window.convertCurrency = convertCurrency;
     window.addNumber = addNumber;
     window.clearAmount = clearAmount;
