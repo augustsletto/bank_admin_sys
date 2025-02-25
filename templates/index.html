@@ -258,9 +258,38 @@
     <div class="col-3 d-flex mt-3">
         <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
             <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">10 Richest</div>
+                <div class="col card-title pb-4">Latest Transactions</div>
                 <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
                 <div class="table-container-small table-container">
+
+                    <div class="table-container-small">
+                        <table class="table wealt-table">
+                            <tbody>
+                                {% for t in latest_transactions %}
+                                {% if t.date <= now %}
+                                <tr>
+                                    <td>{{ t.id }}</td>
+                                    <td>{{ t.operation.value }}</td>
+
+
+                                    <!-- IF AMOUNT MORE THAN LALALA MONEY LAUNDERING OSV  -->
+
+
+                                    <td
+                                class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
+                                if t.type.value == 'Debit' %}+{% else %}-{%
+                                endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
+
+                            <td>
+                                    <td>{{ t.account_id }}</td>
+
+
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 
                 
             </div>

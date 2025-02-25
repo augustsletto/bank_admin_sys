@@ -49,6 +49,32 @@ document.addEventListener("DOMContentLoaded", function () {
         })};
 
 
+        if (document.getElementById("doughnutChart")) {
+            let ctx = document.getElementById("doughnutChart").getContext("2d");
+        
+            let doughnutChartData = JSON.parse(document.getElementById("doughnutChartData").textContent);
+        
+            new Chart(ctx, {
+                type: "doughnut",
+                data: doughnutChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: "#ffffff", // Färgen på texten i legenden
+                                font: { size: 14 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+
+
     if (document.getElementById("barChart")) {
         let bctx = document.getElementById("barChart").getContext("2d");
         

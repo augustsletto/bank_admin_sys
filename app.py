@@ -1,31 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from flask_migrate import Migrate, upgrade
 from flask_bootstrap import Bootstrap5
-from models import db, seedData, Customer, Account, Transaction, TransactionOperation, TransactionType
-from collections import defaultdict
-import matplotlib.pyplot as plt
-import io
-import base64
+from models import db, seedData, Customer, Account, Transaction, TransactionOperation, TransactionType, AccountType
 import numpy as np
 from datetime import datetime, timedelta, date
-from collections import defaultdict
 import requests
 import os
 from dotenv import load_dotenv
-from wtforms import StringField, SubmitField, IntegerField, DateTimeField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, DateTimeField, DecimalField, SelectField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, NumberRange, Length
-from models import db, seedData, Customer, Account, Transaction, AccountType, TransactionType, TransactionOperation
-from wtforms import StringField, DecimalField, SelectField, SubmitField
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, aliased
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Text, func, cast
-from sqlalchemy.sql import extract, func
+from sqlalchemy import  func
+from sqlalchemy.sql import func
 from collections import Counter
-from decimal import Decimal
+
 load_dotenv()
 
 POLYGON_API = os.getenv("POLYGON_API")
@@ -126,7 +114,7 @@ def login():
 
 def get_country_data(country_name=None):
     
-    AccountAlias = aliased(Account)
+    
     
 
     customer_query = db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")).join(Account, Account.customer_id == Customer.id)
@@ -199,6 +187,9 @@ def startpage():
     
     
     
+    
+    
+    
     country = request.args.get("country", "all")
     
     
@@ -250,7 +241,6 @@ def startpage():
     iterations_per_month = dict(sorted(counter_month.items()))
     
     counter_income_by_month = Counter(income_by_month)
-    iterations_income_by_month = dict(sorted(counter_income_by_month.items()))
    
     # print(iterations_income_by_month)
     
@@ -318,6 +308,9 @@ def startpage():
     jpm = data[3]["close"]
     jpm_pr = data[3]["previous_close"]
     jpm_percent = data[3]["change_percent"]
+    
+    latest_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+ 
 
   
     
@@ -353,7 +346,9 @@ def startpage():
                            off_bar_color=off_bar_color,
                            iterations_per_week=iterations_per_week,
                            iterations_per_month=iterations_per_month,
-                           average_transactions_list=average_transactions_list
+                           average_transactions_list=average_transactions_list,
+                           latest_transactions=latest_transactions,
+                           now=datetime.now()
                            )
 
 
@@ -671,7 +666,7 @@ def customer_list(id):
     current_balance = account_balances.get(selected_account_id)
     
     page = request.args.get("page", 1, type=int)
-    per_page = 10
+    per_page = 20
     
     transactions_pagination = (
         Transaction.query
@@ -721,6 +716,8 @@ def customer_list(id):
         total_accounts=len(customer_accounts),
         customer_debit_count=customer_debit_count,
         customer_credit_count=customer_credit_count,
+        customer_credit_sum=customer_credit_sum,
+        customer_debit_sum=customer_debit_sum,
         has_more=has_more,
         next_page=page+1
         
@@ -734,7 +731,7 @@ def customer_list(id):
 def load_more_transactions(id):
     selected_account_id = request.args.get("account_id", None, type=int)
     page = request.args.get("page", 1, type=int)
-    per_page = 10  
+    per_page = 20  
 
     transactions_pagination = (
         Transaction.query
@@ -761,7 +758,10 @@ def load_more_transactions(id):
         "next_page": page + 1
     })
 
-    
+
+
+
+
     
 @app.route("/add_customer", methods = ["GET", "POST"])
 def add_customer():

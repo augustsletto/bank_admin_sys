@@ -38,7 +38,7 @@
 
             <div class="col mt-0 pt-0">
 
-                <div class="col card-details pb-4">All Accounts<strong
+                <div class="col card-details pb-4">All Accounts ({{ total_accounts }})<strong
                         class="cardBold">
                         <div class="table-container table-container-customer">
                             <table class="wealt-table text-start">
@@ -136,7 +136,7 @@
     </div>
 
     <div class="col-4 d-flex">
-        <div class="p-2 card-border flex-fill p-4">
+        <div class="card-border flex-fill p-4 pb-2">
             <div class="row d-flex justify-content-between">
                 <div class="col card-title pb-4">Account</div>
                 <div class="col text-end">
@@ -224,7 +224,7 @@
                 </div> -->
 
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col">
                         <div class="row">
                             <div class="col">Personal Information</div>
@@ -270,7 +270,7 @@
                         
                     </div>
                     
-                </div>
+                </div> -->
 
 
 
@@ -279,10 +279,43 @@
 
             </div>
 
-            <div class="row mt-5 text-center">
-                <div class="col-4">{{ total_accounts }}</div>
-                <div class="col-4 green-details">{{ customer_debit_count }}</div>
-                <div class="col-4 red-details">{{ customer_credit_count }}</div>
+            <div class="row mt-1 text-center">
+
+                
+
+
+                <div>
+                    <canvas id="barChart"></canvas>
+                </div>
+
+
+                
+
+
+
+                
+                <div class="col-6 green-details">
+                    
+                    <span>$</span>
+                    <span>
+                        {%- if customer_debit_sum >= 1000000000 -%}
+                        {{ "{:,.2f}B".format(customer_debit_sum / 1000000000) }}
+                        {%- elif customer_debit_sum >= 1000000 -%}
+                        {{ "{:,.3f}M".format(customer_debit_sum / 1000000) }}
+                        {%- else -%}
+                        {{ "{:,.2f}".format(customer_debit_sum) }}
+                        {%- endif -%}
+                    </span>
+                </div>
+                <div class="col-6 red-details">{{ customer_credit_count }} <span>$</span><span class>
+                    {%- if customer_credit_sum >= 1000000000 -%}
+                    {{ "{:,.2f}B".format(customer_credit_sum / 1000000000) }}
+                    {%- elif customer_credit_sum >= 1000000 -%}
+                    {{ "{:,.3f}M".format(customer_credit_sum / 1000000) }}
+                    {%- else -%}
+                    {{ "{:,.2f}".format(customer_credit_sum) }}
+                    {%- endif -%}
+                </span></div>
             </div>
 
 
@@ -292,13 +325,95 @@
 
         </div>
     </div>
+
+
+    <div class="col-9 d-flex mt-3">
+        <div class="card-border flex-fill p-4">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-2">{% if not selected_country or selected_country == "all" %}Top 10 Wealthiest Customers{% else %}Top 10 Wealthiest in {{ selected_country }}{% endif %}</div>
+                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+
+
+
+            <div class="col mt-2">
+
+                <div class="row m-0 p-8">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col">Personal Information</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Name</div>
+                                    <div class="col">{{ customer.given_name|title }} {{ customer.surname|title }} </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Birthday</div>
+                                    <div class="col">{{ customer.birthday.strftime('%Y-%m-%d') }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">National ID</div>
+                                    <div class="col">{{ customer.national_id }}</div>
+                                </div>
+                                
+                                
+                                
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col"> Information</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Country</div>
+                                    <div class="col">{{ customer.country|title }}, {{ customer.country_code|upper }} </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">City</div>
+                                    <div class="col">{{ customer.city|title }}, {{ customer.zipcode }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Address</div>
+                                    <div class="col">{{ customer.streetaddress|title }}</div>
+                                </div>
+                               
+                            </div>
+                            <div class="col">
+                                <div class="row pt-3">
+                                    <div class="col">Contact Information</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Email Address </div>
+                                    <div class="col" onclick="window.location='mailto:{{customer.email_address}}';"
+                                    style="cursor: pointer;">{{ customer.email_address|lower }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Phone Number</div>
+                                    <div class="col">{{ customer.telephone_country_code }} {{ customer.telephone }}</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+
+                
+                    
+                    
+            </div>
+
+            
+        </div>
+    </div>
+
+
 </div>
 
-<script>
-    function changeCardColor(primary, secondary) {
-        document.getElementById('creditCard').style.background = `linear-gradient(135deg, ${primary}, ${secondary})`;
-    }
-</script>
+
 
 
 <script>
@@ -337,6 +452,18 @@
 
 
 
+<script id="barChartData" type="application/json">
+    {
+        "labels": ["Income", "Expenses"],
+        "datasets": [
+            {
+                "data": [{{customer_debit_sum}}, {{customer_credit_sum}}],
+                "backgroundColor": ["#02c56f", "#c71400"],
+                "borderRadius": 6
+            }
+        ]
+    }
+</script>
 
 
 
