@@ -22,7 +22,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, aliased
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Text, func
+from sqlalchemy import Integer, String, Text, func, cast
 from sqlalchemy.sql import extract, func
 from collections import Counter
 from decimal import Decimal
@@ -509,63 +509,61 @@ def convert_currency():
 @app.route("/management", methods=["GET", "POST"])
 def management():
     # customer = db.session.execute(db.select(Customer)).scalars()
-    request.args.get("sort_by", "order")
+    
     
     customer = Customer.query
-    sort_by = request.args.get("sort_by", "id")
-    order = request.args.get("order", "desc")
-    new_order = "asc" if order == "desc" else "desc"
     
     
     
-    if sort_by == "customer":
-        customer = customer.order_by(Customer.given_name.asc() if order == "asc" else Customer.given_name.desc())
-    elif sort_by == "address":
-        customer = customer.order_by(Customer.streetaddress.asc() if order == "asc" else Customer.streetaddress.desc())
-    elif sort_by == "city":
-        customer = customer.order_by(Customer.city.asc() if order == "asc" else Customer.city.desc())
-    elif sort_by == "national_id":
-        customer = customer.order_by(Customer.national_id.asc() if order == "asc" else Customer.national_id.desc())
-    elif sort_by == "customer_id":
-        customer = customer.order_by(Customer.id.asc() if order == "asc" else Customer.id.desc())
+    sort_order = request.args.get("sort_order", "asc")
+    sort_column = request.args.get("sort_column", "id")
+    search_word = request.args.get('q', '')
     
     
     
-    # name_filter = request.args.get("name")
-    # city_filter = request.args.get("city")
-    
-    # customer_query = Customer.query
-    
-    # if name_filter:
-    #     customer = customer_query.filter(Customer..ilike(f"%{name_filter}%"))
-    # else:
-    #     customer = Customer.query.all()
-    # if city_filter:
-    #     customer = customer_query.filter(Customer.city.ilike(f"%{city_filter}%"))
-    
-    # print(customer)
-    
-    # print(customer)
-    
-    # currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
-    # currency_list_values = []
+    search_customers = Customer.query.filter(
+        Customer.given_name.ilike("%"+ search_word + "%") |
+        Customer.surname.ilike("%"+ search_word + "%") |
+        Customer.streetaddress.ilike("%"+ search_word + "%") |
+        Customer.country.ilike("%"+ search_word + "%") |
+        Customer.city.ilike("%"+ search_word + "%") |
+        Customer.id.ilike("%"+ search_word + "%") |
+        Customer.national_id.ilike("%"+ search_word + "%")
+)
     
     
-    # for currency in currency_list:
-    #     url = f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency={currency}&apikey={ALPHA_VANTAGE}'
-    #     r = requests.get(url)
-    #     data = r.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
-    #     currency_list_values.append(data)
-        
-    # url = f"https://v6.exchangerate-api.com/v6/793f97b4f7bfbf99ae6fb376/latest/USD"
-    # data = requests.get(url).json()
-        
-    # print(data)
     
-        
+    
+    order_by = Customer.id
+    if sort_column == "customers":
+        order_by = Customer.given_name
+    elif sort_column == "address":
+        order_by = Customer.streetaddress
+    elif sort_column == "city":
+        order_by = Customer.city
+    elif sort_column == "national_id":
+        order_by = Customer.national_id
+    elif sort_column == "id":
+        order_by = Customer.id
+    
+    
+    order_by = order_by.asc() if sort_order == "asc" else order_by.desc()
+    
+    all_customers = search_customers.order_by(order_by)
+    
+    
+    
+    
+    cust_amount = db.session.execute(db.select(Customer)).scalars().all()
+    customer_amount = len(cust_amount)
+    acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
+    
+    
+    
+    
         
     
-    return render_template("management.html", customer=customer, order=order, sort_by=sort_by)
+    return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
 
 
 

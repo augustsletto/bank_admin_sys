@@ -87,14 +87,14 @@
                     <div class="col-3 border rounded">
                         <div class="col pb-2">Total Customers</div>
                         <div class="row">
-                            <div class="col card-title">829</div>
+                            <div class="col card-title">{{ customer_amount }}</div>
                             <div class="col">23%</div>
                         </div>
                     </div>
                     <div class="col-3 border rounded">
                         <div class="col pb-2">Total Accounts</div>
                         <div class="row">
-                            <div class="col card-title">325</div>
+                            <div class="col card-title">{{ acc_amount }}</div>
                             <div class="col">23%</div>
 
                         </div>
@@ -103,9 +103,11 @@
 
                 <div class="row mt-3">
                     <div class="col-4 border rounded p-0">
-                        <input type="search" name="filter_customer"
-                            id="filter_cust" placeholder="Search"
-                            class="p-0 m-0 w-100">
+                       <form method="GET">
+                        <input type="text" name="q" placeholder="Search customers.." class="p-0 m-0 w-100" value="{{ q }}">
+                            <button type="submit">Search</button>
+                        </form>
+
                     </div>
                     <div class="col-2"></div>
                     <div class="col-1 border rounded">
@@ -136,20 +138,42 @@
                         <thead>
                             <tr>
 
-                                <th scope="col" class="text-start"><a
-                                        href="#"><i
-                                            class="bi bi-sort-alpha-up">Customer</i></a></th>
-                                <th scope="col" class="text-start">Address</th>
-                                <th scope="col" class="text-start">City</th>
-                                <th scope="col" class="text-start">National Id<i
-                                        class="bi bi-sort-numeric-up"></i></th>
-                                <th scope="col" class="text-start">Customer ID<i
-                                        class="bi bi-sort-numeric-up"></i></th>
+                                <th scope="col" class="text-start">
+                                    <a href="{{ url_for('management', sort_by='customer', sort_order='desc' if request.args.get('sort_order', 'asc') == 'asc' else 'asc') }}">
+                                        <i class="bi {{ 'bi-sort-alpha-down' if request.args.get('sort_order', 'asc') == 'asc' else 'bi-sort-alpha-up' }}"></i> Customer
+                                    </a>
+                                </th>
+                                
+                                
+                                <th scope="col" class="text-start">
+                                    <a href="{{ url_for('management', sort_by='address', sort_order='desc' if request.args.get('sort_order', 'asc') == 'asc' else 'asc') }}">
+                                        <i class="bi {{ 'bi-sort-alpha-down' if request.args.get('sort_order', 'asc') == 'asc' else 'bi-sort-alpha-up' }}"></i> Address
+                                    </a>
+                                </th>
+                                
+                                <th scope="col" class="text-start">
+                                    <a href="{{ url_for('management', sort_by='city', sort_order='desc' if request.args.get('sort_order', 'asc') == 'asc' else 'asc') }}">
+                                        <i class="bi {{ 'bi-sort-alpha-down' if request.args.get('sort_order', 'asc') == 'asc' else 'bi-sort-alpha-up' }}"></i> City
+                                    </a>
+                                </th>
+                                
+                                <th scope="col" class="text-start">
+                                    <a href="{{ url_for('management', sort_by='national_id', sort_order='desc' if request.args.get('sort_order', 'asc') == 'asc' else 'asc') }}">
+                                        <i class="bi {{ 'bi-sort-alpha-down' if request.args.get('sort_order', 'asc') == 'asc' else 'bi-sort-alpha-up' }}"></i> National ID
+                                    </a>
+                                </th>
+                                
+                                <th scope="col" class="text-start">
+                                    <a href="{{ url_for('management', sort_by='id', sort_order='desc' if request.args.get('sort_order', 'asc') == 'asc' else 'asc') }}">
+                                        <i class="bi {{ 'bi-sort-alpha-down' if request.args.get('sort_order', 'asc') == 'asc' else 'bi-sort-alpha-up' }}"></i> #
+                                    </a>
+                                </th>
+                                
                                 <th scope="col"></th>
 
                             </tr>
                         </thead>
-                        {% for cust in customer %}
+                        {% for cust in all_customers %}
 
                         <tbody>
                             <tr
