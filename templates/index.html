@@ -45,7 +45,8 @@
                 {% set total_balance = richest_customers_by_country | sum(attribute="total_balance") %}
 
                 <div class="col display-3 pb-0">
-                    <span class="green-details">$</span><span class="">
+                    <span class="green-details">$</span>
+                    <span>
                         {%- if total_balance >= 1000000000 -%}
                             {{ "{:,.2f}B".format(total_balance / 1000000000) }}
                         {%- elif total_balance >= 1000000 -%}
@@ -173,7 +174,7 @@
                             {% for richest in richest_customers_by_country[:5] %}
                             <tbody>
                                 <tr>
-                                <td>{{ richest.name }}</td>
+                                <td>{{ richest.name|title }}</td>
                                 <td>$
                                     {%- if richest.total_balance >= 1000000000 -%}
                                         {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
@@ -184,7 +185,7 @@
                                         {{ "{:,.2f}".format(richest.total_balance) }}
                                     {%- endif -%}
                             </td>
-                                <td>{{ richest.country}}</td>
+                                <td>{{ richest.country|title}}</td>
                                
                             </tr>
                         </tbody>
@@ -196,7 +197,7 @@
                             {% for richest in richest_customers_by_country[5:10] %}
                             <tbody>
                                 <tr>
-                                <td>{{ richest.name }}</td>
+                                <td>{{ richest.name|title }}</td>
                                 <td>$
                                     {%- if richest.total_balance >= 1000000000 -%}
                                         {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
@@ -206,7 +207,7 @@
                                         {{ "{:,.2f}".format(richest.total_balance) }}
                                     {%- endif -%}
                                 </td>
-                                <td>{{ richest.country}}</td>
+                                <td>{{ richest.country|title}}</td>
                                
                             </tr>
                         </tbody>
@@ -344,5 +345,16 @@
         });
     });
 </script>
+
+
+
+
+
+
+
+
+
+
+
 
 {% endblock %}

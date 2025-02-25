@@ -504,9 +504,47 @@ def convert_currency():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     
+
+    
 @app.route("/management", methods=["GET", "POST"])
 def management():
-    customer = db.session.execute(db.select(Customer)).scalars()
+    # customer = db.session.execute(db.select(Customer)).scalars()
+    request.args.get("sort_by", "order")
+    
+    customer = Customer.query
+    sort_by = request.args.get("sort_by", "id")
+    order = request.args.get("order", "desc")
+    new_order = "asc" if order == "desc" else "desc"
+    
+    
+    
+    if sort_by == "customer":
+        customer = customer.order_by(Customer.given_name.asc() if order == "asc" else Customer.given_name.desc())
+    elif sort_by == "address":
+        customer = customer.order_by(Customer.streetaddress.asc() if order == "asc" else Customer.streetaddress.desc())
+    elif sort_by == "city":
+        customer = customer.order_by(Customer.city.asc() if order == "asc" else Customer.city.desc())
+    elif sort_by == "national_id":
+        customer = customer.order_by(Customer.national_id.asc() if order == "asc" else Customer.national_id.desc())
+    elif sort_by == "customer_id":
+        customer = customer.order_by(Customer.id.asc() if order == "asc" else Customer.id.desc())
+    
+    
+    
+    # name_filter = request.args.get("name")
+    # city_filter = request.args.get("city")
+    
+    # customer_query = Customer.query
+    
+    # if name_filter:
+    #     customer = customer_query.filter(Customer..ilike(f"%{name_filter}%"))
+    # else:
+    #     customer = Customer.query.all()
+    # if city_filter:
+    #     customer = customer_query.filter(Customer.city.ilike(f"%{city_filter}%"))
+    
+    # print(customer)
+    
     # print(customer)
     
     # currency_list = ["EUR", "CHF", "GBP", "JPY", "SEK"]
@@ -527,11 +565,11 @@ def management():
         
         
     
-    return render_template("management.html", customer=customer)
+    return render_template("management.html", customer=customer, order=order, sort_by=sort_by)
 
 
 
-
+@app.route("/download", )
 
 
 
@@ -561,13 +599,14 @@ def edit_customer():
 def customer_list(id):
     customer = Customer.query.get_or_404(id)
 
+    
    
     selected_account_id = request.args.get("account_id", None, type=int)
     
     customer_accounts = customer.accounts  
     account_dict = {acc.id: acc for acc in customer_accounts} 
     
-    
+    print(customer_accounts)
     
    
     if not selected_account_id and customer_accounts:
@@ -575,12 +614,56 @@ def customer_list(id):
 
     
     account_balances = {}
-    for account in customer_accounts:
-        last_transaction = (
-            Transaction.query.filter(Transaction.account_id == account.id)
-            .order_by(Transaction.date.desc())
-            .first()
-        )
+
+    
+    
+    
+    customer_transaction_count = (
+    Transaction.query
+    .join(Account, Transaction.account_id == Account.id)
+    .filter(Account.customer_id == customer.id)
+    .with_entities(func.count(Transaction.id))
+    .scalar()
+    )
+
+    customer_debit_count = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == customer.id, Transaction.type == "DEBIT")
+        .with_entities(func.count(Transaction.id))
+        .scalar()
+    )
+
+    customer_credit_count = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == customer.id, Transaction.type == "CREDIT")
+        .with_entities(func.count(Transaction.id))
+        .scalar()
+    )
+
+
+    
+    customer_credit_sum = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == customer.id, Transaction.type == "CREDIT")
+        .with_entities(func.sum(Transaction.amount))
+        .scalar()
+    )
+    
+    customer_debit_sum = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == customer.id, Transaction.type == "DEBIT")
+        .with_entities(func.sum(Transaction.amount))
+        .scalar()
+    )
+    
+    
+    print(customer_credit_sum)
+    print(customer_debit_sum)
+    
     
     account_balances = {account.id: account.balance for account in customer_accounts}
     
@@ -589,6 +672,16 @@ def customer_list(id):
     
     current_balance = account_balances.get(selected_account_id)
     
+    page = request.args.get("page", 1, type=int)
+    per_page = 10
+    
+    transactions_pagination = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == customer.id, Transaction.account_id == selected_account_id)
+        .order_by(Transaction.date.desc())
+        .paginate(page=page, per_page=per_page, error_out=False)
+    )
     
     transactions = []
 
@@ -609,11 +702,14 @@ def customer_list(id):
         # transactions = pagination.items
 
    
+
+    
+    print(selected_account_id)
     
     
     
-    
-    
+    transactions = transactions_pagination.items
+    has_more = transactions_pagination.has_next
     
     return render_template(
         "customer.html",
@@ -623,12 +719,50 @@ def customer_list(id):
         selected_account_id=selected_account_id,
         current_balance=current_balance,
         total_balance=total_balance, 
-        zip=zip
+        zip=zip,
+        total_accounts=len(customer_accounts),
+        customer_debit_count=customer_debit_count,
+        customer_credit_count=customer_credit_count,
+        has_more=has_more,
+        next_page=page+1
+        
+        
+        
         
         
     )
     
-    
+@app.route("/customer/<int:id>/transactions", methods=["GET"])
+def load_more_transactions(id):
+    selected_account_id = request.args.get("account_id", None, type=int)
+    page = request.args.get("page", 1, type=int)
+    per_page = 10  
+
+    transactions_pagination = (
+        Transaction.query
+        .join(Account, Transaction.account_id == Account.id)
+        .filter(Account.customer_id == id, Transaction.account_id == selected_account_id)
+        .order_by(Transaction.date.desc())
+        .paginate(page=page, per_page=per_page, error_out=False)
+    )
+
+    transactions = [
+        {
+            "id": t.id,
+            "date": t.date.strftime('%b %d, %Y'),
+            "type": t.type.value,
+            "operation": t.operation.value,
+            "amount": "{:,.2f}".format(t.amount),
+        }
+        for t in transactions_pagination.items
+    ]
+
+    return jsonify({
+        "transactions": transactions,
+        "has_more": transactions_pagination.has_next,
+        "next_page": page + 1
+    })
+
     
     
 @app.route("/add_customer", methods = ["GET", "POST"])
@@ -681,6 +815,13 @@ def add_customer():
     
     
     return render_template("add_customer.html", form=form)
+
+
+
+
+
+
+
 
 
 

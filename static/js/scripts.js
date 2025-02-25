@@ -96,3 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addNumber = addNumber;
     window.clearAmount = clearAmount;
 });
+
+
+
+
