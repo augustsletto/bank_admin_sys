@@ -4,15 +4,7 @@
 
 
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+
 
 <div class="row g-4 mx-2">
 
@@ -92,67 +84,168 @@
         </div>
     </div>
     
-    <div class="col-9 d-flex">
-        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
-            <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-2">Transfer</div>
-                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+    <div class="col-3 d-flex">
+      <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+          <div class="row d-flex justify-content-between">
+              <div class="col card-title pb-4">Currency </div>
+              <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+          </div>
+          
+          
+          
+          <form method="POST" action="{{ url_for('transfer')}}">
+            {{ form.hidden_tag() }}
+            
+            
+
+          <div class="table-container">
+            <div class="mb-3">
+                <input type="text" id="searchInputSender" class="form-control" placeholder="Search for a name...">
             </div>
-            
-            
-            <form method="POST" action="{{ url_for('transfer')}}" class="card p-4">
-              {{ form.hidden_tag() }}
-
-              <div class="mb-3">
-                <label for="sender_account_id" class="form-label">Sender Account</label>
-                {{ form.sender_account_id(class="form_control") }}
-              </div>
-
-              <div class="mb-3">
-                <label for="receiver_account_id" class="form-label">receiver Account</label>
-                {{ form.receiver_account_id(class="form_control") }}
-              </div>
-
-              
-              <div class="mb-3">
-                <label for="amount" class="form-label">Amount</label>
-                {{ form.amount(class="form_control") }}
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100">Transfer</button>
-
-
-
-            </form>
-            <div class="table-container-small">
-              
-              <table class="table wealt-table">
-                <thead>
-                  <tr>
-                    <th>Account Id</th>
-                    <th>Customer name</th>
-                    <th>Account type</th>
-                    <th>Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for account in accounts %}
-                    <tr>
-                    <td>{{ account.id }}</td>
-                    <td>{{ account.customer.given_name }} {{ account.customer.surname }}</td>
-                    <td>{{ account.account_type.value }}</td>
-                    <td>${{ "%.2f"|format(account.balance) }}</td>
-                </tr>
-                {% endfor %}
+        
+            <table class="table wealt-table">
+                <tbody id="tableBodySend">
+                    {% for subfield in form.sender_account_id %}
+                    <tr class="selectable-row">
+                        <td>
+                            <label for="{{ subfield.id_for_label }}" class="d-flex align-items-center justify-content-between w-100 m-0 p-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    <span class="name-text">{{ subfield.label.text.title() }}</span>
+                                </div>
+                                <div class="form-check m-0">
+                                    {{ subfield }}
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
-              </table>
-            </div>
-                        
-         
+            </table>
         </div>
-        </div>
-    </div>
 
+
+
+
+          
+    
+      </div>
+    </div>
+    <div class="col-3 d-flex">
+      <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+          <div class="row d-flex justify-content-between">
+              <div class="col card-title pb-4">Currency </div>
+              <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+          </div>
+          
+    
+          <div class="table-container">
+            <div class="mb-3">
+                <input type="text" id="searchInputReceiver" class="form-control" placeholder="Search for a name...">
+            </div>
+        
+            <table class="table wealt-table">
+                <tbody id="tableBodyReceive">
+                    {% for subfield in form.receiver_account_id %}
+                    <tr class="selectable-row">
+                        <td>
+                            <label for="{{ subfield.id_for_label }}" class="d-flex align-items-center justify-content-between w-100 m-0 p-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    <span class="name-text">{{ subfield.label.text.title() }}</span>
+                                </div>
+                                <div class="form-check m-0">
+                                    {{ subfield }}
+                                </div>
+                            </label>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        
+
+        
+          
+
+
+          
+          
+    
+      </div>
+    </div>
+<div class="col-3 d-flex">
+  <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+      <div class="row d-flex justify-content-between">
+          <div class="col card-title pb-4">Currency </div>
+          <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+      </div>
+      
+
+      
+      
+
+
+      
+            
+      <div class="mb-3">
+        
+        {{ form.amount(class="form-control form-control-lg", placeholder="Enter amount") }}
+      </div>
+      
+      <button type="submit" class="btn btn-primary w-100">Transfer</button>
+      
+    
+
+      
+
+        <div class="table-container-xl">
+          
+            <table class="table wealt-table table-hover" >
+                
+                <thead>
+                    <th >Customer</th>
+                    <th class="text-end">Amount</th>
+                </thead>
+                
+                <tbody>
+                    {% for t in transactions_by_country %}
+                    {% if t.date <= now %}
+                    <tr onclick="window.location='{{ url_for('customer_list', id=t.customer_id) }}';"
+                    style="cursor: pointer;">
+                        <td>
+                          <div class="row pds">{{ t.customer_name|title }}</div>
+                          <div class="row pds">{% if t.date.strftime("%d %b") == today %}Today{% else %}{{t.date.strftime("%d %b")}}{%endif%}</div>
+                        </td>
+                        
+                        <td
+                    class="transaction-val text-end {% if t.type == 'DEBIT' %}text-success{% else %}text-danger{% endif %}">
+                    {%
+                    if t.type == 'CREDIT' %}-{%else%}{%
+                    endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
+
+                
+                        <!-- <td>{{ t.account_id }}</td> -->
+
+
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+    
+          </form>
+
+          
+
+  
+</div>
+
+    
 
 
     
@@ -164,7 +257,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Update the From Currency button and hidden input on selection
       document.querySelectorAll('#fromCurrencyMenu .dropdown-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -174,7 +266,6 @@
         });
       });
       
-      // Update the To Currency button and hidden input on selection
       document.querySelectorAll('#toCurrencyMenu .dropdown-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
           e.preventDefault();
@@ -185,7 +276,6 @@
       });
     });
   
-    // Conversion function that reads the amount and selected currencies
     function convertCurrency() {
       let amount = parseFloat(document.getElementById("amount").value);
       let fromCurrency = document.getElementById("fromCurrency").value;
@@ -205,7 +295,59 @@
   </script>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".selectable-row").forEach(function (row) {
+        row.addEventListener("click", function () {
+            let radioInput = this.querySelector("input[type='radio']");
+            if (radioInput) {
+                radioInput.checked = true;
+            }
+        });
+    });
 
+    document.getElementById("searchInputSender").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#tableBodySend .selectable-row");
+
+        rows.forEach(function (row) {
+            let name = row.querySelector(".name-text").textContent.toLowerCase();
+            if (name.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+});
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".selectable-row").forEach(function (row) {
+          row.addEventListener("click", function () {
+              let radioInput = this.querySelector("input[type='radio']");
+              if (radioInput) {
+                  radioInput.checked = true;
+              }
+          });
+      });
+  
+      document.getElementById("searchInputReceiver").addEventListener("keyup", function () {
+          let filter = this.value.toLowerCase();
+          let rows = document.querySelectorAll("#tableBodyReceive .selectable-row");
+  
+          rows.forEach(function (row) {
+              let name = row.querySelector(".name-text").textContent.toLowerCase();
+              if (name.includes(filter)) {
+                  row.style.display = "";
+              } else {
+                  row.style.display = "none";
+              }
+          });
+      });
+  });
+  </script>
 
 
 

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, date
 import requests
 import os
 from dotenv import load_dotenv
-from wtforms import StringField, SubmitField, DateTimeField, DecimalField, SelectField
+from wtforms import StringField, SubmitField, DateTimeField, DecimalField, SelectField, RadioField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, NumberRange, Length
 from sqlalchemy import  func
@@ -90,17 +90,18 @@ class AddAccountForm(FlaskForm):
     submit = SubmitField("Create Account")
 
 class TransferForm(FlaskForm):
-    sender_account_id = SelectField("Sender Account", coerce=int, validators=[DataRequired()])
-    receiver_account_id = SelectField("Receiver Account", coerce=int, validators=[DataRequired()])
+    sender_account_id = RadioField("Sender Account", coerce=int, validators=[DataRequired()])
+    receiver_account_id = RadioField("Receiver Account", coerce=int, validators=[DataRequired()])
     amount = DecimalField("Amount", validators=[DataRequired(), NumberRange(min=0.01, message="Amount must be positive")])
     submit = SubmitField("Transfer Money")
 
     def __init__(self, *args, **kwargs):
         super(TransferForm, self).__init__(*args, **kwargs)
-        self.sender_account_id.choices = [(a.id, f"{a.customer.given_name} {a.customer.surname} - {a.account_type.value}") for a in Account.query.all()]
+        self.sender_account_id.choices = [
+            (a.id, f"{a.customer.given_name} {a.customer.surname} | {a.account_type.value} | ${a.balance:,.2f}")
+            for a in Account.query.all()
+        ]
         self.receiver_account_id.choices = self.sender_account_id.choices
-
-
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -204,7 +205,7 @@ def startpage():
 
     # print(richest_customers_by_country)
     
-    
+    # print(transactions_by_country)
     
    
     
@@ -293,21 +294,35 @@ def startpage():
     data = r.json()["data"]
     
    
-    bac = data[0]["close"]
-    bac_pr = data[0]["previous_close"]
-    bac_percent = data[0]["change_percent"]
+    # bac = data[0]["close"]
+    # bac_pr = data[0]["previous_close"]
+    # bac_percent = data[0]["change_percent"]
     
-    wfc = data[1]["close"]
-    wfc_pr = data[1]["previous_close"]
-    wfc_percent = data[1]["change_percent"]
+    # wfc = data[1]["close"]
+    # wfc_pr = data[1]["previous_close"]
+    # wfc_percent = data[1]["change_percent"]
     
-    gs = data[2]["close"]
-    gs_pr = data[2]["previous_close"]
-    gs_percent = data[2]["change_percent"]
+    # gs = data[2]["close"]
+    # gs_pr = data[2]["previous_close"]
+    # gs_percent = data[2]["change_percent"]
     
-    jpm = data[3]["close"]
-    jpm_pr = data[3]["previous_close"]
-    jpm_percent = data[3]["change_percent"]
+    # jpm = data[3]["close"]
+    # jpm_pr = data[3]["previous_close"]
+    # jpm_percent = data[3]["change_percent"]
+    
+    
+    #  bac=bac, 
+    #                        bac_pr=bac_pr,
+    #                        bac_percent=bac_percent,
+    #                        gs=gs,
+    #                        gs_pr=gs_pr,
+    #                        gs_percent=gs_percent,
+    #                        jpm=jpm,
+    #                        jpm_pr=jpm_pr,
+    #                        jpm_percent=jpm_percent,
+    #                        wfc=wfc,
+    #                        wfc_pr=wfc_pr,
+    #                        wfc_percent=wfc_percent,
     
     latest_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
  
@@ -315,18 +330,6 @@ def startpage():
   
     
     return render_template("index.html", 
-                           bac=bac, 
-                           bac_pr=bac_pr,
-                           bac_percent=bac_percent,
-                           gs=gs,
-                           gs_pr=gs_pr,
-                           gs_percent=gs_percent,
-                           jpm=jpm,
-                           jpm_pr=jpm_pr,
-                           jpm_percent=jpm_percent,
-                           wfc=wfc,
-                           wfc_pr=wfc_pr,
-                           wfc_percent=wfc_percent,
                            currency_list_values=currency_list_values,
                            balance_sum=balance_sum,
                            customer_amount=customer_amount,
@@ -415,6 +418,11 @@ def transfer_money(sender_account_id, receiver_account_id, amount):
 def transfer():
     currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
     
+    latest_transactions =  Transaction.query.filter(Transaction.date <= datetime.now()).order_by(Transaction.date.desc()).all()
+    country_data = get_country_data()
+    
+    transactions_by_country = country_data["transactions"]
+    
     form = TransferForm()
     customers = Customer.query.all()
     accounts = Account.query.all()
@@ -436,7 +444,7 @@ def transfer():
     
     
     
-    return render_template("transfer.html", currencies=currencies, form=form, customers=customers, accounts=accounts)
+    return render_template("transfer.html", currencies=currencies, form=form, customers=customers, accounts=accounts, latest_transactions=latest_transactions, now=datetime.now(), today = datetime.today().strftime("%d %b"), transactions_by_country=transactions_by_country)
 
 
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
@@ -599,7 +607,7 @@ def customer_list(id):
     customer_accounts = customer.accounts  
     account_dict = {acc.id: acc for acc in customer_accounts} 
     
-    print(customer_accounts)
+    # print(customer_accounts)
     
    
     if not selected_account_id and customer_accounts:
