@@ -30,48 +30,54 @@ Bootstrap5(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.jinja_env.filters['zip'] = zip
 
+def title_case_filter(value):
+    return value.title() if value else value
+
+def upper_case_filter(value):
+    return value.upper() if value else value
+
+def lower_case_filter(value):
+    return value.lower() if value else value
 
 
 
 class EditCustomerForm(FlaskForm):
-    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)])
-    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)])
-    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)])
-    city = StringField("City", validators=[DataRequired(), Length(max=70)])
-    zipcode = StringField("Zip Code", validators=[DataRequired(), Length(max=15)])
-    country = StringField("Country", validators=[DataRequired(), Length(max=60)])
-    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)])
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
+    surname = StringField("Surname", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
+    city = StringField("City", validators=[DataRequired(), Length(min=2, max=70)], filters=[title_case_filter])
+    zipcode = StringField("Zip Code", validators=[DataRequired(), Length(min=2, max=15)])
+    country = StringField("Country", validators=[DataRequired(), Length(min=2, max=60)], filters=[title_case_filter])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(min=2, max=2)], filters=[upper_case_filter])
     birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
-    national_id = StringField("National ID", validators=[DataRequired(), Length(max=20)])
-    telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(max=10)])
-    telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
-    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
+    national_id = StringField("National ID", validators=[DataRequired(), Length(min=2, max=20)])
+    telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(min=1, max=10)])
+    telephone = StringField("Telephone", validators=[DataRequired(), Length(min=5, max=30)])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(min=5, max=50)], filters=[lower_case_filter])
     
     submit = SubmitField("Update Customer")
 
 
 class AddCustomerForm(FlaskForm):
-    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)])
-    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)])
-    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)])
-    city = StringField("City", validators=[DataRequired(), Length(max=70)])
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
+    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
+    city = StringField("City", validators=[DataRequired(), Length(max=70)], filters=[title_case_filter])
     zipcode = StringField("Zip Code", validators=[DataRequired(), Length(max=15)])
-    country = StringField("Country", validators=[DataRequired(), Length(max=60)])
-    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)])
+    country = StringField("Country", validators=[DataRequired(), Length(max=60)], filters=[title_case_filter])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)], filters=[upper_case_filter])
     birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
     national_id = StringField("National ID", validators=[DataRequired(), Length(max=20)])
     telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(max=10)])
     telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
-    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)], filters=[lower_case_filter])
     
     account_type = SelectField(
         "Account Type", 
         choices=[(account.value, account.name) for account in AccountType], 
         validators=[DataRequired()]
     )
-    balance = DecimalField(
-        "Initial Balance", 
-        validators=[DataRequired(), NumberRange(min=0, message="Balance must be at least 0")], render_kw={"placeholder":"Balance"}
+    balance = DecimalField("Initial Balance", validators=[DataRequired(), NumberRange(min=1, max=500000, message="Balance must be between 0 and 500,000")], render_kw={"placeholder":"Balance"}
     )
     
     submit = SubmitField("Add Customer")
@@ -83,16 +89,13 @@ class AddAccountForm(FlaskForm):
         choices=[(account.value, account.name) for account in AccountType], 
         validators=[DataRequired()]
     )
-    balance = DecimalField(
-        "Initial Balance", 
-        validators=[DataRequired(), NumberRange(min=0, message="Balance must be at least 0")]
-    )
+    balance = DecimalField("Initial Balance", validators=[DataRequired(), NumberRange(min=1, max=500000, message="Balance must be between 1 and 500,000")])
     submit = SubmitField("Create Account")
 
 class TransferForm(FlaskForm):
     sender_account_id = RadioField("Sender Account", coerce=int, validators=[DataRequired()])
     receiver_account_id = RadioField("Receiver Account", coerce=int, validators=[DataRequired()])
-    amount = DecimalField("Amount", validators=[DataRequired(), NumberRange(min=0.01, message="Amount must be positive")])
+    amount = DecimalField("Amount", validators=[DataRequired(), NumberRange(min=1, max=500000, message="Amount must be positive")])
     submit = SubmitField("Transfer Money")
 
     def __init__(self, *args, **kwargs):
@@ -377,6 +380,9 @@ def transfer_money(sender_account_id, receiver_account_id, amount):
     if sender_account.balance < amount:
         return False, "Insufficient balance."
     
+    if amount > 500000:
+        return False, "Transaction amount exceeds the maximum transfer limit."
+    
     
     is_internal_transfer = sender_account.customer_id == receiver_account.customer_id
 
@@ -446,41 +452,58 @@ def transfer():
     
     return render_template("transfer.html", currencies=currencies, form=form, customers=customers, accounts=accounts, latest_transactions=latest_transactions, now=datetime.now(), today = datetime.today().strftime("%d %b"), transactions_by_country=transactions_by_country)
 
-
 @app.route("/add_account/<int:customer_id>", methods=["GET", "POST"])
 def add_account(customer_id):
-    
     form = AddAccountForm()
     customer = db.get_or_404(Customer, customer_id)
-    
-    
+
     if form.validate_on_submit():
+        balance = form.balance.data
+
+
+        if balance <= 0:
+            flash("Balance must be greater than 0.", "danger")
+            return render_template("add_account.html", form=form, customer=customer)
+
+        if balance > 500000:
+            flash("Balance cannot exceed 500,000.", "danger")
+            return render_template("add_account.html", form=form, customer=customer)
+
+
         new_account = Account(
-            account_type = form.account_type.data,
+            account_type=form.account_type.data,
             created=datetime.now(),
-            balance=form.balance.data,
+            balance=balance,
             customer_id=customer.id
         )
-        
+
         db.session.add(new_account)
         db.session.commit()
-        
+
+
         initial_transaction = Transaction(
-            type = TransactionType.DEBIT,
-            operation = TransactionOperation.DEPOSIT_CASH,
+            type=TransactionType.DEBIT,
+            operation=TransactionOperation.DEPOSIT_CASH,
             date=datetime.now(),
-            amount = form.balance.data,
-            new_balance = form.balance.data,
-            account_id = new_account.id
-            
+            amount=balance,
+            new_balance=balance,
+            account_id=new_account.id
         )
-        
+
         db.session.add(initial_transaction)
         db.session.commit()
+
         flash("Account successfully created!", "success")
         return redirect(url_for("customer_list", id=customer_id))
-    
+
+
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{field.capitalize()}: {error}", "danger")
+
     return render_template("add_account.html", form=form, customer=customer)
+
 
 
 
@@ -509,64 +532,109 @@ def convert_currency():
     
 
     
-@app.route("/management", methods=["GET", "POST"])
-def management():
-    # customer = db.session.execute(db.select(Customer)).scalars()
+# @app.route("/management", methods=["GET", "POST"])
+# def management():
+#     # customer = db.session.execute(db.select(Customer)).scalars()
     
     
-    customer = Customer.query
-    
-    
-    
-    sort_order = request.args.get("sort_order", "asc")
-    sort_column = request.args.get("sort_column", "id")
-    search_word = request.args.get('q', '')
+#     customer = Customer.query
     
     
     
-    search_customers = Customer.query.filter(
-        Customer.given_name.ilike("%"+ search_word + "%") |
-        Customer.surname.ilike("%"+ search_word + "%") |
-        Customer.streetaddress.ilike("%"+ search_word + "%") |
-        Customer.country.ilike("%"+ search_word + "%") |
-        Customer.city.ilike("%"+ search_word + "%") |
-        Customer.id.ilike("%"+ search_word + "%") |
-        Customer.national_id.ilike("%"+ search_word + "%")
-)
+#     sort_order = request.args.get("sort_order", "asc")
+#     sort_column = request.args.get("sort_column", "id")
+#     search_word = request.args.get('q', '')
     
     
     
-    
-    order_by = Customer.id
-    if sort_column == "customers":
-        order_by = Customer.given_name
-    elif sort_column == "address":
-        order_by = Customer.streetaddress
-    elif sort_column == "city":
-        order_by = Customer.city
-    elif sort_column == "national_id":
-        order_by = Customer.national_id
-    elif sort_column == "id":
-        order_by = Customer.id
-    
-    
-    order_by = order_by.asc() if sort_order == "asc" else order_by.desc()
-    
-    all_customers = search_customers.order_by(order_by)
+#     search_customers = Customer.query.filter(
+#         Customer.given_name.ilike("%"+ search_word + "%") |
+#         Customer.surname.ilike("%"+ search_word + "%") |
+#         Customer.streetaddress.ilike("%"+ search_word + "%") |
+#         Customer.country.ilike("%"+ search_word + "%") |
+#         Customer.city.ilike("%"+ search_word + "%") |
+#         Customer.id.ilike("%"+ search_word + "%") |
+#         Customer.national_id.ilike("%"+ search_word + "%")
+# )
     
     
     
     
-    cust_amount = db.session.execute(db.select(Customer)).scalars().all()
-    customer_amount = len(cust_amount)
-    acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
+#     order_by = Customer.id
+#     if sort_column == "customers":
+#         order_by = Customer.given_name
+#     elif sort_column == "address":
+#         order_by = Customer.streetaddress
+#     elif sort_column == "city":
+#         order_by = Customer.city
+#     elif sort_column == "national_id":
+#         order_by = Customer.national_id
+#     elif sort_column == "id":
+#         order_by = Customer.id
+    
+    
+#     order_by = order_by.asc() if sort_order == "asc" else order_by.desc()
+    
+#     all_customers = search_customers.order_by(order_by)
+    
+    
+    
+    
+#     cust_amount = db.session.execute(db.select(Customer)).scalars().all()
+#     customer_amount = len(cust_amount)
+#     acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
     
     
     
     
         
     
+#     return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
+@app.route("/management", methods=["GET", "POST"])
+def management():
+    sort_order = request.args.get('sort_order', 'asc')
+    sort_column = request.args.get('sort_by', 'id')
+    search_word = request.args.get('q', '')
+
+    search_customers = Customer.query.filter(
+        Customer.given_name.ilike(f"%{search_word}%") |
+        Customer.surname.ilike(f"%{search_word}%") |
+        Customer.streetaddress.ilike(f"%{search_word}%") |
+        Customer.country.ilike(f"%{search_word}%") |
+        Customer.city.ilike(f"%{search_word}%") |
+        Customer.id.ilike(f"%{search_word}%") |
+        Customer.national_id.ilike(f"%{search_word}%")
+    )
+
+    order_by = {
+        "customer": Customer.given_name,
+        "address": Customer.streetaddress,
+        "city": Customer.city,
+        "national_id": Customer.national_id,
+        "id": Customer.id
+    }.get(sort_column, Customer.id)
+
+    order_by = order_by.asc() if sort_order == "asc" else order_by.desc()
+    all_customers = search_customers.order_by(order_by).all()
+
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify([
+            {
+                "id": cust.id,
+                "name": f"{cust.given_name} {cust.surname}",
+                "email": cust.email_address,
+                "address": f"{cust.streetaddress}, {cust.zipcode}",
+                "city": cust.city,
+                "national_id": cust.national_id
+            } for cust in all_customers
+        ])
+
+    customer_amount = search_customers.count()
+    acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
+
     return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
+
+
 
 
 
@@ -727,7 +795,8 @@ def customer_list(id):
         customer_credit_sum=customer_credit_sum,
         customer_debit_sum=customer_debit_sum,
         has_more=has_more,
-        next_page=page+1
+        next_page=page+1,
+        today = datetime.today().strftime("%d %b, %Y")
         
         
         
@@ -775,7 +844,10 @@ def load_more_transactions(id):
 def add_customer():
     
     form = AddCustomerForm()
-        
+    existing_customer = Customer.query.filter_by(national_id=form.national_id.data).first()
+    if existing_customer:
+            flash("A customer with this National ID already exists.", "danger")
+            return redirect(url_for("add_customer"))
     if form.validate_on_submit():
         create_customer = Customer(
             given_name = form.given_name.data.title(),

@@ -37,7 +37,6 @@
                 </div>
             </div>
 
-            <!-- Finance Section -->
             <div class="dashboard-card mb-3" style="height: 250px;">
                 <h6>Finances</h6>
                 <div class="d-flex justify-content-center align-items-center h-100">
@@ -45,7 +44,6 @@
                 </div>
             </div>
 
-            <!-- Transaction History -->
             <div class="dashboard-card">
                 <h6>Transaction History</h6>
                 {% if transactions %}
@@ -65,6 +63,7 @@
                             <td>${{ "{:,.2f}".format(t.amount) }}</td>
                             <td>${{ "{:,.2f}".format(t.new_balance) }}</td>
                             <td>{{ t.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            
                         </tr>
                         {% endfor %}
                         <div>

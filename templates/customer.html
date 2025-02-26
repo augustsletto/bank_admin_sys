@@ -4,419 +4,270 @@
 
 {% block content %}
 
-<div class="row g-4 mx-2">
+<div class="container-fluid mt-3">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="row d-flex justify-content-between">
+                    <div class="col card-title pb-4 mb-3">Total Balance</div>
 
-    <div class="col-3 d-flex">
-        <div class="card-border flex-fill p-4 pb-0">
-            <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4 mb-3">Total Balance</div>
-                
-                <div class="col text-end"><i
-                        class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-            </div>
-
-            <div class="row d-flex align-items-center mb-4">
-                <div
-                    class="col-2 cvv-col ms-3 d-flex justify-content-center align-items-center">
-                    <span id="cvvbal">CVV</span>
+                    <div class="col text-end"><i
+                            class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
                 </div>
-                <div class="col-2 mt-0 ms-4" id="dots">••••</div>
-                <div class="col-2">{{ customer.national_id[-4:] }}</div>
-            </div>
 
-            <div class="col display-3 pb-3" id="total-balance">
-                <span class="green-details">$</span><span class>
-                    {%- if total_balance >= 1000000000 -%}
-                    {{ "{:,.2f}B".format(total_balance / 1000000000) }}
-                    {%- elif total_balance >= 1000000 -%}
-                    {{ "{:,.3f}M".format(total_balance / 1000000) }}
-                    {%- else -%}
-                    {{ "{:,.2f}".format(total_balance) }}
-                    {%- endif -%}
-                </span>
-            </div>
-
-            <div class="col mt-0 pt-0">
-
-                <div class="col card-details pb-4">All Accounts ({{ total_accounts }})<strong
-                        class="cardBold">
-                        <div class="table-container table-container-customer">
-                            <table class="wealt-table text-start">
-                                {% for acc in customer_accounts %}
-                                <tbody>
-
-                                    <tr
-                                        class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}"
-                                        onclick="window.location='{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}';"
-                                        style="cursor: pointer;">
-
-                                        <td>{{ acc.account_type.value }}</td>
-                                        <td class="text-end">$ {%- if
-                                            acc.balance >= 1000000000 -%}
-                                            {{ "{:,.2f}B".format(acc.balance /
-                                            1000000000) }}
-                                            {%- elif acc.balance >= 1000000 -%}
-                                            {{ "{:,.3f}M".format(acc.balance /
-                                            1000000) }}
-                                            {%- else -%}
-                                            {{ "{:,.2f}".format(acc.balance) }}
-                                            {%- endif -%}</td>
-
-                                    </tr>
-                                </tbody>
-                                {% endfor %}
-                            </table>
-                        </div>
-
-                    </strong></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-5 d-flex">
-        <div class="p-2 card-border flex-fill p-4 d-flex flex-column">
-            <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">Transactions</div>
-                <div class="col text-end"><i
-                        class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-            </div>
-            <div class="table-container table-container-big flex-grow-1">
-
-                {% if transactions %}
-                <table class="table wealt-table">
-                    <thead>
-                        <tr>
-
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-
-                            <th></th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody id="transaction-table">
-                        {% for t in transactions %}
-                        <tr>
-                            <td>{{ t.id }}</td>
-                            <td>{{ t.date.strftime('%b %d, %Y') }}</td>
-                            <!-- <td>{{ t.type.value }}</td> -->
-                            <td>{{ t.operation.value }}</td>
-                            <!-- <td>{{ t.new_balance }}</td> -->
-
-                            <td
-                                class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
-                                if t.type.value == 'Debit' %}+{% else %}-{%
-                                endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
-
-                            <td></td>
-
-                        </tr>
-
-
-                        {% endfor %}
-
-                        
-
-                        {% else %}
-                        <p>No transactions found for this account.</p>
-                        {% endif %}
-                    </tbody>
-                </table>
-                <div class="text-center mt-3 me-5">
-                    <button id="load-more-btn" class="btn" 
-                        onclick="loadMoreTransactions()" {% if not has_more %}style="display: none;"{% endif %}>
-                        View More
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="col-4 d-flex">
-        <div class="card-border flex-fill p-4 pb-2">
-            <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-4">Account</div>
-                <div class="col text-end">
-                    <div class="dropdown">
-                        <a class="add_acc_btn"
-                            href="{{ url_for('add_account', customer_id=customer.id) }}">
-                            <i
-                                class="bi bi-plus-lg py-1 px-2 tiny-buttons rounded"></i>
-                        </a>
-                        <i
-                            class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"
-                            data-bs-toggle="dropdown" aria-expanded="false"></i>
-                        <ul
-                            class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow"
-                            data-bs-theme="dark"
-                            style="min-width: auto; width: auto;">
-                            {% for acc in customer_accounts %}
-                            <li class="nav-item">
-                                
-
-                            </li>
-                            {% endfor %}
-                        </ul>
+                <div class="row d-flex align-items-center mb-4">
+                    <div
+                        class="col-2 cvv-col ms-3 d-flex justify-content-center align-items-center">
+                        <span id="cvvbal">CVV</span>
                     </div>
-                </div>
-            </div>
-
-
-            <div class="information">
-
-
-                <!-- <div class="table-container">
-                    
-                    <table class="wealt-table text-start">
-                        <tbody>
-                            <tr>
-                                <td>Name</td>
-                                <td>{{ customer.given_name }} {{ customer.surname }}</td>
-                            </tr>
-                            <tr>
-                                <td>Birthday</td>
-                                <td>{{ customer.birthday.strftime('%Y-%m-%d') }}</td>
-                            </tr>
-                            <tr>
-                                <td>National ID</td>
-                                <td>{{ customer.national_id }}</td>
-                            </tr>
-                            <tr>
-                                <td>Country</td>
-                                <td>{{ customer.country }}, {{ customer.country_code }}</td>
-                            </tr>
-                            <tr>
-                                <td>City</td>
-                                <td>{{ customer.city }}, {{ customer.zipcode }}</td>
-                            </tr>
-                            <tr>
-                                <td>Address</td>
-                                <td>{{ customer.streetaddress }}</td>
-                            </tr>
-                            
-                        </tbody>
-                        
-                        
-                    </table>
-                    
-                    <table class="wealt-table text-start">
-                        
-                        <tbody>
-                            <tr>
-                                <td>Email Address</td>
-                                <td onclick="window.location='mailto:{{customer.email_address}}';"
-                                style="cursor: pointer;">{{ customer.email_address }}</td>
-                            </tr>
-                            <tr>
-                                <td>Phone Number</td>
-                                <td>{{ customer.telephone_country_code }} {{ customer.telephone }}</td>
-                            </tr>
-                            
-                        </tbody>
-                        
-                        
-                    </table>
-                    
-                    
-                </div> -->
-
-
-                <!-- <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Personal Information</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Name</div>
-                            <div class="col">{{ customer.given_name|title }} {{ customer.surname|title }} </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Birthday</div>
-                            <div class="col">{{ customer.birthday.strftime('%Y-%m-%d') }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">National ID</div>
-                            <div class="col">{{ customer.national_id }}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Country</div>
-                            <div class="col">{{ customer.country|title }}, {{ customer.country_code|upper }} </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">City</div>
-                            <div class="col">{{ customer.city|title }}, {{ customer.zipcode }}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Address</div>
-                            <div class="col">{{ customer.streetaddress|title }}</div>
-                        </div>
-                        <div class="row pt-3">
-                            <div class="col">Contact Information</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Email Address </div>
-                            <div class="col" onclick="window.location='mailto:{{customer.email_address}}';"
-                            style="cursor: pointer;">{{ customer.email_address|lower }}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">Phone Number</div>
-                            <div class="col">{{ customer.telephone_country_code }} {{ customer.telephone }}</div>
-                        </div>
-                        
-                        
-                    </div>
-                    
-                </div> -->
-
-
-
-                
-
-
-            </div>
-
-            <div class="row mt-1 text-center">
-
-                
-
-
-                <div>
-                    <canvas id="barChart"></canvas>
+                    <div class="col-2 mt-0 ms-4" id="dots">••••</div>
+                    <div class="col-2">{{ customer.national_id[-4:] }}</div>
                 </div>
 
-
-                
-
-
-
-                
-                <div class="col-6 green-details">
-                    
-                    <span>$</span>
-                    <span>
-                        {%- if customer_debit_sum >= 1000000000 -%}
-                        {{ "{:,.2f}B".format(customer_debit_sum / 1000000000) }}
-                        {%- elif customer_debit_sum >= 1000000 -%}
-                        {{ "{:,.3f}M".format(customer_debit_sum / 1000000) }}
+                <div class="col display-3 pb-3" id="total-balance">
+                    <span class="green-details">$</span><span class>
+                        {%- if total_balance >= 1000000000 -%}
+                        {{ "{:,.2f}B".format(total_balance / 1000000000) }}
+                        {%- elif total_balance >= 1000000 -%}
+                        {{ "{:,.3f}M".format(total_balance / 1000000) }}
                         {%- else -%}
-                        {{ "{:,.2f}".format(customer_debit_sum) }}
+                        {{ "{:,.2f}".format(total_balance) }}
                         {%- endif -%}
                     </span>
                 </div>
-                <div class="col-6 red-details">{{ customer_credit_count }} <span>$</span><span class>
-                    {%- if customer_credit_sum >= 1000000000 -%}
-                    {{ "{:,.2f}B".format(customer_credit_sum / 1000000000) }}
-                    {%- elif customer_credit_sum >= 1000000 -%}
-                    {{ "{:,.3f}M".format(customer_credit_sum / 1000000) }}
-                    {%- else -%}
-                    {{ "{:,.2f}".format(customer_credit_sum) }}
-                    {%- endif -%}
-                </span></div>
-            </div>
 
+                <div class="col mt-0 pt-0">
 
+                    <div class="col card-details pb-4">All Accounts ({{
+                        total_accounts }})<strong
+                            class="cardBold">
+                            <div
+                                class="table-container table-container-customer">
+                                <table class="wealt-table text-start">
+                                    {% for acc in customer_accounts %}
+                                    <tbody>
 
+                                        <tr
+                                            class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}"
+                                            onclick="window.location='{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}';"
+                                            style="cursor: pointer;">
 
+                                            <td>{{ acc.account_type.value
+                                                }}</td>
+                                            <td class="text-end">$ {%- if
+                                                acc.balance >= 1000000000 -%}
+                                                {{ "{:,.2f}B".format(acc.balance
+                                                /
+                                                1000000000) }}
+                                                {%- elif acc.balance >= 1000000
+                                                -%}
+                                                {{ "{:,.3f}M".format(acc.balance
+                                                /
+                                                1000000) }}
+                                                {%- else -%}
+                                                {{ "{:,.2f}".format(acc.balance)
+                                                }}
+                                                {%- endif -%}</td>
 
-
-        </div>
-    </div>
-
-
-    <div class="col-9 d-flex mt-3">
-        <div class="card-border flex-fill p-4">
-            <div class="row d-flex justify-content-between">
-                <div class="col card-title pb-2">{% if not selected_country or selected_country == "all" %}Top 10 Wealthiest Customers{% else %}Top 10 Wealthiest in {{ selected_country }}{% endif %}</div>
-                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
-            </div>
-            
-
-
-
-            <div class="col mt-2">
-
-                <div class="row m-0 p-8">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col">Personal Information</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Name</div>
-                                    <div class="col">{{ customer.given_name|title }} {{ customer.surname|title }} </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Birthday</div>
-                                    <div class="col">{{ customer.birthday.strftime('%Y-%m-%d') }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">National ID</div>
-                                    <div class="col">{{ customer.national_id }}</div>
-                                </div>
-                                
-                                
-                                
+                                        </tr>
+                                    </tbody>
+                                    {% endfor %}
+                                </table>
                             </div>
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col"> Information</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Country</div>
-                                    <div class="col">{{ customer.country|title }}, {{ customer.country_code|upper }} </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">City</div>
-                                    <div class="col">{{ customer.city|title }}, {{ customer.zipcode }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Address</div>
-                                    <div class="col">{{ customer.streetaddress|title }}</div>
-                                </div>
-                               
-                            </div>
-                            <div class="col">
-                                <div class="row pt-3">
-                                    <div class="col">Contact Information</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Email Address </div>
-                                    <div class="col" onclick="window.location='mailto:{{customer.email_address}}';"
-                                    style="cursor: pointer;">{{ customer.email_address|lower }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-4">Phone Number</div>
-                                    <div class="col">{{ customer.telephone_country_code }} {{ customer.telephone }}</div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    
+
+                        </strong></div>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="row d-flex justify-content-between">
+                    <div class="col card-title pb-4">Transactions</div>
+                    <div class="col text-end"><i
+                            class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                </div>
+                <div class="table-container table-container-big flex-grow-1">
+
+                    {% if transactions %}
+                    <table class="table wealt-table">
+                        <thead>
+                            <tr>
+
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transaction-table">
+                            {% for t in transactions %}
+                            <tr>
+                                <td>{{ t.id }}</td>
+                                <!-- {{ t.date.strftime('%b %d, %Y') }}</td> -->
+                                <td>{% if t.date.strftime("%d %b, %Y") == today
+                                    %}Today{% else
+                                    %}{{t.date.strftime("%d %b")}}{%endif%}</td>
+                                <!-- <td>{{ t.type.value }}</td> -->
+                                <td>{{ t.operation.value }}</td>
+                                <!-- <td>{{ t.new_balance }}</td> -->
+
+                                <td
+                                    class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
+                                    if t.type.value == 'Debit' %}+{% else %}-{%
+                                    endif %} ${{ "{:,.2f}".format(t.amount)
+                                    }}</td>
+
+                                <td></td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                            {% else %}
+                            <p>No transactions found for this account.</p>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                    <div class="text-center mt-3 me-5">
+                        <button id="load-more-btn" class="btn"
+                            onclick="loadMoreTransactions()" {% if not has_more
+                            %}style="display: none;" {% endif %}>
+                            View More
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="row d-flex justify-content-between">
+                    <div class="col card-title pb-4">Account</div>
+                    <div class="col text-end">
+                        <div class="dropdown">
+                            <a class="add_acc_btn"
+                                href="{{ url_for('add_account', customer_id=customer.id) }}">
+                                <i
+                                    class="bi bi-plus-lg py-1 px-2 tiny-buttons rounded"></i>
+                            </a>
+                            <i
+                                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"></i>
+                            <ul
+                                class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow"
+                                data-bs-theme="dark"
+                                style="min-width: auto; width: auto;">
+                                {% for acc in customer_accounts %}
+                                <li class="nav-item">
+
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="information">
+
+                </div>
+
+                <div class="row mt-1 text-center">
+
+                    <div>
+                        <canvas id="barChart"></canvas>
+                    </div>
+
+                    <div class="col-6 green-details">
+
+                        <span>$</span>
+                        <span>
+                            {%- if customer_debit_sum >= 1000000000 -%}
+                            {{ "{:,.2f}B".format(customer_debit_sum /
+                            1000000000) }}
+                            {%- elif customer_debit_sum >= 1000000 -%}
+                            {{ "{:,.3f}M".format(customer_debit_sum / 1000000)
+                            }}
+                            {%- else -%}
+                            {{ "{:,.2f}".format(customer_debit_sum) }}
+                            {%- endif -%}
+                        </span>
+                    </div>
+                    <div class="col-6 red-details">{{ customer_credit_count }}
+                        <span>$</span><span class>
+                            {%- if customer_credit_sum >= 1000000000 -%}
+                            {{ "{:,.2f}B".format(customer_credit_sum /
+                            1000000000) }}
+                            {%- elif customer_credit_sum >= 1000000 -%}
+                            {{ "{:,.3f}M".format(customer_credit_sum / 1000000)
+                            }}
+                            {%- else -%}
+                            {{ "{:,.2f}".format(customer_credit_sum) }}
+                            {%- endif -%}
+                        </span></div>
+                </div>
+
+
+
+
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+
+                    <div class="row d-flex justify-content-between">
+                        <div class="col card-title pb-2">
+                            Customer Information
+                        </div>
+                        <div class="col text-end"><i
+                                class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Personal Details</h6>
+                            <p><strong>Name:</strong> {{ customer.given_name|title }} {{ customer.surname|title }}</p>
+                            <p><strong>Birthday:</strong> {{ customer.birthday.strftime('%Y-%m-%d') }}</p>
+                            <p><strong>National ID:</strong> {{ customer.national_id }}</p>
+                        </div>
                 
-                    
-                    
+                        <div class="col-md-5">
+                            <h6 class="text-muted">Location</h6>
+                            <p><strong>Country:</strong> {{ customer.country|title }}, {{ customer.country_code|upper }}</p>
+                            <p><strong>City:</strong> {{ customer.city|title }}, {{ customer.zipcode }}</p>
+                            <p><strong>Address:</strong> {{ customer.streetaddress|title }}</p>
+                        </div>
+                
+                        <div class="col-md-4">
+                            <h6 class="text-muted">Contact</h6>
+                            <p><strong>Email:</strong> 
+                                <a href="mailto:{{ customer.email_address }}" class="text-light">{{ customer.email_address|lower }}</a>
+                            </p>
+                            <p><strong>Phone:</strong> 
+                                <a href="tel:+{{ customer.telephone_country_code }}{{ customer.telephone }}" class="text-light">
+                                    +{{ customer.telephone_country_code }} {{ customer.telephone }}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             
         </div>
     </div>
-
-
 </div>
 
+<!--  -->
 
-
-
-<script>
+    <script>
     let currentPage = 2;
     let customerId = "{{ customer.id }}"
     let selectedAccountId = "{{ selected_account_id }}"
@@ -450,9 +301,7 @@
 
 </script>
 
-
-
-<script id="barChartData" type="application/json">
+    <script id="barChartData" type="application/json">
     {
         "labels": ["Income", "Expenses"],
         "datasets": [
@@ -465,7 +314,4 @@
     }
 </script>
 
-
-
-
-{% endblock %}
+    {% endblock %}

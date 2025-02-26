@@ -1,0 +1,330 @@
+
+
+<div class="row mx-2">
+
+
+    
+    <div class="col-3 d-flex">
+        <div class="card-border flex-fill p-4 pb-0" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Overview</div>
+                <div class="col text-end">
+                    <form method="GET" action="{{ url_for('startpage') }}">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle country_btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if selected_country and selected_country != "all" %}{{ selected_country }}{% else %}Total{% endif %}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <input type="text" class="form-control" id="searchCountry" placeholder="Search...">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="?country=all">Total</a>
+                                </li>
+                                {% for count in country_list_items | unique %}
+                                <li>
+                                    <a class="dropdown-item country-option" href="?country={{ count }}">{{ count }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+
+
+            
+                <div class="col py-2">{% if not selected_country or selected_country == "all" %}Total Balance{% else %}Total Balance in {{ selected_country }}{% endif %}</div>
+                {% set total_balance = richest_customers_by_country | sum(attribute="total_balance") %}
+
+                <div class="col display-3 pb-0">
+                    <span class="green-details">$</span>
+                    <span>
+                        {%- if total_balance >= 1000000000 -%}
+                            {{ "{:,.2f}B".format(total_balance / 1000000000) }}
+                        {%- elif total_balance >= 1000000 -%}
+                            {{ "{:,.3f}M".format(total_balance / 1000000) }}
+                        {%- else -%}
+                            {{ "{:,.2f}".format(total_balance) }}
+                        {%- endif -%}
+                </span>
+            </div>
+            
+            <div class="col mt-0">
+                
+                <div class="col card-details pb-4 mt-4"><strong class="cardBold">
+                    <div class="table-container table-container-small">
+                        <table class="wealt-table text-start">
+                            
+                              <tbody>
+                                <tr>
+                                    <td class="text-white">Total Customers</td>
+                                    <td class="text-end">{{ total_customers_by_country }}    
+                                </tr>
+                                <tr>
+                                    <td class="text-white">Total Accounts</td>
+                                    <td class="text-end">{{ total_accounts_by_country }}    
+                                </tr>
+
+                              </tbody>
+                            
+                          </table>
+                    </div>
+
+
+
+                    
+                    
+                      
+
+                </strong></div>
+                
+            </div>
+            
+            
+        </div>
+    </div>
+    <div class="col-5 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Statistics</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            <div>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 d-flex">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Transactions by Weekday</div>
+                <div class="col text-end">
+                    <i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i>
+                </div>
+            </div>
+            <div>
+                <canvas id="barChart"></canvas>
+            </div>
+
+
+
+
+            
+            <div class="container mt-2 pe-5">
+                <div class="row text-white ps-3 rounded d-flex align-items-center text-start">
+                    <div class="col-5 d-flex justify-content-start align-items-center px-0">
+                        <div class="text-end">
+                            <span class="fs-1 d-block">8,3</span>
+                        </div>
+                        <div class="ms-2 text-start">
+                            <span class="d-block lw-l lh-sm fs-6">Cash</span>
+                            <span class="d-block lw-l lh-sm fs-6">receipts</span>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-2 d-flex justify-content-start ps-0">
+                        <div class="border-start border-secondary" style="height: 30px;"></div>
+                    </div>
+            
+                    <div class="col-5 d-flex justify-content-start align-items-center">
+                        <div class="text-end">
+                            <span class="fs-1 d-block">6,9</span>
+                        </div>
+                        <div class="ms-2 text-start">
+                            <span class="d-block lh-sm fs-6">Cash</span>
+                            <span class="d-block lh-sm fs-6">expenses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+
+        </div>
+    </div>
+
+    
+    
+    <div class="col-4 d-flex mt-3">
+        <div class="card-border flex-fill p-4">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-2">{% if not selected_country or selected_country == "all" %}10 Wealthiest{% else %}10 Wealthiest in {{ selected_country }}{% endif %}</div>
+                <div class="col text-end"><i class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+            </div>
+            
+
+
+
+            <div class="col mt-2">
+
+                <div class="row m-0 p-8">
+                    <div class="col">
+                        <table class="wealt-table table-dark text-start">
+                            {% for richest in richest_customers_by_country[:10] %}
+                            <tbody>
+                                <tr>
+                                <td>{{ richest.name|title }}</td>
+                                <td>$
+                                    {%- if richest.total_balance >= 1000000000 -%}
+                                        {{ "{:,.2f}B".format(richest.total_balance / 1000000000) }}
+                                        
+                                    {%- elif richest.total_balance >= 1000000 -%}
+                                        {{ "{:,.3f}M".format(richest.total_balance / 1000000) }}
+                                    {%- else -%}
+                                        {{ "{:,.2f}".format(richest.total_balance) }}
+                                    {%- endif -%}
+                            </td>
+                                
+                               
+                            </tr>
+                        </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    
+                </div>
+
+                
+                    
+                    
+            </div>
+
+            <!-- <div class="table-container-small table-container">
+                <table class="wealt-table table-dark text-start">
+                    <thead>
+                        <th>Customer id</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Retained</th>
+                        <th>Amount</th>
+                        <th>Balance after trade</th>
+                    </thead>
+                    {% for latest_transac in transactions_by_country %}
+                    {% if latest_transac.date <= now %}
+                    
+
+
+                    <tbody>
+                        <tr>
+                        <td>{{ latest_transac.customer_id }}</td>
+                        <td>{{ latest_transac.customer_name }}</td>
+                        <td class="badge rouded-pill bg-danger text-dark">Frozen</td>
+                        <td>5 min ago</td>
+                        <td>${{ "{:,.2f}".format(latest_transac.amount) }}</td>
+                        <td>${{ "{:,.2f}".format(latest_transac.new_balance) }}</td>
+
+                        
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    
+                    </tbody>
+                </table>
+        </div> -->
+        </div>
+    </div>
+    <div class="col-8 d-flex mt-3">
+        <div class="p-2 card-border flex-fill p-4" style="background-color: #1d1d1d;">
+            <div class="row d-flex justify-content-between">
+                <div class="col card-title pb-4">Latest Transactions</div>
+                <div class="col text-end"><i class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                
+                <div class="table-container-small table-container">
+                    <table class="wealt-table table-dark text-start">
+                        <thead>
+                            <th>Customer id</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th>Retained</th>
+                            <th>Amount</th>
+                            <th>Balance after trade</th>
+                        </thead>
+                        {% for latest_transac in transactions_by_country %}
+                        {% if latest_transac.date <= now %}
+                        
+    
+    
+                        <tbody>
+                            <tr>
+                            <td>{{ latest_transac.customer_id }}</td>
+                            <td>{{ latest_transac.customer_name }}</td>
+                            <td class="badge rouded-pill bg-danger text-dark">Frozen</td>
+                            <td>5 min ago</td>
+                            <td
+                                class="{% if latest_transac.type == 'DEBIT' %}text-success{% else %}text-danger{% endif %}">{%
+                                if latest_transac.type == 'DEBIT' %}+{% else %}-{%
+                                endif %} ${{ "{:,.2f}".format(latest_transac.amount) }}</td>
+                            <td>${{ "{:,.2f}".format(latest_transac.new_balance) }}</td>
+    
+                            
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        
+                        </tbody>
+                    </table>
+            </div>
+                
+                <!-- <div class="table-container-small table-container">
+
+                    <div class="table-container-small">
+                        <table class="table wealt-table">
+                            
+                            <thead>
+                                <th>#</th>
+                                <th>Customer id</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                
+                                <th>Amount</th>
+                                
+                            </thead>
+                            
+                            <tbody>
+                                {% for t in latest_transactions %}
+                                {% if t.date <= now %}
+                                <tr>
+                                    <td>{{ t.id }}</td>
+                                    <td>{{ t.operation.value }}</td>
+                                    <td class="badge rouded-pill bg-danger text-dark">Frozen</td>
+                                    <td>5 min ago</td>
+
+                                    
+
+
+                                    <td
+                                class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
+                                if t.type.value == 'Debit' %}+{% else %}-{%
+                                endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
+
+                            <td>
+                                    <td>{{ t.account_id }}</td>
+
+
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div> -->
+                
+                
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
