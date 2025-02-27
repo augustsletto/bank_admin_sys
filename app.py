@@ -30,47 +30,39 @@ Bootstrap5(app)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.jinja_env.filters['zip'] = zip
 
-def title_case_filter(value):
-    return value.title() if value else value
-
-def upper_case_filter(value):
-    return value.upper() if value else value
-
-def lower_case_filter(value):
-    return value.lower() if value else value
 
 
 
 class EditCustomerForm(FlaskForm):
-    given_name = StringField("Given Name", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
-    surname = StringField("Surname", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
-    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(min=2, max=50)], filters=[title_case_filter])
-    city = StringField("City", validators=[DataRequired(), Length(min=2, max=70)], filters=[title_case_filter])
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(min=2, max=50)])
+    surname = StringField("Surname", validators=[DataRequired(), Length(min=2, max=50)])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(min=2, max=50)])
+    city = StringField("City", validators=[DataRequired(), Length(min=2, max=70)])
     zipcode = StringField("Zip Code", validators=[DataRequired(), Length(min=2, max=15)])
-    country = StringField("Country", validators=[DataRequired(), Length(min=2, max=60)], filters=[title_case_filter])
-    country_code = StringField("Country Code", validators=[DataRequired(), Length(min=2, max=2)], filters=[upper_case_filter])
+    country = StringField("Country", validators=[DataRequired(), Length(min=2, max=60)])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(min=2, max=2)])
     birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
     national_id = StringField("National ID", validators=[DataRequired(), Length(min=2, max=20)])
     telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(min=1, max=10)])
     telephone = StringField("Telephone", validators=[DataRequired(), Length(min=5, max=30)])
-    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(min=5, max=50)], filters=[lower_case_filter])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(min=5, max=50)])
     
     submit = SubmitField("Update Customer")
 
 
 class AddCustomerForm(FlaskForm):
-    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
-    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
-    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)], filters=[title_case_filter])
-    city = StringField("City", validators=[DataRequired(), Length(max=70)], filters=[title_case_filter])
+    given_name = StringField("Given Name", validators=[DataRequired(), Length(max=50)])
+    surname = StringField("Surname", validators=[DataRequired(), Length(max=50)])
+    streetaddress = StringField("Street Address", validators=[DataRequired(), Length(max=50)])
+    city = StringField("City", validators=[DataRequired(), Length(max=70)])
     zipcode = StringField("Zip Code", validators=[DataRequired(), Length(max=15)])
-    country = StringField("Country", validators=[DataRequired(), Length(max=60)], filters=[title_case_filter])
-    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)], filters=[upper_case_filter])
+    country = StringField("Country", validators=[DataRequired(), Length(max=60)])
+    country_code = StringField("Country Code", validators=[DataRequired(), Length(max=2)])
     birthday = DateTimeField("Birthday (YYYY-MM-DD)", format='%Y-%m-%d', validators=[DataRequired()])
     national_id = StringField("National ID", validators=[DataRequired(), Length(max=20)])
     telephone_country_code = StringField("Telephone Country Code", validators=[DataRequired(), Length(max=10)])
     telephone = StringField("Telephone", validators=[DataRequired(), Length(max=30)])
-    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)], filters=[lower_case_filter])
+    email_address = StringField("Email Address", validators=[DataRequired(), Email(), Length(max=50)])
     
     account_type = SelectField(
         "Account Type", 
@@ -424,6 +416,8 @@ def transfer_money(sender_account_id, receiver_account_id, amount):
 def transfer():
     currencies = ["USD", "EUR", "SEK", "GBP", "JPY"]
     
+    
+    
     latest_transactions =  Transaction.query.filter(Transaction.date <= datetime.now()).order_by(Transaction.date.desc()).all()
     country_data = get_country_data()
     
@@ -585,18 +579,8 @@ def convert_currency():
 #     acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
     
     
-    
-    
-        
-    
-#     return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
-@app.route("/management", methods=["GET", "POST"])
-def management():
-    sort_order = request.args.get('sort_order', 'asc')
-    sort_column = request.args.get('sort_by', 'id')
-    search_word = request.args.get('q', '')
-
-    search_customers = Customer.query.filter(
+def get_filtered_customers(search_word):
+    return Customer.query.filter(
         Customer.given_name.ilike(f"%{search_word}%") |
         Customer.surname.ilike(f"%{search_word}%") |
         Customer.streetaddress.ilike(f"%{search_word}%") |
@@ -606,16 +590,42 @@ def management():
         Customer.national_id.ilike(f"%{search_word}%")
     )
 
-    order_by = {
+def get_order_by_column(sort_column, sort_order):
+    column = {
         "customer": Customer.given_name,
         "address": Customer.streetaddress,
         "city": Customer.city,
         "national_id": Customer.national_id,
         "id": Customer.id
     }.get(sort_column, Customer.id)
+    
+    return column.asc() if sort_order == "asc" else column.desc()
 
-    order_by = order_by.asc() if sort_order == "asc" else order_by.desc()
+        
+    
+#     return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
+@app.route("/management", methods=["GET", "POST"])
+def management():
+    sort_order = request.args.get('sort_order', 'asc')
+    sort_column = request.args.get('sort_by', 'id')
+    search_word = request.args.get('q', '')
+    
+    page = request.args.get("page", 1, type=int)
+    per_page = 20
+
+    search_customers = get_filtered_customers(search_word)
+
+
+    order_by = get_order_by_column(sort_column, sort_order)
+
     all_customers = search_customers.order_by(order_by).all()
+
+    customers_pagination = search_customers.order_by(order_by).paginate(page=page, per_page=per_page, error_out=False)
+
+    customer_pag = customers_pagination.items
+    has_more = customers_pagination.has_next
+
+
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return jsonify([
@@ -626,13 +636,51 @@ def management():
                 "address": f"{cust.streetaddress}, {cust.zipcode}",
                 "city": cust.city,
                 "national_id": cust.national_id
-            } for cust in all_customers
+            } for cust in customer_pag  # Use paginated results instead of all_customers
         ])
+
 
     customer_amount = search_customers.count()
     acc_amount = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id).scalar()
 
-    return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word)
+    return render_template("management.html", customer_amount=customer_amount, acc_amount=acc_amount, all_customers=all_customers, q=search_word,customer_pag=customer_pag, has_more=has_more)
+
+
+
+
+@app.route("/management/customers", methods=["GET"])
+def load_more_customers():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    sort_order = request.args.get('sort_order', 'asc')
+    sort_column = request.args.get('sort_by', 'id')
+    search_word = request.args.get('q', '')
+
+    search_customers = get_filtered_customers(search_word)
+
+
+    order_by = get_order_by_column(sort_column, sort_order)
+
+
+    customers_pagination = search_customers.order_by(order_by).paginate(page=page, per_page=per_page, error_out=False)
+
+    customers = [
+        {
+            "id": cust.id,
+            "name": f"{cust.given_name} {cust.surname}",
+            "email": cust.email_address,
+            "address": f"{cust.streetaddress}, {cust.zipcode}",
+            "city": cust.city,
+            "national_id": cust.national_id
+        }
+        for cust in customers_pagination.items
+    ]
+
+    return jsonify({
+        "customers": customers,
+        "has_more": customers_pagination.has_next,
+        "next_page": page + 1
+    })
 
 
 
@@ -742,7 +790,7 @@ def customer_list(id):
     current_balance = account_balances.get(selected_account_id)
     
     page = request.args.get("page", 1, type=int)
-    per_page = 20
+    per_page = 3
     
     transactions_pagination = (
         Transaction.query
@@ -798,17 +846,16 @@ def customer_list(id):
         next_page=page+1,
         today = datetime.today().strftime("%d %b, %Y")
         
-        
-        
-        
-        
+ 
     )
+    
+    
     
 @app.route("/customer/<int:id>/transactions", methods=["GET"])
 def load_more_transactions(id):
     selected_account_id = request.args.get("account_id", None, type=int)
     page = request.args.get("page", 1, type=int)
-    per_page = 20  
+    per_page = 3  
 
     transactions_pagination = (
         Transaction.query
@@ -821,7 +868,7 @@ def load_more_transactions(id):
     transactions = [
         {
             "id": t.id,
-            "date": t.date.strftime('%b %d, %Y'),
+            "date": t.date.strftime('%d %b'),
             "type": t.type.value,
             "operation": t.operation.value,
             "amount": "{:,.2f}".format(t.amount),
@@ -834,6 +881,7 @@ def load_more_transactions(id):
         "has_more": transactions_pagination.has_next,
         "next_page": page + 1
     })
+
 
 
 
@@ -893,11 +941,6 @@ def add_customer():
     
     
     return render_template("add_customer.html", form=form)
-
-
-
-
-
 
 
 

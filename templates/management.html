@@ -41,35 +41,37 @@
                             <thead>
                                 <tr>
                                     <th scope="col" class="text-start">
-                                        <a href="#" onclick="updateSorting('customer')">
-                                            <i class="bi bi-sort-alpha-down"></i> Customer
+                                        <a href="#" onclick="updateSorting('customer', event)">
+                                            <i id="customer-sort-icon" class=""></i> Customer
                                         </a>
                                     </th>
                                     <th scope="col" class="text-start">
-                                        <a href="#" onclick="updateSorting('address')">
-                                            <i class="bi bi-sort-alpha-down"></i> Address
+                                        <a href="#" onclick="updateSorting('address', event)">
+                                            <i id="address-sort-icon" class=""></i> Address
                                         </a>
                                     </th>
                                     <th scope="col" class="text-start">
-                                        <a href="#" onclick="updateSorting('city')">
-                                            <i class="bi bi-sort-alpha-down"></i> City
+                                        <a href="#" onclick="updateSorting('city', event)">
+                                            <i id="city-sort-icon" class=""></i> City
                                         </a>
                                     </th>
                                     <th scope="col" class="text-start">
-                                        <a href="#" onclick="updateSorting('national_id')">
-                                            <i class="bi bi-sort-alpha-down"></i> National ID
+                                        <a href="#" onclick="updateSorting('national_id', event)">
+                                            <i id="national_id-sort-icon" class=""></i> National ID
                                         </a>
                                     </th>
                                     <th scope="col" class="text-start">
-                                        <a href="#" onclick="updateSorting('id')">
-                                            <i class="bi bi-sort-alpha-down"></i> #
+                                        <a href="#" onclick="updateSorting('id', event)">
+                                            <i id="id-sort-icon" class=""></i> #
                                         </a>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody id="customer-table-body">
-                                {% for cust in all_customers %}
+                            
+                            
+                            <tbody id="customer-table">{% for cust in customer_pag %}
                                 <tr onclick="window.location='{{ url_for('customer_list', id=cust.id) }}';" style="cursor: pointer;">
+                                    
                                     <td class="text-start"><strong>{{ cust.given_name|title }} {{ cust.surname|title }}</strong><br>
                                         <span style="font-size: 0.85em; color: gray;">{{ cust.email_address|lower }}</span>
                                     </td>
@@ -81,6 +83,13 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        <div class="text-center mt-3">
+                            <button id="load-more-btn" class="btn" onclick="loadMoreCustomers()" 
+                                {% if not has_more %}style="display: none;"{% endif %}>
+                                View More
+                            </button>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -179,20 +188,46 @@
 let currentSortColumn = "id";
 let currentSortOrder = "asc";
 let currentSearch = "";
-
 function fetchCustomers() {
     currentSearch = document.getElementById("search").value;
+    let loadMoreBtn = document.getElementById("load-more-btn");
+
+    if (currentSearch.length > 0) {
+        loadMoreBtn.style.display = "none"; // Hide when searching
+    } else {
+        loadMoreBtn.style.display = "block"; // Show when search is cleared
+        loadMoreBtn.style.margin = "20px auto"; // Ensure centering
+        loadMoreBtn.style.textAlign = "center";
+    }
+
     updateTable();
 }
 
-function updateSorting(column) {
+
+function updateSorting(column, event) {
+    if (event) event.preventDefault();  // Prevent page reload
+
     if (currentSortColumn === column) {
         currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
     } else {
         currentSortColumn = column;
         currentSortOrder = "asc";
     }
+
     updateTable();
+    updateSortIcons(); // Keep sorting icons updated
+}
+
+
+function updateSortIcons() {
+    document.querySelectorAll("th a i").forEach(icon => {
+        icon.className = ""; // Reset all icons
+    });
+
+    let icon = document.querySelector(`#${currentSortColumn}-sort-icon`);
+    if (icon) {
+        icon.className = currentSortOrder === "asc" ? "bi bi-arrow-up" : "bi bi-arrow-down";
+    }
 }
 
 function updateTable() {
@@ -201,8 +236,13 @@ function updateTable() {
     })
     .then(response => response.json())
     .then(data => {
-        let tableBody = document.getElementById("customer-table-body");
+        let tableBody = document.getElementById("customer-table");
         tableBody.innerHTML = "";
+
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No customers found</td></tr>`;
+            return;
+        }
 
         data.forEach(cust => {
             let row = `
@@ -218,10 +258,60 @@ function updateTable() {
             `;
             tableBody.innerHTML += row;
         });
+    })
+    .catch(error => {
+        console.error("Error fetching customers:", error);
+        document.getElementById("customer-table").innerHTML =
+            `<tr><td colspan="5" class="text-center">Error loading data</td></tr>`;
     });
 }
 
+
+
+
 document.getElementById("search").addEventListener("input", fetchCustomers);
 </script>
+<script>
+    let currentPage = 2;
+
+function loadMoreCustomers() {
+    fetch(`/management/customers?page=${currentPage}&sort_by=${currentSortColumn}&sort_order=${currentSortOrder}&q=${currentSearch}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.customers.length > 0) {
+            let table = document.getElementById("customer-table");
+
+            data.customers.forEach(c => {
+                let row = table.insertRow();
+                row.innerHTML = `
+    <td class="text-start"><strong>${c.name}</strong><br>
+        <span style="font-size: 0.85em; color: gray;">${c.email}</span>
+    </td>
+    <td class="text-start">${c.address}</td>
+    <td class="text-start">${c.city}</td>
+    <td class="text-start">${c.national_id}</td>
+    <td class="text-start">${c.id}</td>
+`;
+
+                row.style.cursor = "pointer";
+                row.onclick = function() {
+                    window.location.href = `/customer/${c.id}`;
+                };
+            });
+
+            if (!data.has_more) {
+                document.getElementById("load-more-btn").style.display = "none";
+            } else {
+                currentPage++;
+            }
+        }
+    })
+    .catch(error => console.error("Error loading more customers:", error));
+}
+
+</script>
+
+
+
 
 {% endblock %}

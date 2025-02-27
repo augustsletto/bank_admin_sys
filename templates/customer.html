@@ -117,8 +117,8 @@
                                 <!-- <td>{{ t.new_balance }}</td> -->
 
                                 <td
-                                    class="{% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
-                                    if t.type.value == 'Debit' %}+{% else %}-{%
+                                    class="text-end {% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
+                                    if t.type.value == 'Debit' %}{% else %}-{%
                                     endif %} ${{ "{:,.2f}".format(t.amount)
                                     }}</td>
 
@@ -188,6 +188,7 @@
 
                         <span>$</span>
                         <span>
+                            {% if customer_debit_sum %}
                             {%- if customer_debit_sum >= 1000000000 -%}
                             {{ "{:,.2f}B".format(customer_debit_sum /
                             1000000000) }}
@@ -197,10 +198,14 @@
                             {%- else -%}
                             {{ "{:,.2f}".format(customer_debit_sum) }}
                             {%- endif -%}
+                            {% else %}
+                            {{ "0.00"|float }}
+                            {% endif %}
                         </span>
                     </div>
                     <div class="col-6 red-details">{{ customer_credit_count }}
                         <span>$</span><span class>
+                            {% if customer_credit_sum %}
                             {%- if customer_credit_sum >= 1000000000 -%}
                             {{ "{:,.2f}B".format(customer_credit_sum /
                             1000000000) }}
@@ -210,6 +215,9 @@
                             {%- else -%}
                             {{ "{:,.2f}".format(customer_credit_sum) }}
                             {%- endif -%}
+                            {% else %}
+                            {{ "0.00"|float }}
+                            {% endif %}
                         </span></div>
                 </div>
 
@@ -268,9 +276,15 @@
 <!--  -->
 
     <script>
+
+    
+
+
     let currentPage = 2;
     let customerId = "{{ customer.id }}"
     let selectedAccountId = "{{ selected_account_id }}"
+
+    
 
     function loadMoreTransactions() {
         fetch(`/customer/${customerId}/transactions?account_id=${selectedAccountId}&page=${currentPage}`)
@@ -280,13 +294,14 @@
                 let table = document.getElementById("transaction-table");
 
                 data.transactions.forEach(t => {
+                    
                     let row = table.insertRow();
                     row.innerHTML = `
                     <td>${t.id}</td>
                     <td>${t.date}</td>
                     <td>${t.operation}</td>
-                    <td class="${t.type === 'Debit' ? 'text-success' : 'text-danger'}">
-                        ${t.type === 'Debit' ? '+' : '-'} $${t.amount}
+                    <td class="text-end ${t.type === 'Debit' ? 'text-success' : 'text-danger'}">
+                        ${t.type === 'Debit' ? '' : '-'} $${t.amount}
                     </td>
                     `;
                 });
@@ -306,7 +321,7 @@
         "labels": ["Income", "Expenses"],
         "datasets": [
             {
-                "data": [{{customer_debit_sum}}, {{customer_credit_sum}}],
+                "data": [{{customer_debit_sum if customer_debit_sum else e}}, {{customer_credit_sum if customer_credit_sum else 0}}],
                 "backgroundColor": ["#02c56f", "#c71400"],
                 "borderRadius": 6
             }
