@@ -223,7 +223,7 @@ def load_more_customers():
 
 
 @main_bp.route("/edit_customer", methods=["GET", "POST"])
-@roles_required("Admin")
+@login_required
 def edit_customer():
     customer_id = request.args.get("id")
     customer = db.get_or_404(Customer, customer_id)

@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         legend: {
                             display: true,
                             labels: {
-                                color: "#ffffff", // Färgen på texten i legenden
+                                color: "#ffffff", 
                                 font: { size: 14 }
                             }
                         }
@@ -117,11 +117,19 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("amount").value = "";
     }
 
-    // Expose functions to global scope if needed
     window.convertCurrency = convertCurrency;
     window.addNumber = addNumber;
     window.clearAmount = clearAmount;
 });
+
+
+
+
+function changeCardColor(primary, secondary) {
+    document.getElementById('creditCard').style.background = `linear-gradient(135deg, ${primary}, ${secondary})`;
+}
+
+
 
 
 

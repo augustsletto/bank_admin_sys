@@ -356,6 +356,81 @@
 </script>
 
 
+<script>
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+            
+            function showError(input, message) {
+                let errorSpan = input.nextElementSibling;
+                if (!errorSpan || !errorSpan.classList.contains("error-message")) {
+                    errorSpan = document.createElement("span");
+                    errorSpan.classList.add("error-message");
+                    input.parentNode.appendChild(errorSpan);
+                }
+                errorSpan.textContent = message;
+                input.classList.add("is-invalid");
+            }
+            
+            function clearError(input) {
+                let errorSpan = input.nextElementSibling;
+                if (errorSpan && errorSpan.classList.contains("error-message")) {
+                    errorSpan.remove();
+                }
+                input.classList.remove("is-invalid");
+            }
+            
+            function validateInput(input, minLength, maxLength, regex = null, errorMessage = "Invalid input") {
+                const value = input.value.trim();
+                if (value.length < minLength || value.length > maxLength) {
+                    showError(input, `Must be between ${minLength}-${maxLength} characters.`);
+                    return false;
+                }
+                if (regex && !regex.test(value)) {
+                    showError(input, errorMessage);
+                    return false;
+                }
+                clearError(input);
+                return true;
+            }
+            
+            isValid &= validateInput(document.querySelector("input[name='given_name']"), 2, 50, /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/, "Invalid name format.");
+            isValid &= validateInput(document.querySelector("input[name='surname']"), 2, 50, /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/, "Invalid surname format.");
+            isValid &= validateInput(document.querySelector("input[name='streetaddress']"),2,50,/^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ',.-]+$/,"Invalid street address format.");            isValid &= validateInput(document.querySelector("input[name='city']"), 2, 70, /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/, "Invalid city format.");
+            isValid &= validateInput(document.querySelector("input[name='zipcode']"), 2, 15, /^[0-9A-Za-z -]+$/, "Invalid zip code format.");
+            isValid &= validateInput(document.querySelector("input[name='country']"), 2, 60, /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/, "Invalid country format.");
+            isValid &= validateInput(document.querySelector("input[name='country_code']"), 2, 2, /^[A-Z]{2}$/, "Must be two uppercase letters.");
+            isValid &= validateInput(document.querySelector("input[name='national_id']"), 2, 20, /^[0-9A-Za-z-]+$/, "Invalid national ID format.");
+            isValid &= validateInput(document.querySelector("input[name='telephone_country_code']"), 1, 10, /^\+?[0-9]+$/, "Invalid country code.");
+            isValid &= validateInput(document.querySelector("input[name='telephone']"), 5, 30, /^[0-9 ()+-]+$/, "Invalid phone format.");
+            isValid &= validateInput(document.querySelector("input[name='email_address']"), 5, 50, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format.");
+            isValid &= validateInput(document.querySelector("input[name='birthday']"), 10, 10, /^\d{4}-\d{2}-\d{2}$/, "Use format YYYY-MM-DD.");
+
+            
+            
+
+
+
+
+
+            const balanceField = document.querySelector("input[name='balance']");
+            const balanceValue = parseFloat(balanceField.value);
+            if (isNaN(balanceValue) || balanceValue < 1 || balanceValue > 500000) {
+                showError(balanceField, "Balance must be between 1 and 500,000.");
+                isValid = false;
+            } else {
+                clearError(balanceField);
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+
+</script>
 
 {% endblock %}

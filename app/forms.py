@@ -1,8 +1,7 @@
 from wtforms import StringField, SubmitField, DateTimeField, DecimalField, SelectField, RadioField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, NumberRange, Length
-from app.models import db, Customer, Account, Transaction, TransactionOperation, TransactionType, AccountType, Role, User, roles_users
-from app.seed import seedData
+from app.models import Account, AccountType
 
 
 class EditCustomerForm(FlaskForm):

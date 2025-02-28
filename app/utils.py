@@ -12,6 +12,7 @@ def get_country_data(country_name=None):
     customer_query = db.session.query(Customer, db.func.sum(Account.balance).label("total_balance")).join(Account, Account.customer_id == Customer.id)
     total_customers_query = db.session.query(db.func.count(Customer.id))
     total_accounts_query = db.session.query(db.func.count(Account.id)).join(Customer, Customer.id == Account.customer_id)
+    
     transactions_query = (
         db.session.query(Transaction, Customer.id, Customer.given_name, Customer.surname)
         .join(Account, Account.id == Transaction.account_id)

@@ -19,17 +19,14 @@ class Config:
     SECURITY_UNAUTHORIZED_VIEW = "/unauthorized"
     SECURITY_FLASH_MESSAGES = True  
 
-    # Flask-Security meddelanden
-    SECURITY_MSG_INVALID_PASSWORD = ("Incorrect password. Please try again.", "danger")
-    SECURITY_MSG_USER_DOES_NOT_EXIST = ("User not found. Check your email.", "danger")
-    SECURITY_MSG_DISABLED_ACCOUNT = ("Your account is disabled.", "warning")
+
 
 class ConfigDebug(Config):
-    """Debug-konfiguration (för utveckling)."""
+    # Debug-konfiguration (för utveckling)
     DEBUG = True
     SQLALCHEMY_ECHO = False 
 
 class ConfigProduction(Config):
-    """Produktionskonfiguration (för live-miljöer)."""
+    # Produktionskonfiguration (för live)
     DEBUG = False
     SQLALCHEMY_ECHO = False

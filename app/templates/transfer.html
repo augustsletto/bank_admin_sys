@@ -14,8 +14,7 @@
         <div class="card">
           <div class="row d-flex justify-content-between">
             <div class="col card-title pb-4">Sender </div>
-            <div class="col text-end"><i
-                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            
             </div>
             <form method="POST" action="{{ url_for('main.transfer')}}">
               {{ form.hidden_tag() }}
@@ -55,8 +54,7 @@
         <div class="card">
           <div class="row d-flex justify-content-between">
             <div class="col card-title pb-4">Receiver </div>
-            <div class="col text-end"><i
-                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+            
           </div>
           
             <div class="mb-3">
@@ -93,8 +91,7 @@
           <div class="card">
             <div class="row d-flex justify-content-between">
               <div class="col card-title pb-4">Currency </div>
-              <div class="col text-end"><i
-                  class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+              
             </div>
             <div class="mb-3">
               {% with messages = get_flashed_messages(with_categories=true) %}
@@ -162,252 +159,6 @@
 </div>
 
 
-
-<!-- 
-
-<div class="row mx-2">
-  <div class="container d-flex gy-2">
-
-    <div class="col-3 d-flex">
-      <div class="card-border flex-fill p-4 pb-0"
-        style="background-color: #1d1d1d;">
-        <div class="row d-flex justify-content-between">
-          <div class="col card-title pb-4">Currency </div>
-          <div class="col text-end"><i
-              class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-        </div>
-
-        <div class="converter mb-4">
-          <div class="mb-3">
-            <input type="number" id="amount" class="form_input py-2"
-              placeholder="Enter amount">
-          </div>
-
-          <div class="row mb-3">
-            <div class="col">
-              <div class="dropdown">
-                <button id="fromCurrencyButton"
-                  class="btn dropdown-toggle custom-currency-btn" type="button"
-                  data-bs-toggle="dropdown" aria-expanded="false"
-                  style="width: 100%; text-align: left; background: #444; color: #fff; border: none;">
-                  From Currency
-                </button>
-                <ul id="fromCurrencyMenu" class="dropdown-menu"
-                  style="width: 100%; background: #333;">
-                  {% for currency in currencies %}
-                  <li>
-                    <a class="dropdown-item" href="#"
-                      data-value="{{ currency }}" style="color: #fff;">{{
-                      currency }}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <input type="hidden" id="fromCurrency" value>
-            </div>
-            <div class="col">
-              <div class="dropdown">
-                <button id="toCurrencyButton"
-                  class="btn dropdown-toggle custom-currency-btn" type="button"
-                  data-bs-toggle="dropdown" aria-expanded="false"
-                  style="width: 100%; text-align: left; background: #444; color: #fff; border: none;">
-                  To Currency
-                </button>
-                <ul id="toCurrencyMenu" class="dropdown-menu"
-                  style="width: 100%; background: #333;">
-                  {% for currency in currencies %}
-                  <li>
-                    <a class="dropdown-item" href="#"
-                      data-value="{{ currency }}" style="color: #fff;">{{
-                      currency }}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <input type="hidden" id="toCurrency" value>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <input type="text" id="convertedAmount" class="form_input py-2"
-              placeholder="Converted amount" readonly>
-          </div>
-
-          <button class="exchange-btn mt-0" onclick="convertCurrency()">Exchange
-            Now</button>
-
-          <div class="number-pad">
-            <button onclick="addNumber(1)">1</button>
-            <button onclick="addNumber(2)">2</button>
-            <button onclick="addNumber(3)">3</button>
-            <button onclick="addNumber(4)">4</button>
-            <button onclick="addNumber(5)">5</button>
-            <button onclick="addNumber(6)">6</button>
-            <button onclick="addNumber(7)">7</button>
-            <button onclick="addNumber(8)">8</button>
-            <button onclick="addNumber(9)">9</button>
-            <button onclick="clearAmount()">C</button>
-            <button onclick="addNumber(0)">0</button>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="col-3 d-flex">
-      <div class="card-border flex-fill p-4 pb-0"
-        style="background-color: #1d1d1d;">
-        <div class="row d-flex justify-content-between">
-          <div class="col card-title pb-4">Currency </div>
-          <div class="col text-end"><i
-              class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-          </div>
-
-          <form method="POST" action="{{ url_for('main.transfer')}}">
-          {{ form.hidden_tag() }}
-
-          <div class="table-container">
-            <div class="mb-3">
-              <input type="text" id="searchInputSender" class="form-control"
-                placeholder="Search for a name...">
-            </div>
-
-            <table class="table wealt-table">
-              <tbody id="tableBodySend">
-                {% for subfield in form.sender_account_id %}
-                <tr class="selectable-row">
-                  <td>
-                    <label for="{{ subfield.id_for_label }}"
-                      class="d-flex align-items-center justify-content-between w-100 m-0 p-2">
-                      <div class="d-flex align-items-center">
-                        <i class="bi bi-person-circle me-2"></i>
-                        <span class="name-text">{{ subfield.label.text.title()
-                          }}</span>
-                      </div>
-                      <div class="form-check m-0">
-                        {{ subfield }}
-                      </div>
-                    </label>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </div>
-      <div class="col-3 d-flex">
-        <div class="card-border flex-fill p-4 pb-0"
-          style="background-color: #1d1d1d;">
-          <div class="row d-flex justify-content-between">
-            <div class="col card-title pb-4">Currency </div>
-            <div class="col text-end"><i
-                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-          </div>
-
-          <div class="table-container">
-            <div class="mb-3">
-              <input type="text" id="searchInputReceiver" class="form-control"
-                placeholder="Search for a name...">
-            </div>
-
-            <table class="table wealt-table">
-              <tbody id="tableBodyReceive">
-                {% for subfield in form.receiver_account_id %}
-                <tr class="selectable-row">
-                  <td>
-                    <label for="{{ subfield.id_for_label }}"
-                      class="d-flex align-items-center justify-content-between w-100 m-0 p-2">
-                      <div class="d-flex align-items-center">
-                        <i class="bi bi-person-circle me-2"></i>
-                        <span class="name-text">{{ subfield.label.text.title()
-                          }}</span>
-                      </div>
-                      <div class="form-check m-0">
-                        {{ subfield }}
-                      </div>
-                    </label>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </div>
-      <div class="col-3 d-flex">
-        <div class="card-border flex-fill p-4 pb-0"
-          style="background-color: #1d1d1d;">
-          <div class="row d-flex justify-content-between">
-            <div class="col card-title pb-4">Currency </div>
-            <div class="col text-end"><i
-                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
-          </div>
-
-          <div class="mb-3">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="alert-container">
-              {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
-              {% endfor %}
-            </div>
-            {% endif %}
-            {% endwith %}
-
-            {{ form.amount(class="form-control form-control-lg",
-            placeholder="Enter amount") }}
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100">Transfer</button>
-
-          <div class="table-container-xl">
-
-            <table class="table wealt-table table-hover">
-
-              <thead>
-                <th>Customer</th>
-                <th class="text-end">Amount</th>
-              </thead>
-
-              <tbody>
-                {% for t in transactions_by_country %}
-                {% if t.date <= now %}
-                <tr
-                  onclick="window.location='{{ url_for('main.customer_list', id=t.customer_id) }}';"
-                  style="cursor: pointer;">
-                  <td>
-                    <div class="row pds">{{ t.customer_name|title }}</div>
-                    <div class="row pds">{% if t.date.strftime("%d %b") == today
-                      %}Today{% else
-                      %}{{t.date.strftime("%d %b")}}{%endif%}</div>
-                  </td>
-
-                  <td
-                    class="transaction-val text-end {% if t.type == 'DEBIT' %}text-success{% else %}text-danger{% endif %}">
-                    {%
-                    if t.type == 'CREDIT' %}-{%else%}{%
-                    endif %} ${{ "{:,.2f}".format(t.amount) }}</td>
-
-                  
-
-                </tr>
-                {% endif %}
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-        </form>
-
-      </div>
-
-    </div>
-  </div>
-</div> -->
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {

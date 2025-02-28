@@ -108,13 +108,10 @@
                             {% for t in transactions %}
                             <tr>
                                 <td>{{ t.id }}</td>
-                                <!-- {{ t.date.strftime('%b %d, %Y') }}</td> -->
                                 <td>{% if t.date.strftime("%d %b, %Y") == today
                                     %}Today{% else
                                     %}{{t.date.strftime("%d %b")}}{%endif%}</td>
-                                <!-- <td>{{ t.type.value }}</td> -->
                                 <td>{{ t.operation.value }}</td>
-                                <!-- <td>{{ t.new_balance }}</td> -->
 
                                 <td
                                     class="text-end {% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
@@ -273,7 +270,7 @@
     </div>
 </div>
 
-<!--  -->
+
 
     <script>
 
