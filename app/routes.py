@@ -44,10 +44,15 @@ def logout():
 
 
 #Dashboard Route (index)
+
+    
     
 @main_bp.route("/", methods=["GET"])
 @login_required
 def startpage():
+    
+    
+    
     country = request.args.get("country", "all")
     country_data = get_country_data(country)
     
@@ -161,6 +166,7 @@ def management():
     customer_pag = customers_pagination.items
     has_more = customers_pagination.has_next
 
+    
 
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -222,6 +228,8 @@ def load_more_customers():
 # Customer routes
 
 
+
+
 @main_bp.route("/edit_customer", methods=["GET", "POST"])
 @login_required
 def edit_customer():
@@ -239,10 +247,13 @@ def edit_customer():
 
 
 
+    
 
 @main_bp.route("/customer/<int:id>", methods=["GET", "POST"])
 @login_required
 def customer_list(id):
+    
+
     customer = Customer.query.get_or_404(id)
     selected_account_id = request.args.get("account_id", None, type=int)
     customer_accounts = customer.accounts  
@@ -251,6 +262,7 @@ def customer_list(id):
 
     if not selected_account_id and customer_accounts:
         selected_account_id = customer_accounts[0].id
+
 
     
     account_balances = {}
@@ -323,10 +335,13 @@ def customer_list(id):
 )
     else:
         transactions = []
-
     
     transactions = transactions_pagination.items
     has_more = transactions_pagination.has_next
+    
+    cust_amount = db.session.execute(db.select(Customer)).scalars().all()
+    customer_amount = len(cust_amount)
+    
     
     return render_template(
         "customer.html",
@@ -344,7 +359,8 @@ def customer_list(id):
         customer_debit_sum=customer_debit_sum,
         has_more=has_more,
         next_page=page+1,
-        today = datetime.today().strftime("%d %b, %Y")
+        today = datetime.today().strftime("%d %b, %Y"),
+        customer_amount=customer_amount
         
  
     )

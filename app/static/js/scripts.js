@@ -132,5 +132,50 @@ function changeCardColor(primary, secondary) {
 
 
 
+// Customer.html scripts
+
+let currentPage = 2;
+let customerId = "{{ customer.id }}"
+let selectedAccountId = "{{ selected_account_id }}"
+
+    
+
+function loadMoreTransactions() {
+    fetch(`/customer/${customerId}/transactions?account_id=${selectedAccountId}&page=${currentPage}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.transactions.length > 0) {
+            let table = document.getElementById("transaction-table");
+
+            data.transactions.forEach(t => {
+                
+                let row = table.insertRow();
+                row.innerHTML = `
+                <td>${t.id}</td>
+                <td>${t.date}</td>
+                <td>${t.operation}</td>
+                <td class="text-end ${t.type === 'Debit' ? 'text-success' : 'text-danger'}">
+                    ${t.type === 'Debit' ? '' : '-'} $${t.amount}
+                </td>
+                `;
+            });
+            if (!data.has_more) {
+                document.getElementById("load-more-btn").style.display = "none"
+            }
+        }
+        currentPage++;
+    })
+    .catch(error => console.error("Error loading more transactions:", error));
+}
+
+
+
+
+
+// Add Customer color toggle
+function changeCardColor(primary, secondary) {
+    document.getElementById('creditCard').style.background = `linear-gradient(135deg, ${primary}, ${secondary})`;
+}
+
 
 

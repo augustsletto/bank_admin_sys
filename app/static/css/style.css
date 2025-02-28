@@ -225,6 +225,11 @@ body {
   
   
   /* Tables */
+
+  .wealt-table {
+    width: 100%;
+    border-collapse: collapse;
+    }
   
   .wealt-table tr th{
   color:#8f8f8f;
@@ -245,8 +250,6 @@ body {
   top: 0;
   background-color: #1b1b1b; 
   z-index: 10;
-  border-collapse: collapse;
-  width: 100%;
   
   }
               

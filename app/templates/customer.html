@@ -11,10 +11,8 @@
                 <div class="row d-flex justify-content-between">
                     <div class="col card-title pb-4 mb-3">Total Balance</div>
 
-                    <div class="col text-end"><i
-                            class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                    
                 </div>
-
                 <div class="row d-flex align-items-center mb-4">
                     <div
                         class="col-2 cvv-col ms-3 d-flex justify-content-center align-items-center">
@@ -74,10 +72,9 @@
                                     {% endfor %}
                                 </table>
                             </div>
-
-                        </strong></div>
+                        </strong>
+                    </div>
                 </div>
-
             </div>
         </div>
 
@@ -85,25 +82,21 @@
             <div class="card">
                 <div class="row d-flex justify-content-between">
                     <div class="col card-title pb-4">Transactions</div>
-                    <div class="col text-end"><i
-                            class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
+                    
+
                 </div>
                 <div class="table-container table-container-big flex-grow-1">
-
                     {% if transactions %}
                     <table class="table wealt-table">
                         <thead>
                             <tr>
-
                                 <th>#</th>
                                 <th>Date</th>
                                 <th>Type</th>
                                 <th>Amount</th>
-
                                 <th></th>
                             </tr>
                         </thead>
-
                         <tbody id="transaction-table">
                             {% for t in transactions %}
                             <tr>
@@ -112,19 +105,14 @@
                                     %}Today{% else
                                     %}{{t.date.strftime("%d %b")}}{%endif%}</td>
                                 <td>{{ t.operation.value }}</td>
-
                                 <td
                                     class="text-end {% if t.type.value == 'Debit' %}text-success{% else %}text-danger{% endif %}">{%
                                     if t.type.value == 'Debit' %}{% else %}-{%
                                     endif %} ${{ "{:,.2f}".format(t.amount)
                                     }}</td>
-
                                 <td></td>
-
                             </tr>
-
                             {% endfor %}
-
                             {% else %}
                             <p>No transactions found for this account.</p>
                             {% endif %}
@@ -138,7 +126,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -153,34 +140,18 @@
                                 <i
                                     class="bi bi-plus-lg py-1 px-2 tiny-buttons rounded"></i>
                             </a>
-                            <i
-                                class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"></i>
-                            <ul
-                                class="dropdown-menu dropdown-menu-end position-absolute p-1 border-0 shadow"
-                                data-bs-theme="dark"
-                                style="min-width: auto; width: auto;">
-                                {% for acc in customer_accounts %}
-                                <li class="nav-item">
-
-                                </li>
-                                {% endfor %}
-                            </ul>
+                            
+                            
                         </div>
                     </div>
                 </div>
 
                 <div class="information">
-
                 </div>
-
                 <div class="row mt-1 text-center">
-
                     <div>
                         <canvas id="barChart"></canvas>
                     </div>
-
                     <div class="col-6 green-details">
 
                         <span>$</span>
@@ -231,8 +202,17 @@
                         <div class="col card-title pb-2">
                             Customer Information
                         </div>
-                        <div class="col text-end"><i
-                                class="bi bi-search py-1 px-2 tiny-buttons rounded"></i></div>
+                        <div class="col text-end">
+                            <form id="searchForm" method="GET" onsubmit="return updateAction()">
+                                <label for="search">Enter Customer ID:</label>
+                                <input type="number" id="search" name="id" min="1" max="{{ customer_amount }}">
+                                <button type="submit">Search</button>
+                            </form>
+                            
+                            
+                            
+                            
+                            </div>
                     </div>
     
                     <div class="row">
@@ -268,49 +248,26 @@
             
         </div>
     </div>
-</div>
+</div><script>
+    const MAX_CUSTOMER_ID = {{ customer_amount }};
 
+    function updateAction() {
+        const searchInput = document.getElementById('search');
+        const searchValue = parseInt(searchInput.value, 10);
 
+        if (!searchValue || searchValue < 1) {
+            alert("Please enter a valid customer ID (1 or higher).");
+            return false;
+        }
 
-    <script>
+        if (searchValue > MAX_CUSTOMER_ID) {
+            alert("The entered ID exceeds the maximum customer ID: " + MAX_CUSTOMER_ID);
+            return false;
+        }
 
-    
-
-
-    let currentPage = 2;
-    let customerId = "{{ customer.id }}"
-    let selectedAccountId = "{{ selected_account_id }}"
-
-    
-
-    function loadMoreTransactions() {
-        fetch(`/customer/${customerId}/transactions?account_id=${selectedAccountId}&page=${currentPage}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.transactions.length > 0) {
-                let table = document.getElementById("transaction-table");
-
-                data.transactions.forEach(t => {
-                    
-                    let row = table.insertRow();
-                    row.innerHTML = `
-                    <td>${t.id}</td>
-                    <td>${t.date}</td>
-                    <td>${t.operation}</td>
-                    <td class="text-end ${t.type === 'Debit' ? 'text-success' : 'text-danger'}">
-                        ${t.type === 'Debit' ? '' : '-'} $${t.amount}
-                    </td>
-                    `;
-                });
-                if (!data.has_more) {
-                    document.getElementById("load-more-btn").style.display = "none"
-                }
-            }
-            currentPage++;
-        })
-        .catch(error => console.error("Error loading more transactions:", error));
+        window.location.href = "{{ url_for('main.customer_list', id=0) }}".replace('0', searchValue);
+        return false;
     }
-
 </script>
 
     <script id="barChartData" type="application/json">
