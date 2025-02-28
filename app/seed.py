@@ -7,7 +7,7 @@ from flask_security import hash_password
 import random
 
 
-MAX_NR_OF_CUSTOMERS = 200
+MAX_NR_OF_CUSTOMERS = 500
 MAX_NR_OF_ACCOUNTS = 4
 MINIMUM_NR_OF_ACCOUNTS = 1
 MAX_NR_OF_TRANSACTIONS = 20
