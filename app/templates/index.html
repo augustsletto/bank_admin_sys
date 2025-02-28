@@ -19,7 +19,7 @@
                 <div class="row d-flex justify-content-between">
                     <div class="col card-title pb-4">Overview</div>
                     <div class="col text-end">
-                        <form method="GET" action="{{ url_for('startpage') }}">
+                        <form method="GET" action="{{ url_for('main.startpage') }}">
                             <div class="dropdown">
                                 <button class="btn dropdown-toggle country_btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     {% if selected_country and selected_country != "all" %}{{ selected_country }}{% else %}Total{% endif %}
@@ -231,7 +231,7 @@
                               {% for t in transactions_by_country %}
                               {% if t.date <= now %}
                               <tr
-                                onclick="window.location='{{ url_for('customer_list', id=t.customer_id) }}';"
+                                onclick="window.location='{{ url_for('main.customer_list', id=t.customer_id) }}';"
                                 style="cursor: pointer;">
                                 <td><div class="row pds">{{ t.customer_name|title }}</div></td>
                                 <td><div class="row pds">{% if t.date.strftime("%d %b") == today %}Today{% else %}{{t.date.strftime("%d %b")}}{%endif%}</div></td>

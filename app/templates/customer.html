@@ -49,7 +49,7 @@
 
                                         <tr
                                             class="{% if acc.id == selected_account_id %}text-white{% else %}{% endif %}"
-                                            onclick="window.location='{{ url_for('customer_list', id=customer.id, account_id=acc.id, page=1) }}';"
+                                            onclick="window.location='{{ url_for('main.customer_list', id=customer.id, account_id=acc.id, page=1) }}';"
                                             style="cursor: pointer;">
 
                                             <td>{{ acc.account_type.value
@@ -152,7 +152,7 @@
                     <div class="col text-end">
                         <div class="dropdown">
                             <a class="add_acc_btn"
-                                href="{{ url_for('add_account', customer_id=customer.id) }}">
+                                href="{{ url_for('main.add_account', customer_id=customer.id) }}">
                                 <i
                                     class="bi bi-plus-lg py-1 px-2 tiny-buttons rounded"></i>
                             </a>
@@ -260,7 +260,7 @@
                             </p>
                             <p><strong>Phone:</strong> 
                                 <a href="tel:+{{ customer.telephone_country_code }}{{ customer.telephone }}" class="text-light">
-                                    +{{ customer.telephone_country_code }} {{ customer.telephone }}
+                                    {{ customer.telephone_country_code }} {{ customer.telephone }}
                                 </a>
                             </p>
                         </div>

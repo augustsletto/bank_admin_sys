@@ -992,7 +992,7 @@ text-decoration: none;
 
 .table-container-full th:nth-child(1),
 .table-container-full td:nth-child(1) {
-    width: 30%; /* Adjust width as needed */
+    width: 30%; 
 }
 
 .table-container-full th:nth-child(2),
@@ -1027,8 +1027,8 @@ text-decoration: none;
     {% set navigation_bar = [
     ('/', 'index', 'Dashboard'),
     ('/management', 'management', 'Management'),
-    ('/transfer', 'transfer', 'Transfer'),
-    ('/admin', 'admin', 'Admin'),
+    ('/transfer', 'main.transfer', 'Transfer'),
+    ('/logout', 'logout', 'Logout'),
 
     ] -%}
     {% set active_page = active_page|default('index') -%}
@@ -1036,13 +1036,13 @@ text-decoration: none;
     <div class="container-fluid mt-3">
       <div class="row g-3">
     
-          <!-- Transactions (Moved to Top-Right) -->
+          
           <div class="col-12">
             <div class="card">
-<!-- NAVBAR -->
+
 <nav class="navbar navbar-expand-lg">
   <div class="container-fluid d-flex align-items-center">
-      <!-- Left: Logo & Name -->
+
       <a href="/"
                     class="d-inline-flex link-body-emphasis text-decoration-none ms-0 ps-0 header-logo">
                     <img src="/static/images/Group 5.png" id="logologo"
@@ -1051,7 +1051,7 @@ text-decoration: none;
                         class="green-details">o</span>nytor</span>
                   </a>
 
-      <!-- Center: Navbar Links -->
+
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
       </button>
@@ -1065,11 +1065,15 @@ text-decoration: none;
           </ul>
       </div>
 
-      <!-- Right: Profile Picture & Name -->
+
       <div class="d-flex align-items-center">
-          <span class="me-3 fs-5">Emma Parson</span>
-          <img src="profile.jpg" alt="Profile" width="45" height="45" class="rounded-circle border border-light">
-      </div>
+        {% if current_user.is_authenticated %}
+            <span class="me-3 fs-5">{{ current_user.username }}</span>
+        {% endif %}
+        
+    </div>
+    
+    
   </div>
 </nav>
 

@@ -17,7 +17,7 @@
             <div class="col text-end"><i
                 class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
             </div>
-            <form method="POST" action="{{ url_for('transfer')}}">
+            <form method="POST" action="{{ url_for('main.transfer')}}">
               {{ form.hidden_tag() }}
     
               
@@ -126,7 +126,7 @@
                   {% for t in transactions_by_country %}
                   {% if t.date <= now %}
                   <tr
-                    onclick="window.location='{{ url_for('customer_list', id=t.customer_id) }}';"
+                    onclick="window.location='{{ url_for('main.customer_list', id=t.customer_id) }}';"
                     style="cursor: pointer;">
                     <td>
                       <div class="row pds">{{ t.customer_name|title }}</div>
@@ -264,7 +264,7 @@
               class="bi bi-three-dots py-1 px-2 tiny-buttons rounded"></i></div>
           </div>
 
-          <form method="POST" action="{{ url_for('transfer')}}">
+          <form method="POST" action="{{ url_for('main.transfer')}}">
           {{ form.hidden_tag() }}
 
           <div class="table-container">
@@ -377,7 +377,7 @@
                 {% for t in transactions_by_country %}
                 {% if t.date <= now %}
                 <tr
-                  onclick="window.location='{{ url_for('customer_list', id=t.customer_id) }}';"
+                  onclick="window.location='{{ url_for('main.customer_list', id=t.customer_id) }}';"
                   style="cursor: pointer;">
                   <td>
                     <div class="row pds">{{ t.customer_name|title }}</div>

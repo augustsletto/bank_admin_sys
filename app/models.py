@@ -1,14 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, DateTime, ForeignKey, Enum, Numeric, Boolean
-from datetime import datetime, timedelta
-from faker import Faker
-from decimal import Decimal
-from flask_security import SQLAlchemyUserDatastore, hash_password
-
+from flask_security import SQLAlchemyUserDatastore
 from flask_security.models import fsqla_v3 as fsqla
-
-import random
 import enum
 
 # MAX_NR_OF_CUSTOMERS = 200
@@ -17,120 +11,120 @@ import enum
 # MAX_NR_OF_TRANSACTIONS = 20
 # MINIMUM_NR_OF_TRANSACTIONS = 10
 
-# db = SQLAlchemy()
+db = SQLAlchemy()
 
 
-# roles_users = db.Table('roles_users',
-#     db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
-#     db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
+roles_users = db.Table('roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
 
-# class Role(db.Model, fsqla.FsRoleMixin):
-#     __tablename__ = "Role"
+class Role(db.Model, fsqla.FsRoleMixin):
+    __tablename__ = "Role"
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     name: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
-#     description: Mapped[str] = mapped_column(String(255), nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=False)
 
-# class User(db.Model, fsqla.FsUserMixin):
-#     __tablename__ = "User"
+class User(db.Model, fsqla.FsUserMixin):
+    __tablename__ = "User"
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     username: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-#     password: Mapped[str] = mapped_column(String(255), nullable=False)
-#     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-#     active: Mapped[bool] = mapped_column(Boolean, default=True)
-#     fs_uniquifier: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-#     roles: Mapped[list[Role]] = relationship("Role", secondary=roles_users, back_populates="users")
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    fs_uniquifier: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    roles: Mapped[list[Role]] = relationship("Role", secondary=roles_users, back_populates="users")
 
     
     
 
 
-# Role.users = relationship("User", secondary=roles_users, back_populates="roles")
-# user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+Role.users = relationship("User", secondary=roles_users, back_populates="roles")
 
 
 
 
 
 
-# class Customer(db.Model):
-#     __tablename__ = "Customers"
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     given_name: Mapped[str] = mapped_column(String(50), nullable=False)
-#     surname: Mapped[str] = mapped_column(String(50), nullable=False)
-#     streetaddress: Mapped[str] = mapped_column(String(50), nullable=False)
-#     city: Mapped[str] = mapped_column(String(70), nullable=False)
-#     zipcode: Mapped[str] = mapped_column(String(15), nullable=False)
-#     country: Mapped[str] = mapped_column(String(60), nullable=False)
-#     country_code: Mapped[str] = mapped_column(String(2), nullable=False)
-#     birthday: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
-#     national_id: Mapped[str] = mapped_column(String(20), nullable=False)
-#     telephone_country_code: Mapped[str] = mapped_column(String(10), nullable=False)
-#     telephone: Mapped[str] = mapped_column(String(30), nullable=False)
-#     email_address: Mapped[str] = mapped_column(String(50), nullable=False)
+class Customer(db.Model):
+    __tablename__ = "Customers"
 
-#     accounts: Mapped[list["Account"]] = relationship(
-#         "Account", back_populates="customer", lazy="select"
-#     )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    given_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    surname: Mapped[str] = mapped_column(String(50), nullable=False)
+    streetaddress: Mapped[str] = mapped_column(String(50), nullable=False)
+    city: Mapped[str] = mapped_column(String(70), nullable=False)
+    zipcode: Mapped[str] = mapped_column(String(15), nullable=False)
+    country: Mapped[str] = mapped_column(String(60), nullable=False)
+    country_code: Mapped[str] = mapped_column(String(2), nullable=False)
+    birthday: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    national_id: Mapped[str] = mapped_column(String(20), nullable=False)
+    telephone_country_code: Mapped[str] = mapped_column(String(10), nullable=False)
+    telephone: Mapped[str] = mapped_column(String(30), nullable=False)
+    email_address: Mapped[str] = mapped_column(String(50), nullable=False)
 
-# class AccountType(enum.Enum):
-#     PERSONAL = "Personal"
-#     CHECKING = "Checking"
-#     SAVINGS = "Savings"
+    accounts: Mapped[list["Account"]] = relationship(
+        "Account", back_populates="customer", lazy="select"
+    )
 
-
-# class Account(db.Model):
-#     __tablename__ = "Accounts"
-
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     account_type: Mapped[AccountType] = mapped_column(
-#         Enum(AccountType, native_enum=True, create_constraint=True),  # native_enum=True use for MySQL
-#         nullable=False
-#     )
-#     created: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
-#     balance: Mapped[float] = mapped_column(Numeric(precision=12, scale=2), nullable=False)
-#     customer_id: Mapped[int] = mapped_column(ForeignKey("Customers.id"), nullable=False)
-
-#     customer: Mapped["Customer"] = relationship(
-#         "Customer", back_populates="accounts", lazy="select"
-#     )
-#     transactions: Mapped[list["Transaction"]] = relationship(
-#         "Transaction", back_populates="account", lazy="select"
-#     )
+class AccountType(enum.Enum):
+    PERSONAL = "Personal"
+    CHECKING = "Checking"
+    SAVINGS = "Savings"
 
 
-# class TransactionType(enum.Enum):
-#     DEBIT = "Debit"
-#     CREDIT = "Credit"
+class Account(db.Model):
+    __tablename__ = "Accounts"
 
-# class TransactionOperation(enum.Enum):
-#     SALARY = "Salary"
-#     TRANSFER = "Transfer"
-#     DEPOSIT_CASH = "Deposit cash"
-#     ATM_WITHDRAWL = "ATM withdrawal"
-#     PAYMENT = "Payment"
-#     BANK_WITHDRAWL = "Bank withdrawal"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    account_type: Mapped[AccountType] = mapped_column(
+        Enum(AccountType, native_enum=True, create_constraint=True),  # native_enum=True use for MySQL
+        nullable=False
+    )
+    created: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    balance: Mapped[float] = mapped_column(Numeric(precision=12, scale=2), nullable=False)
+    customer_id: Mapped[int] = mapped_column(ForeignKey("Customers.id"), nullable=False)
 
-# class Transaction(db.Model):
-#     __tablename__ = "Transactions"
+    customer: Mapped["Customer"] = relationship(
+        "Customer", back_populates="accounts", lazy="select"
+    )
+    transactions: Mapped[list["Transaction"]] = relationship(
+        "Transaction", back_populates="account", lazy="select"
+    )
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     type: Mapped[TransactionType] = mapped_column(
-#         Enum(TransactionType, native_enum=True, create_constraint=True), nullable=False)
+
+class TransactionType(enum.Enum):
+    DEBIT = "Debit"
+    CREDIT = "Credit"
+
+class TransactionOperation(enum.Enum):
+    SALARY = "Salary"
+    TRANSFER = "Transfer"
+    DEPOSIT_CASH = "Deposit cash"
+    ATM_WITHDRAWL = "ATM withdrawal"
+    PAYMENT = "Payment"
+    BANK_WITHDRAWL = "Bank withdrawal"
+
+class Transaction(db.Model):
+    __tablename__ = "Transactions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type: Mapped[TransactionType] = mapped_column(
+        Enum(TransactionType, native_enum=True, create_constraint=True), nullable=False)
     
-#     operation:Mapped[TransactionOperation] = mapped_column(
-#         Enum(TransactionOperation, native_enum=True, create_constraint=True), nullable=False)
+    operation:Mapped[TransactionOperation] = mapped_column(
+        Enum(TransactionOperation, native_enum=True, create_constraint=True), nullable=False)
     
-#     date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
-#     amount: Mapped[float] = mapped_column(Numeric(precision=10, scale=2), nullable=False)
-#     new_balance: Mapped[float] = mapped_column(Numeric(precision=10, scale=2), nullable=False)
-#     account_id: Mapped[int] = mapped_column(ForeignKey("Accounts.id"), nullable=False)
+    date: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    amount: Mapped[float] = mapped_column(Numeric(precision=10, scale=2), nullable=False)
+    new_balance: Mapped[float] = mapped_column(Numeric(precision=10, scale=2), nullable=False)
+    account_id: Mapped[int] = mapped_column(ForeignKey("Accounts.id"), nullable=False)
 
-#     account: Mapped["Account"] = relationship(
-#         "Account", back_populates="transactions", lazy="select"
-#     )
+    account: Mapped["Account"] = relationship(
+        "Account", back_populates="transactions", lazy="select"
+    )
 
 # def seedData(db):
 
