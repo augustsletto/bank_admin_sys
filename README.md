@@ -1,64 +1,62 @@
-# Simple base for a webapp
-This is a simple skeleton for a webapp that uses flask.
 
-## Setup
-### Create an isolated environment
-```bash
-# Create a virtual environment
-python -m venv venv
+## Installation
 
-# For macOS/Linux, activate environment:
-source venv/bin/activate
+För att köra projektet, följ dessa steg:
 
-# For Windows, activate environment:
-venv\Scripts\activate
+1. Klona projektet från GitHub:
+   ```bash
+   git clone <repo-url>
+   cd <projektmapp>
+   ```
+2. Skapa och aktivera en virtuell miljö:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # På Windows: venv\Scripts\activate
+   ```
+3. Installera beroenden:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   **OBS!** Flask och vissa Flask-relaterade paket installeras ibland inte automatiskt trots att de ligger i requirements.txt. Om de saknas, installera dem manuellt:
+   ```bash
+   pip install flask flask-login flask-wtf flask-sqlalchemy
+   ```
+4. Starta applikationen:
+   ```bash
+   flask run
+   ```
 
-# remember that powershell might not allow you to run scripts. You have to use CMD instead then
-```
-### Install requirements
-```bash
-# Install dependencies
-pip install -r requirements.txt
-```
+## Funktionalitet utöver det uppenbara
 
-### Database
-In app.py you find 
-```python
-app.config['SQLALCHEMY_DATABASE_URI']
-```
-Use the current configuration by creating a database "Bank" och change to your own preference.
+- **Swish-inspirerad transferfunktion** – Smidig pengaöverföring mellan konton.
+- **Interaktiv transaktionshistorik** – Se tidigare transaktioner i en dynamisk tabell.
+- **Management-table** – Live-sökning och sortering av användarkonton.
+- **Statistik efter land** – Visualisering av transaktioner på dashboarden.
+- **Pengatvättsvarning** – Systemet identifierar misstänkta transaktioner och varnar.
+- **Kundhantering** – Gå direkt till kundsida från management-sektionen.
 
-To change the number of customers that seeds to the database, change variables in models.py
-```python
-MAX_NR_OF_CUSTOMERS = 50
-MAX_NR_OF_ACCOUNTS = 4
-MINIMUM_NR_OF_ACCOUNTS = 1
-MAX_NR_OF_TRANSACTIONS = 30
-MINIMUM_NR_OF_TRANSACTIONS = 3
-```
+## Kända problem och förbättringsområden
 
-### Migrations
-To test that migrations works fine, run:
-```bash
-flask db upgrade
-```
-
-In case of problems, delete the migrations-map and run
-```bash
-flask db init
-
-flask db migrations -m "First migration"
-
-flask db upgrade
-```
-
-## To run the app
-```bash
-py app.py
-
-# Alternative 
-flask run
+- **Långsam dashboard** – Mycket data hämtas vid varje laddning. En lösning vore att lagra information i sessioner eller en cache.
+- **"View more" i transfer-funktionen** – Funktionen kunde inte implementeras helt då det uppstod problem med form-splitning.
+- **Freeze-funktion på konton** – Behöver förbättras för att stoppa misstänkta transaktioner.
+- **Flash-meddelanden** – Vissa valideringsmeddelanden fungerar inte optimalt.
+- **Inputvalidering** – Kan förbättras för att säkerställa robusthet.
 
 
-```
+## Utvecklingsprocess och reflektion
+
+- Projektet började med en relativt enkel och icke-responsiv design. Sent i utvecklingsprocessen bestämde jag mig för att skapa en mer modern och responsiv layout, vilket tog upp en del tid från mitt planerade backend-arbete. Detta ledde till att vissa delar blev något forcerade och hade kunnat förbättras med bättre planering.
+
+- Trots detta anser jag att jag har täckt in både G och VG-kraven i stor utsträckning och att projektet uppfyller de viktigaste målen på ett tillfredsställande sätt.
+
+## Möjliga framtida förbättringar
+
+- Implementera en adminprofil där misstänkta transaktioner samlas i en inkorg istället för att bara printas.
+- Förbättrad "View more"-funktionalitet för transfer-historiken.
+- Optimerad prestanda genom caching eller sessioner.
+
+## Sammanfattning
+
+Projektet erbjuder en modern och interaktiv upplevelse för hantering av transaktioner och kontoadministration. Även om vissa funktioner kan förbättras har det en stabil grund och flera användbara funktioner för vidare utveckling.
 
