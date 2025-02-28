@@ -58,6 +58,7 @@ py app.py
 
 # Alternative 
 flask run
-# remember that this will not execute the seed-function!
+
+
 ```
 
