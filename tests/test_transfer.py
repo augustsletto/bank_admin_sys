@@ -1,73 +1,108 @@
 import pytest
-from app import app, db, transfer_money
-from models import Customer, Account, Transaction, TransactionType, TransactionOperation
+from app import create_app, db
+from app.models import Account, Customer, Transaction, TransactionType, TransactionOperation
+from app.utils import transfer_money
 from datetime import datetime
 from decimal import Decimal
 
 @pytest.fixture
-def test_client():
-    """Setup Flask test client and database."""
+def app():
+    app = create_app()
     app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  
-    client = app.test_client()
-
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     with app.app_context():
         db.create_all()
-        yield client
-        # db.drop_all()
+        yield app
+        db.session.remove()
+        db.drop_all()
 
-def create_test_accounts():
-    """Helper function to create test customers and accounts."""
-    customer = Customer(
-        given_name="John",
-        surname="Doe",
-        streetaddress="123 Test St",
-        city="Testville",
-        zipcode="12345",
-        country="Testland",
-        country_code="TL",
-        birthday=datetime(1990, 1, 1),
-        national_id="123456789",
-        telephone_country_code="+1",
-        telephone="555-1234",
-        email_address="john.doe@example.com"
-    )
-    db.session.add(customer)
-    db.session.commit()
+@pytest.fixture
+def client(app):
+    return app.test_client()
 
-    account1 = Account(
-        account_type="Checking",
-        created=datetime.now(),
-        balance=Decimal("500.00"),  
-        customer_id=customer.id
-    )
-
-    account2 = Account(
-        account_type="Savings",
-        created=datetime.now(),
-        balance=Decimal("1000.00"),  
-        customer_id=customer.id
-    )
-
-    db.session.add_all([account1, account2])
-    db.session.commit()
-
-    return account1, account2
-
-def test_cannot_transfer_more_than_balance(test_client):
-    """Test that transferring more money than the sender has is blocked."""
+@pytest.fixture
+def init_db(app):
     with app.app_context():
-        account1, account2 = create_test_accounts()
+        customer = Customer(
+            given_name="Mr",
+            surname="Cool",
+            streetaddress="123 Huvudgata",
+            city="Silicon Valley",
+            zipcode="1337",
+            country="Örnsköldsvik",
+            country_code="XD",
+            birthday=datetime(1990, 1, 1),
+            national_id="123456789",
+            telephone_country_code="+1",
+            telephone="1234567890",
+            email_address="Mrcool@yahootmail.com"
+        )
+        db.session.add(customer)
+        db.session.commit()
 
-        success, message = transfer_money(account1.id, account2.id, Decimal("600.00"))  
-        assert not success
-        assert message == "Insufficient balance."
+        account1 = Account(
+            account_type="SAVINGS",
+            created=datetime.now(),
+            balance=Decimal("1000.00"),
+            customer_id=customer.id
+        )
 
-def test_cannot_transfer_negative_amount(test_client):
-    """Test that negative transfers are blocked."""
+        account2 = Account(
+            account_type="CHECKING",
+            created=datetime.now(),
+            balance=Decimal("500.00"),
+            customer_id=customer.id
+        )
+
+        db.session.add(account1)
+        db.session.add(account2)
+        db.session.commit()
+
+       
+        db.session.refresh(account1)
+        db.session.refresh(account2)
+
+        return customer, account1, account2
+
+
+
+def test_transfer_exceed_balance(init_db):
+    _, sender, receiver = init_db
+    success, message = transfer_money(sender.id, receiver.id, Decimal("2000.00"))
+    assert success is False
+    assert message == "Insufficient balance."
+
+def test_transfer_negative_amount(init_db):
+    _, sender, receiver = init_db
+    success, message = transfer_money(sender.id, receiver.id, Decimal("-50.00"))
+    assert success is False
+    assert message == "Cannot transfer negative money."
+
+def test_transfer_valid_amount(init_db, app):
+    _, sender, receiver = init_db
+
     with app.app_context():
-        account1, account2 = create_test_accounts()
+        success, message = transfer_money(sender.id, receiver.id, Decimal("200.00"))
 
-        success, message = transfer_money(account1.id, account2.id, Decimal("-50.00"))  
-        assert not success
-        assert message == "Invalid amount: Cannot transfer negative money."
+        assert success is True
+        assert message == "Successful!"
+
+
+        sender = db.session.get(Account, sender.id)
+        receiver = db.session.get(Account, receiver.id)
+
+        assert sender.balance == Decimal("800.00")
+        assert receiver.balance == Decimal("700.00")
+
+    """
+    A QA engineer walks into a bar and orders a beer.
+He orders 2 beers.
+He orders 0 beers.
+He orders -1 beers.
+He orders a lizard.
+He orders a 304jfo"#)=¤().
+He tries to leave without paying.
+Satisfied, he declares the bar ready for business. The first customer comes in an orders a beer. 
+They finish their drink, and then ask where the bathroom is.
+The bar explodes.
+    """
